@@ -1,4 +1,4 @@
-name: Build and Release WP Zip File
+name: Build and Release Zip
 
 on:
   release:
@@ -19,7 +19,6 @@ jobs:
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: ${{ github.workspace }}/$RELEASE_VERSION.zip
