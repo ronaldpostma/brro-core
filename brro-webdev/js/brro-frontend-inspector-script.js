@@ -1,0 +1,161 @@
+jQuery(function ($) {
+    console.log('Brro Elementor Devtools Frontend Script Runs');
+    // 1. Function to update the viewport width
+    function updateDevScreenWidth() {
+        $('.viewport-width').remove(); // 1.1 Remove existing viewport width display
+        devScreenWidth = $('body').width(); // 1.2 Get the current width of the body
+        console.log('Updated devScreenWidth:', devScreenWidth); // 1.3 Log the updated width
+        $('.inspector-container').append('<div class="viewport-width">' + devScreenWidth + 'px</div>'); // 1.4 Display the new width
+    }
+    // 1.1 Initial viewport width setup
+    var devScreenWidth = $('body').width(); 
+    console.log('Initial devScreenWidth:', devScreenWidth); 
+    // 1.2 Attach resize event handler to update width
+    $(window).on('resize', updateDevScreenWidth); 
+    // 1.3 Observe body for size changes
+    var bodyElement = document.querySelector('body');
+    if (bodyElement) {
+        new ResizeObserver(updateDevScreenWidth).observe(bodyElement); 
+    }
+    // 2. Additional functionality for 'webadmin' class
+    if ($('body').hasClass('webadmin')) {
+        // 2.1 Define toggleable circles with colors
+        var toggleCircles = [
+            { class: 'inspect-parent inspect-child inspect-child-child inspect-widget', color: 'darkviolet' },
+            { class: 'inspect-parent', color: 'red' },
+            { class: 'inspect-child', color: 'gold' },
+            { class: 'inspect-child-child', color: 'pink' },
+            { class: 'inspect-widget', color: 'yellowgreen' },
+        ];
+        if (!$('body').hasClass('elementor-editor-active')) {
+            toggleCircles.push({ class: 'hide-admin-bar', color: 'black' });
+        }
+        // 2.2 Create container for inspector buttons
+        var circleContainer = $('<div class="inspector-container"></div>');
+        var circleElements = [];
+        $.each(toggleCircles, function (index, circleData) {
+            var circleElement = $('<div class="inspector-button"></div>').css('background-color', circleData.color);
+            circleElements.push(circleElement);
+        });
+        circleContainer.append(circleElements);
+        $('body').append(circleContainer);
+        $('.inspector-container').append('<div class="viewport-width" >' + devScreenWidth + 'px</div>');
+        setTimeout(function() {
+            $('body:not(.elementor-editor-active) .inspector-container').append('<div id="brro-generate-css-btn">(Re)gen CSS</div>');
+        }, 800);
+        // Activate inspector state in Elementor editor by default
+        $('body.elementor-editor-active').addClass('inspect-parent inspect-child inspect-child-child inspect-widget');
+        $('body.elementor-editor-active .inspector-button').addClass('inspector-active');
+        if ($('body').hasClass('admin-bar')) {
+            $(this).addClass('hide-admin-bar');
+            $('html').addClass('hide-admin-bar');
+            $('body .inspector-container div:nth-of-type(6)').addClass('inspector-active');
+            $('#wpadminbar').slideUp();
+        }
+        //
+        // 2.3 Event handling for individual element inspector buttons on click
+        $('.inspector-button:not(:first-of-type)').on('click', function () {
+            // if the clicked button is active
+            if ($(this).hasClass('inspector-active')) {
+                $(this).removeClass('inspector-active');
+                var index = $('.inspector-button').index($(this));
+                if (index >= 0 && index < toggleCircles.length) {
+                    $('body').removeClass(toggleCircles[index].class);
+                }
+                var bodyHasAllClasses = toggleCircles.slice(1).every(function(circle) {
+                    return $('body').hasClass(circle.class);
+                });
+                if (!bodyHasAllClasses) {
+                    $('.inspector-button:first-of-type').removeClass('inspector-active');
+                }
+            // if the clicked button is not active, add 'active' class and and add the corresponding inspector class to body
+            } else {
+                $(this).addClass('inspector-active');
+                var index = $('.inspector-button').index($(this));
+                if (index >= 0 && index < toggleCircles.length) {
+                    $('body').addClass(toggleCircles[index].class);
+                }
+                var bodyHasAllClasses = toggleCircles.slice(1).every(function(circle) {
+                    return $('body').hasClass(circle.class);
+                });
+                if (bodyHasAllClasses) {
+                    $('.inspector-button:first-of-type').addClass('inspector-active');
+                }
+            }
+        });
+        // 2.4 Event handling for all elements inspector button on click
+        $('.inspector-button:first-of-type').on('click', function () {
+            // if the clicked button is active
+            if ($(this).hasClass('inspector-active')) {
+                $('.inspector-button').removeClass('inspector-active');
+                var index = $('.inspector-button').index($(this));
+                if (index >= 0 && index < toggleCircles.length) {
+                    $('body').removeClass(toggleCircles[index].class);
+                }
+            // if the clicked button is not active, add 'active' class and and add the corresponding inspector class to body
+            } else {
+                $('.inspector-button').removeClass('inspector-active');
+                $('.inspector-button').addClass('inspector-active');
+                var index = $('.inspector-button').index($(this));
+                if (index >= 0 && index < toggleCircles.length) {
+                    $('body').removeClass(toggleCircles[index].class);
+                }
+                var index = $('.inspector-button').index($(this));
+                if (index >= 0 && index < toggleCircles.length) {
+                    $('body').addClass(toggleCircles[index].class);
+                }
+            }
+        });
+        // 2.5 Click on admin bar inspector button
+        $('.inspector-button').on('click', function () {
+            setTimeout(function() {
+                if ($('.inspector-button:nth-child(6)').hasClass('inspector-active')) {
+                    $('html').addClass('hide-admin-bar');
+                    $('#wpadminbar').slideUp();
+                } else {
+                    $('html').removeClass('hide-admin-bar');
+                    $('#wpadminbar').slideDown();
+                }
+            }, 50);
+        });
+    }
+    //
+    // 3. PHP regenerate button
+    $(document).on('click', '#brro-generate-css-btn', function(e) {
+        e.preventDefault();
+        console.log('CSS regen clicked');
+        // Append a parameter to the current URL and reload
+        var currentUrl = window.location.href;
+        var newUrl = currentUrl.indexOf('?') > -1 ? currentUrl + '&trigger_css_regeneration=1' : currentUrl + '?trigger_css_regeneration=1';
+        setTimeout(function() {
+            window.location.href = newUrl;
+        }, 200);
+    });
+    // Function to get URL parameters
+    function getQueryParam(param) {
+        var result = window.location.search.match(new RegExp("(\\?|&)" + param + "(\\[\\])?=([^&]*)"));
+        return result ? result[3] : false;
+    }
+    // Check if the 'trigger_css_regeneration' parameter is set
+    if (getQueryParam('trigger_css_regeneration')) {
+        $.ajax({
+            url: brroAjax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'generate_css',
+            },
+            success: function(response) {
+                console.log('CSS Regenerated Successfully');
+                // Optionally, clear the parameter from the URL after the action is complete
+                var cleanUrl = window.location.href.split('?')[0];
+                window.history.replaceState({}, document.title, cleanUrl);
+            },
+            error: function() {
+                alert('There was an error.');
+            }
+        });
+        setTimeout(function() {
+            location.reload(true);
+        }, 200);
+    }
+});

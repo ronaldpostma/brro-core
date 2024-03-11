@@ -1,0 +1,146 @@
+/* Elementor Inspector Container */
+.inspector-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 9999;
+    padding:10px 20px;
+}
+.inspector-button {
+    transition:all 200ms ease;
+    width: 30px;
+    height: 30px;
+    margin-bottom:10px;
+    border-radius: 50%;
+    mix-blend-mode: lighten;
+    cursor: pointer;
+    opacity: .2;
+    margin-left:auto;
+}
+.inspector-button:hover {
+    opacity:.6;
+}
+.inspector-button:hover:before {
+    color: silver;
+    mix-blend-mode:difference;
+    position: absolute;
+    right: 0;
+    transform: translateX(-60px);
+    width:170px;
+    text-align:right;
+}
+.inspector-button.inspector-active:first-of-type:hover:before {
+    content: "Hide all";
+}
+.inspector-button:not(.inspector-active):first-of-type:hover:before {
+    content: "Show all";
+}
+.inspector-button:nth-of-type(2):hover:before {
+    content: "Container Parent";
+}
+.inspector-button:nth-of-type(3):hover:before {
+    content: "Container Child";
+}
+.inspector-button:nth-of-type(4):hover:before {
+    content: "Container Child > Child";
+}
+.inspector-button:nth-of-type(5):hover:before {
+    content: "Widgets";
+}
+.inspector-button:nth-of-type(6):hover:before {
+    content: "Hide Admin-bar";
+}
+.inspector-container:not(:hover) .inspector-button,
+/*.inspector-container:not(:hover) .viewport-width,*/
+.inspector-container:not(:hover) #brro-generate-css-btn {
+    transform: translatex(120px);
+}
+.inspector-button.inspector-active {
+    opacity: 1;
+}
+.viewport-width, #brro-generate-css-btn {
+    transition:all 200ms ease;
+    background-color:black;
+    border:1px solid white;
+    color:white;
+    font-size:14px;
+    border-radius:4px;
+    padding:4px 8px;
+    margin-bottom:10px;
+    opacity:.7;
+    text-align: center;
+}
+#brro-generate-css-btn {
+    background-color:purple;
+    border:1px solid yellow;
+    cursor: pointer;
+}
+/* On screen highlighting of containers and widgets */
+.elementor-container-inspector .e-con::before,
+.inspect-parent .e-con::before,
+.inspect-child .e-con::before,
+.inspect-child-child .e-con::before,
+.elementor-container-inspector .elementor-widget::before,
+.inspect-widget .elementor-widget::before{
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    /*mix-blend-mode: multiply;*/
+    opacity:.5;
+}
+.elementor-container-inspector  .e-con.e-parent::before,
+.inspect-parent .e-con.e-parent::before {
+    border: 2px dashed /*Red*/;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 100%;
+}
+.elementor-container-inspector  .e-con.e-child::before,
+.inspect-child .e-con.e-child::before {
+    border: 1px dotted /*Brown*/;
+    top: 2px;
+    left: 2px;
+    width:calc(100% - 4px);
+    height: calc(100% - 4px);
+}
+.elementor-container-inspector  .e-con.e-child .e-con.e-child::before,
+.inspect-child-child .e-con.e-child .e-con.e-child::before{
+    border: 1px dashed /*Blue*/;
+    top: 3px;
+    left: 3px;
+    width:calc(100% - 6px);
+    height: calc(100% - 6px);
+}
+.elementor-container-inspector .elementor-widget::before,
+.inspect-widget .elementor-widget::before {
+    box-shadow: inset 0 0 0 4px /*#ddd*/;
+    opacity: 0.6;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 100%;
+}
+
+/* Hide Admin Bar */
+html.hide-admin-bar {
+    margin-top:0px!important;
+}
+
+/* Scrollbar in the editor */
+/* width */
+body.elementor-editor-active[data-elementor-device-mode="mobile"]::-webkit-scrollbar,
+body.elementor-editor-active[data-elementor-device-mode="tablet"]::-webkit-scrollbar{
+    width: 0px!important;
+}
+/* track */
+body.elementor-editor-active[data-elementor-device-mode="mobile"]::-webkit-scrollbar-track,
+body.elementor-editor-active[data-elementor-device-mode="tablet"]::-webkit-scrollbar-track{
+  background: transparent!important;
+}
+/* handle */
+body.elementor-editor-active[data-elementor-device-mode="mobile"]::-webkit-scrollbar-thumb,
+body.elementor-editor-active[data-elementor-device-mode="tablet"]::-webkit-scrollbar-thumb{
+  background: transparent!important;
+  border:none!important;
+}
