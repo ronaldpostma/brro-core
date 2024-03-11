@@ -1,9 +1,11 @@
 <?php
 /**
  * Plugin Name: Brro Web Development Tools
+ * Plugin URI: https://base.brro.nl/git-webhook/brro-plugin-info.json
  * Description: Brro web development tools.
- * Version: 1.2.1
- * Author: Ronald Postma <a href="https://brro.com">@Brro</a>
+ * Version: 1.2.2
+ * Author: Ronald Postma 
+ * Author URI: https://brro.nl/
  * 
  */
 //
@@ -124,3 +126,51 @@ function brro_add_inspector_css() {
     echo '<style>' . $custom_css . '</style>';
 }
 add_action('wp_head', 'brro_add_inspector_css');
+
+/*
+*
+* Update mechanism
+*
+*/
+
+function brro_check_for_plugin_update($checked_data) {
+    if (empty($checked_data->checked)) return $checked_data;
+
+    // Define the plugin slug
+    $plugin_slug = 'brro-webdev';
+    $plugin_path = plugin_basename(__FILE__);
+
+    // Fetch the latest plugin info from your custom URI
+    $response = brro_get_plugin_update_info();
+
+    if ($response && version_compare($checked_data->checked[$plugin_path], $response->new_version, '<')) {
+        $checked_data->response[$plugin_path] = (object) [
+            'url' => $response->url,
+            'slug' => $plugin_slug,
+            'package' => $response->package,
+            'new_version' => $response->new_version,
+            'tested' => $response->tested,
+        ];
+    }
+
+    return $checked_data;
+}
+add_filter('pre_set_site_transient_update_plugins', 'brro_check_for_plugin_update');
+
+function brro_get_plugin_update_info() {
+    $update_info_url = 'https://base.brro.nl/git-webhook/brro-plugin-info.json';
+    $response = wp_remote_get($update_info_url);
+
+    if (is_wp_error($response)) {
+        return false; // Bail early on request error
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body);
+
+    if (!is_null($data)) {
+        return $data;
+    }
+
+    return false;
+}
