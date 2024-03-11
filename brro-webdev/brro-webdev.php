@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Brro Web Development Tools
  * Plugin URI: https://base.brro.nl/git-webhook/brro-plugin-info.json
- * Description: Brro web development tools.
+ * Description: Brro web development tools
  * Version: 1.2.2
  * Author: Ronald Postma 
  * Author URI: https://brro.nl/
