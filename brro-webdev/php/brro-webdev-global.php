@@ -131,4 +131,3 @@ function brro_custom_upload_size_error( $file ) {
     return $file;
 }
 add_filter( 'wp_handle_upload_prefilter', 'brro_custom_upload_size_error' );
-
