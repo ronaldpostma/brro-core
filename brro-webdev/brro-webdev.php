@@ -9,7 +9,7 @@
  * 
  */
 //
-// Include php function files
+// Include php function files:
 //
 // brro_handle_generate_css()                      | Trigger regen CSS from frontend
 // brro_elementor_devtools_read_and_generate_css() | Conditionally calculate output for css var() and write to frontend css file
