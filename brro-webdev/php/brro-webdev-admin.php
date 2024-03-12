@@ -1,17 +1,18 @@
 <?php
 // brro-webdev-admin.php
 //
+// Login page wp-login.php
 // Private / logged in only mode
 // Disable admin bar for subscribers/viewers
-// wp-login.php css
 // Check jQuery
 // Remove XML RPC and Comments
-// WP Admin Menu jQuery collapse
-// CSS for WP Admin Sidebar
+// WP Admin Menu Customization
+// CSS for WP Admin 
 //
 // ******************************************************************************************************************************************************
 //
 // WP Login page
+add_action('login_enqueue_scripts', 'brro_add_wplogin_css');
 function brro_add_wplogin_css() {
     // Fetching individual settings for each condition
     $backgroundmain = get_option('brro_login_backgroundmain', 'linear-gradient(270deg, beige, blue, purple, pink)'); 
@@ -48,11 +49,11 @@ function brro_add_wplogin_css() {
     </script>    
     <?php
 }
-add_action('login_enqueue_scripts', 'brro_add_wplogin_css');
 //
 // ******************************************************************************************************************************************************
 //
 // Wordpress private / logged in only mode
+add_action('get_header', 'brro_admin_redirect');
 function brro_admin_redirect() {
     $private_mode = get_option('brro_private_mode', 0);
     if ($private_mode == 1) {
@@ -62,10 +63,10 @@ function brro_admin_redirect() {
         }
     }
 }
-add_action('get_header', 'brro_admin_redirect');
 //
 // ******************************************************************************************************************************************************
 // SEO addition to private mode
+add_action('template_redirect', 'brro_temporary_unavailable');
 function brro_temporary_unavailable() {
     $private_mode = get_option('brro_private_mode', 0);
     if ($private_mode == 1) {
@@ -76,11 +77,11 @@ function brro_temporary_unavailable() {
         }
     }
 }
-add_action('template_redirect', 'brro_temporary_unavailable');
 //
 // ******************************************************************************************************************************************************
 //
 // Disable admin bar for subscribers (for viewing link)
+add_action('after_setup_theme', 'brro_disable_admin_bar_for_subscribers');
 function brro_disable_admin_bar_for_subscribers() {
     $private_mode = get_option('brro_private_mode', 0);
     if ($private_mode == 1) {
@@ -90,21 +91,22 @@ function brro_disable_admin_bar_for_subscribers() {
         }
     }
 }
-add_action('after_setup_theme', 'brro_disable_admin_bar_for_subscribers');
 //
 // ******************************************************************************************************************************************************
 //
-// Check jQuery loaded
+// Check if jQuery loaded (in WP 6.x it failed to load on some sites)
+add_action('wp_enqueue_scripts', 'brro_check_jquery');
 function brro_check_jquery() {
     if (!wp_script_is('jquery', 'enqueued')) {
         wp_enqueue_script('jquery');
     }
 }
-add_action('wp_enqueue_scripts', 'brro_check_jquery');
 //
 // ******************************************************************************************************************************************************
 //
 // Remove XML RPC and Comments
+// Hook XML-RPCinto 'after_setup_theme'
+add_action('after_setup_theme', 'brro_disable_xmlrpc_comments');
 function brro_disable_xmlrpc_comments() {
     $xmlrpc_off = get_option('brro_xmlrpc_off', 0);
     if ($xmlrpc_off == 1) {
@@ -117,8 +119,6 @@ function brro_disable_xmlrpc_comments() {
         add_filter('comments_array', '__return_empty_array', 10, 2); // Hide existing comments
     }
 }
-// Hook into 'after_setup_theme'
-add_action('after_setup_theme', 'brro_disable_xmlrpc_comments');
 // Remove comments
 add_action('admin_init', function () {
     $comments_off = get_option('brro_comments_off', 0);
@@ -159,31 +159,18 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
 }, 999);
 //
 // ******************************************************************************************************************************************************************
-//  
+// 
+// WP Admin UX for site owners and editors
+//
+// 
 // Disable drag postboxes
+add_action( 'admin_init', 'brro_disable_drag_metabox' );
 function brro_disable_drag_metabox() {
     $user = get_current_user_id();
-    $editorone = '2';
-    $editortwo = '3';
-    if( $user == $editorone || $user == $editortwo ) {
+    $editors = array('2', '3', '4', '5');
+    if (in_array($user, $editors)) {
         wp_deregister_script('postbox');
     }
-}
-add_action( 'admin_init', 'brro_disable_drag_metabox' );
-//
-// ******************************************************************************************************************************************************************
-//  
-// INSTRUCTIONS BUTTON
-add_action( 'admin_head', 'brro_instructions_button' );
-function brro_instructions_button() {
-    $helpUrl = get_option('brro_client_help_url','https://www.brro.nl/contact');
-    ?>
-    <script>
-        jQuery(document).ready(function($){
-            $('#dashboard-widgets-wrap').prepend('<a id="helpbutton" href="<?php echo esc_url($helpUrl); ?>" target="_blank">Hulp bij de website</a>');
-        });
-    </script>
-  <?php
 }
 //
 // ******************************************************************************************************************************************************
@@ -191,41 +178,49 @@ function brro_instructions_button() {
 // jQuery for WP Admin Sidebar
 add_action('admin_head', 'brro_wp_admin_sidebar_jquery');
 function brro_wp_admin_sidebar_jquery() {
+    $user = get_current_user_id();
+    $editors = array('2', '3', '4', '5');
+    if (in_array($user, $editors)) {
+        $helpUrl = get_option('brro_client_help_url','https://www.brro.nl/contact');
+    } else {
+        $helpUrl = 'https://www.brro.nl/';
+    }
     ?>
     <script>
     jQuery(document).ready(function($) {
-        $('<li class="wp-not-current-submenu wp-menu-separator custom-sep pre-separator" aria-hidden="true"><div class="separator"></div></li>').insertAfter('li#menu-dashboard');
-        $('<li class="wp-not-current-submenu wp-menu-separator custom-sep first-separator" aria-hidden="true"><div class="separator"></div></li>').insertBefore('li#menu-plugins');
-        $('<li class="wp-not-current-submenu wp-menu-separator custom-sep last-separator" aria-hidden="true"><div class="separator"></div></li>').insertBefore('li#menu-users');
-        // Add 'group' classes to all 'li' elements after 'li.xxx-separator'
-        $('li.pre-separator').nextAll('li:not(.first-separator):not(.last-separator)').addClass('group one');
-        $('li.first-separator').nextAll('li:not(.last-separator)').addClass('two');
-        $('li.last-separator').nextAll('li').addClass('three');
-        // Click collapse triggers
-        $(document).on('click', '.pre-separator', function() {
-            $(this).toggleClass('activesep');
-            $('li.group.one:not(.two):not(.three)').toggle();
-        });
-        $(document).on('click', '.first-separator', function() {
-            $(this).toggleClass('activesep');
-            $('li.group.one.two:not(.three)').toggle();
-        });
-        $(document).on('click', '.last-separator', function() {
-            $(this).toggleClass('activesep');
-            $('li.group.one.two.three').toggle();
-        });
-        if ($('li.group.one:not(.two):not(.three)').hasClass('wp-has-current-submenu')) {
-            $('li.group.one:not(.two):not(.three):not(.wp-has-current-submenu)').toggle();
+        // Add separator classes
+        $('#toplevel_page_brro-toggle-core, #toplevel_page_brro-toggle-functionality, #toplevel_page_brro-toggle-content').addClass('brro-separator');
+        $('#toplevel_page_brro-toggle-core').nextUntil('#toplevel_page_brro-toggle-functionality').addClass('brro-core');
+        $('#toplevel_page_brro-toggle-functionality').nextUntil('#toplevel_page_brro-toggle-content').addClass('brro-functionality');
+        $('#toplevel_page_brro-toggle-content').nextUntil('#collapse-menu').addClass('brro-content');
+        // Brro help link
+        $('#toplevel_page_brro-help-link a').attr('href', '<?php echo esc_url($helpUrl); ?>').attr('target', '_blank');
+        
+        function brroSeparatorClick(brroSeparator, brroLiClass) {
+            $(document).on('click', brroSeparator, function(event) {
+                event.preventDefault();
+                $(this).toggleClass('wp-has-current-submenu wp-not-current-submenu');
+                $(this).find('a').toggleClass('wp-has-current-submenu wp-not-current-submenu').blur();
+                $('li' + brroLiClass).toggle();
+            });
         }
-        if ($('li.group.one.two:not(.three)').hasClass('wp-has-current-submenu')) {
-            $('li.group.one.two:not(.three):not(.wp-has-current-submenu)').toggle();
+        // Handle click events for separator
+        brroSeparatorClick('#toplevel_page_brro-toggle-core', '.brro-core');
+        brroSeparatorClick('#toplevel_page_brro-toggle-functionality', '.brro-functionality');
+        brroSeparatorClick('#toplevel_page_brro-toggle-content', '.brro-content');
+        // Check and toggle classes on page load
+        function brroSeparatorOnLoad(brroSeparator, brroLiClass) {
+            if ($('li' + brroLiClass).hasClass('wp-has-current-submenu')) {
+                $(brroSeparator).toggleClass('wp-has-current-submenu wp-not-current-submenu');
+                $(brroSeparator + ' a').toggleClass('wp-has-current-submenu wp-not-current-submenu').blur();
+                $('li' + brroLiClass + ':not(.wp-has-current-submenu)').toggle();
+            }
         }
-        if ($('li.group.one.two.three').hasClass('wp-has-current-submenu')) {
-            $('li.group.one.two.three:not(.wp-has-current-submenu)').toggle();
-        }
-        $('li.wp-has-current-submenu').each(function() {
-            $(this).prevAll('li.custom-sep').first().addClass('activesep');
-        });
+        // Toggle states on page load for each type
+        brroSeparatorOnLoad('#toplevel_page_brro-toggle-core', '.brro-core');
+        brroSeparatorOnLoad('#toplevel_page_brro-toggle-functionality', '.brro-functionality');
+        brroSeparatorOnLoad('#toplevel_page_brro-toggle-content', '.brro-content');
+        // Fade in the menu to make it visible after modifications
         setTimeout(function() {
             $('#adminmenu').css('opacity', '1');
         }, 100);
@@ -236,23 +231,84 @@ function brro_wp_admin_sidebar_jquery() {
 //
 // ******************************************************************************************************************************************************************
 //  
+//  Add custom separators and delete the default ons
+add_action('admin_menu', 'brro_add_custom_menu_items');
+function brro_add_custom_menu_items() {
+    global $menu;
+    // Iterate over the menu items and remove separators
+    foreach ($menu as $index => $item) {
+        if ('wp-menu-separator' === $item[4]) {
+            unset($menu[$index]);
+        }
+    }
+    // Add custom separators
+    add_menu_page('WP Core','|','read','brro-toggle-core','','dashicons-arrow-down-alt2');
+    add_menu_page('Plugin Settings','|','read','brro-toggle-functionality','','dashicons-arrow-down-alt2');
+    add_menu_page('Site Content','|','read','brro-toggle-content','','dashicons-arrow-down-alt2');
+    // Add Brro help item
+    add_menu_page('Brro, help!','Brro, help!','read','brro-help-link','','dashicons-external');
+}
+//
+// ******************************************************************************************************************************************************************
+//
+// WP Admin Sidebar order
+add_filter('custom_menu_order', '__return_true'); // Enable custom menu ordering.
+add_filter('menu_order', 'brro_custom_admin_menu_order', 10); // Function for the custom order
+function brro_custom_admin_menu_order($menu_ord) {
+    if (!$menu_ord) return true;
+    $custom_order = array(
+        'index.php', // Dashboard
+        'brro-help-link',
+        'brro-toggle-core',
+        'edit-comments.php', // Comments
+        'themes.php', // Appearance   
+        'tools.php', // Tools
+        'options-general.php', // Settings
+        'brro-toggle-functionality',
+        'plugins.php', // Plugins
+    );
+    $custom_post_types = array(); // Initialize an array to hold custom post type menu items
+    // Insert all menu items after "Plugins", except for custom posts
+    foreach ($menu_ord as $menu_item) {
+        if (!in_array($menu_item, $custom_order)) {
+            // Check if the item is a custom post type menu item
+            if (strpos($menu_item, 'edit.php?post_type=brro') !== false) {
+                // If so, add to the custom post types array instead of the main custom order
+                $custom_post_types[] = $menu_item;
+            } else {
+                // Otherwise, add it to the main custom order
+                $custom_order[] = $menu_item;
+            }
+        }
+    }
+    // Append these specific items after plugins
+    $custom_order[] = 'brro-toggle-content';
+    $custom_order[] = 'upload.php'; // Media
+    $custom_order[] = 'users.php'; // Users
+    $custom_order[] = 'edit.php?post_type=page'; // Pages
+    $custom_order[]= 'edit.php'; // Posts
+    // Append brro custom post type menu items at the end
+    $custom_order = array_merge($custom_order, $custom_post_types);
+    return $custom_order;
+}
+//
+// ******************************************************************************************************************************************************************
+//  
 // Dashboard CSS
 add_action('admin_head', 'brro_dashboard_css');
 function brro_dashboard_css() {
     $user = get_current_user_id();
     $admin = '1';
-    $editorone = '2';
-    $editortwo = '3';
-    if( $user == $editorone || $user == $editortwo ) {
+    $editors = array('2', '3', '4', '5');
+    if (in_array($user, $editors)) {
         ?>    
         <style> 
             /* cursor draggable */
             .postbox .hndle {
                 cursor:default !important;
             } 
-            /* Display:none > 
-             * Hide all links in side and top menu */
-            #adminmenu li.group:not(.three), #adminmenu li.wp-menu-separator,  
+            /* Display > none 
+             * Hide all links in top menu and page attributes */ 
             #wpadminbar li, #screen-meta-links, .wp-admin #wpfooter, .handle-actions,
             /* Notices */
             .e-notice, div.notice:not(#user_switching):not(.error),
@@ -260,9 +316,7 @@ function brro_dashboard_css() {
             p.page-template-label-wrapper, #page_template {
                 display:none;
             }
-            /* Display:none >
-             * Show admin menu items */
-            ul.wp-submenu li:not(.wp-submenu-head),#adminmenu li.group.three:not(.wp-menu-separator):not(#collapse-menu),
+            /* Display > reset initial
             /* Show Admin top menu */
             #wpadminbar li#wp-admin-bar-site-name, #wpadminbar li#wp-admin-bar-my-account, #wpadminbar li#wp-admin-bar-logout {
                 display:inherit!important;
@@ -282,10 +336,9 @@ function brro_dashboard_css() {
                 padding:0;
             }
             /* Custom dashboard */
+            .index-php .wrap h1,
             .index-php #dashboard-widgets-wrap {visibility:hidden;}
             .index-php #dashboard-widgets-wrap:before {visibility: visible;margin-bottom:64px;margin-top:68px;display:block;}
-            #helpbutton {background-color:black;visibility:visible;padding:20px;color:white;font-size:22px;margin-left:calc(50% - 91px)}
-            #helpbutton:hover {background-color:white;color:black;}
         </style>
         <?php 
     }
@@ -295,40 +348,22 @@ function brro_dashboard_css() {
         /* WP Sidebar */
         #adminmenu {
             opacity:0;
-            transition: opacity 300ms ease-in-out;
+            transition: opacity 150ms ease-in-out;
         }
-        #collapse-menu {
-            display:none!important;
-        }
-        li.custom-sep.group,
-        li.group:not(.wp-has-current-submenu){
+        /* Hide items by default, except active */
+        li.brro-content:not(.wp-has-current-submenu):not(#toplevel_page_brro-help-link),
+        li.brro-functionality:not(.wp-has-current-submenu),
+        li.brro-core:not(.wp-has-current-submenu),
+        li#collapse-menu{
             display:none;
         }
         /* Separators */
-        li.custom-sep {
-            height: 28px!important;
-            background: darkslategrey;
-            margin:24px 0 0 0!important;
-            cursor:pointer;
-        }
-        li.activesep{
-            background: darkolivegreen;
-        }
-        li.custom-sep:before {
-            padding: 4px 0 0 12px;
-            color:white;
-            font-weight:600;
-            display:block;
-        }
-        li.pre-separator:before {
-            content: 'Settings';
-        }
-        li.first-separator:before {
-            content: 'Plugins';
-        }
-        li.last-separator:before {
-            content: 'Content';
-        }
+        .brro-separator .wp-menu-name {font-size:0;}
+        .brro-separator .wp-menu-name:after {font-size:14px;}
+        .brro-separator {mix-blend-mode: luminosity;background-color: rgba(255, 255, 255, .1);}
+        .brro-separator.wp-has-current-submenu .wp-menu-image:before {transform:rotate(180deg)}
+        .brro-separator:not(#toplevel_page_brro-toggle-core) a {margin-top:24px;}
+        #toplevel_page_brro-help-link a {margin-bottom:20px;}
         /* Code Snippets */
         .cloud-connect-wrap,
         a[data-snippet-type="bundles"],
