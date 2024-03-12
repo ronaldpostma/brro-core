@@ -200,7 +200,7 @@ function brro_wp_admin_sidebar_jquery() {
             if ($('li' + brroLiClass).hasClass('wp-has-current-submenu')) {
                 $(brroSeparator).toggleClass('wp-has-current-submenu wp-not-current-submenu');
                 $(brroSeparator + ' a').toggleClass('wp-has-current-submenu wp-not-current-submenu').blur();
-                $('li' + brroLiClass + ':not(.wp-has-current-submenu)').toggle();
+                $('li' + brroLiClass + ':not(.wp-has-current-submenu):not(.wp-menu-separator)').toggle();
             }
         }
         // Toggle states on page load for each type
@@ -341,7 +341,8 @@ function brro_dashboard_css() {
         li.brro-content:not(.wp-has-current-submenu):not(#toplevel_page_brro-help-link),
         li.brro-functionality:not(.wp-has-current-submenu),
         li.brro-core:not(.wp-has-current-submenu),
-        li#collapse-menu{
+        li#collapse-menu,
+        li.wp-menu-separator{
             display:none;
         }
         /* Separators */
