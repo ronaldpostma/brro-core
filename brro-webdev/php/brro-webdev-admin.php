@@ -162,19 +162,6 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
 // 
 // WP Admin UX for site owners and editors
 //
-// 
-// Disable drag postboxes
-add_action( 'admin_init', 'brro_disable_drag_metabox' );
-function brro_disable_drag_metabox() {
-    $user = get_current_user_id();
-    $editors = array('2', '3', '4', '5');
-    if (in_array($user, $editors)) {
-        wp_deregister_script('postbox');
-    }
-}
-//
-// ******************************************************************************************************************************************************
-//
 // jQuery for WP Admin Sidebar
 add_action('admin_head', 'brro_wp_admin_sidebar_jquery');
 function brro_wp_admin_sidebar_jquery() {
@@ -309,7 +296,7 @@ function brro_dashboard_css() {
             } 
             /* Display > none 
              * Hide all links in top menu and page attributes */ 
-            #wpadminbar li, #screen-meta-links, .wp-admin #wpfooter, .handle-actions,
+            #wpadminbar li, .wp-admin #wpfooter, .handle-actions,
             /* Notices */
             .e-notice, div.notice:not(#user_switching):not(.error),
             /*attributes*/
