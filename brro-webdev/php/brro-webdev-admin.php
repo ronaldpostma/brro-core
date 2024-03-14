@@ -65,20 +65,6 @@ function brro_admin_redirect() {
 }
 //
 // ******************************************************************************************************************************************************
-// SEO addition to private mode
-add_action('template_redirect', 'brro_temporary_unavailable');
-function brro_temporary_unavailable() {
-    $private_mode = get_option('brro_private_mode', 0);
-    if ($private_mode == 1) {
-        if ( !is_user_logged_in()) {
-            header("HTTP/1.1 503 Service Temporarily Unavailable");
-            header("Status: 503 Service Temporarily Unavailable");
-            header("Retry-After: 3600"); // Tells search engines to check back in an hour
-        }
-    }
-}
-//
-// ******************************************************************************************************************************************************
 //
 // Disable admin bar for subscribers (for viewing link)
 add_action('after_setup_theme', 'brro_disable_admin_bar_for_subscribers');
