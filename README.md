@@ -14,50 +14,50 @@
  	* /css/brro-inspector-style.css
 2. Scope of usability
 3. Developing Code Snippets
-4. Going live with [brro-production](#)
+4. Going live with brro-production
 5. License
 
 
 # File content explanation
 ## brro-webdev.php
-Explanation.
+Explanation
 
 ## /php/brro-webdev-admin.php
-Explanation.
+Explanation
 
 ## /php/brro-webdev-generate-css.php
-Explanation.
+Explanation
 
 ## /php/brro-webdev-global.php
-Explanation.
+Explanation
 
 ## /php/brro-webdev-settings.php
-Explanation.
+Explanation
 
 ## /js/brro-backend-elementor-script.js
-Explanation.
+Explanation
 
 ## /js/brro-frontend-inspector-script.js
-Explanation.Explanation.
+Explanation
 
 ## /css/brro-frontend-var-style.css
-Explanation.
+Explanation
 
 ## /css/brro-inspector-style.css
-Explanation.
+Explanation
 
 
 # Scope of usability
-Explanation.
+Explanation
 
 
 # Developing Code Snippets
-Explanation.
+Explanation
 
 
-# Going live with [brro-production](#)
-Explanation.
+# Going live with brro-production
+Explanation
 
 
 # License
-This project is licensed under the MIT License - see the [LICENSE.md](#) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
