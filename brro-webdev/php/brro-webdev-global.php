@@ -38,6 +38,7 @@ function brro_wp_css_body_class( $classes ){
 // ******************************************************************************************************************************************************************
 //  
 // Shortcode constructor from ACF field data
+add_shortcode('acfcontent', 'brro_acf_content_shortcode');
 function brro_acf_content_shortcode($atts) {
     if (!function_exists('get_field')) {
         return;
@@ -65,8 +66,46 @@ function brro_acf_content_shortcode($atts) {
     return $output;
     // Example: [acfcontent before="<span>" field="custom_title" after="</span>"]
 }
-// Register the shortcode with WordPress
-add_shortcode('acfcontent', 'brro_acf_content_shortcode');
+//
+// ******************************************************************************************************************************************************************
+//  
+// Shortcode constructor for media query line breaks
+add_shortcode('break', 'brro_custom_break_shortcode');
+function brro_custom_break_shortcode($atts) {
+    // Generate a random ID: 6 characters + 3 digits
+    $randomId = wp_generate_password(6, false) . wp_generate_password(3, false, 'digits');
+    // Extract attributes
+    $attributes = shortcode_atts(array(
+        'min' => null,
+        'max' => null,
+    ), $atts);
+    $min = $attributes['min'];
+    $max = $attributes['max'];
+    // Start output buffering
+    ob_start();
+    // Construct output based on parameters given in the shortcode
+    if (!is_null($min) || !is_null($max)) {
+        echo '<style>';
+        if (!is_null($min) && !is_null($max)) {
+            // Both min and max provided
+            echo "@media (min-width:{$min}px) and (max-width:{$max}px){#{$randomId} {display:block!important;}}";
+        } elseif (!is_null($min)) {
+            // Only min provided
+            echo "@media (min-width:{$min}px){#{$randomId} {display:block!important;}}";
+        } elseif (!is_null($max)) {
+            // Only max provided
+            echo "@media (max-width:{$max}px){#{$randomId} {display:block!important;}}";
+        }
+        echo '</style>';
+        echo "<span style='display:none' id='{$randomId}'></span>";
+    } else {
+        // Neither min nor max provided, output only a line break
+        echo '<br>';
+    }
+    // Return the buffered content
+    return ob_get_clean();
+    // Example: [break min="600" max="1200"]
+}
 //
 // ******************************************************************************************************************************************************************
 //  
