@@ -13,7 +13,7 @@
  	* /css/brro-frontend-var-style.css
  	* /css/brro-inspector-style.css
 2. Scope of usability
-3. Developing Code Snippets
+3. Developing with Code Snippets
 4. Going live with brro-production
 5. License
 
