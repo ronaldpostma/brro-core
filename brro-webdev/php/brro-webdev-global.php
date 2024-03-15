@@ -109,6 +109,52 @@ function brro_custom_break_shortcode($atts) {
 //
 // ******************************************************************************************************************************************************************
 //  
+// Shortcode constructor for navburger
+add_shortcode('navburger', 'brro_navburger_shortcode');
+function brro_navburger_shortcode($atts) {
+    // Shortcode attributes, expecting one 'style' attribute
+    $attributes = shortcode_atts(array(
+        'style' => '',
+    ), $atts);
+    // Explode the 'style' string into an array based on spaces
+    $style = explode(' ', $attributes['style']);
+    // Check if all necessary parameters are provided
+    if (count($style) < 6) {
+        return 'Wrong parameters for shortcode [navburger]. Example usage: [navburger style="60px 40px 8px 3px red green"]';
+    }
+    // Start output buffering
+    ob_start();
+    // Construct output based on parameters given in the shortcode
+    echo '<div style="display:inline-block;width:auto;">';
+    echo "<script>
+        document.addEventListener('DOMContentLoaded',function(){
+            document.addEventListener('click',function(e){
+                if(e.target.id==='nav-icon'||e.target.closest('#nav-icon')){
+                    document.getElementById('nav-icon').classList.toggle('open');
+                }
+            });
+        });
+        </script>";
+    echo "<style>
+        #nav-icon .bar {width: 100%; height: {$style[2]}; border-radius: {$style[3]}; background-color: {$style[4]};transition:transform 300ms ease, opacity 300ms ease, background-color 300ms ease;}
+        #nav-icon.open .bar,#nav-icon:hover .bar {background-color: {$style[5]};}
+        #nav-icon:not(.open):hover .bar.three {transform: translateY(calc(.25 * {$style[2]}));}
+        #nav-icon:not(.open):hover .bar.one {transform: translateY(calc(0px - (.25 * {$style[2]})));}
+        .bar.one {align-self:flex-start;}
+        .bar.three {align-self:flex-end;}
+        #nav-icon.open .bar.two {transform: rotate(45deg);}
+        #nav-icon.open .bar.one {transform: translateY(calc(({$style[1]} - (3 * {$style[2]})) / 2 + {$style[2]})) rotate(-45deg);}
+        #nav-icon.open:not(:hover) .bar.one,#nav-icon.open:not(:hover) .bar.two {background-color: {$style[4]};}
+        #nav-icon.open .bar.three {opacity:0;} 
+        </style>";
+    echo '<div id="nav-icon" style="width:'.$style[0].';height:'.$style[1].';position:relative;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;"><span class="bar one"></span><span class="bar two"></span><span class="bar three"></span></div>';
+    echo '</div>';
+    // Return the buffered content
+    return ob_get_clean();
+}
+//
+// ******************************************************************************************************************************************************************
+//  
 // Prevent image scaling
 add_filter('big_image_size_threshold', function($threshold, $imagesize, $file, $attachment_id) {
     // Check if the width of the image is 1920px or less
