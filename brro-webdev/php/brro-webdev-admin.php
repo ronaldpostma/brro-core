@@ -44,7 +44,7 @@ function brro_add_wplogin_css() {
                 $('#nav, #backtoblog, #loginform').slideToggle('slow');
                 $('.password-input').removeAttr('disabled');
                 $('div#login').addClass('showlogin');
-                $('div#login:not(.showlogin)').css('cursor','default');
+                $('div#login.showlogin').css('cursor','default');
             });
         }); 
     </script>    
