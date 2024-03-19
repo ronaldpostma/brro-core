@@ -216,6 +216,11 @@ function brro_plugin_settings_page() {
                     <label for="brro_login_logoheight">Logo height (px):</label>
                     <input style="float: right;" type="number" name="brro_login_logoheight" value="<?php echo esc_attr(get_option('brro_login_logoheight', '160')); ?>">
             </fieldset>
+        <!-- Append menu items to 'Site content' -->
+            <fieldset>
+                <h3 style="margin:40px 0 16px 0;">Append menu items to 'Site Content'</h3>
+                    <textarea id="brro_append_menuitems" name="brro_append_menuitems" rows="10" cols="50"><?php echo esc_textarea(get_option('brro_append_menuitems', '')); ?></textarea>
+            </fieldset>
         <!-- Checkbox for "Turn off support XML RPC" -->
             <fieldset>
                 <h3 style="margin:40px 0 16px 0;">Turn off support XML RPC</h3>
@@ -229,7 +234,7 @@ function brro_plugin_settings_page() {
                     No
                 </label>
             </fieldset>
-        <!-- Checkbox for "Turn off support XML RPC" -->
+        <!-- Checkbox for "Turn off support Comments" -->
             <fieldset>
                 <h3 style="margin:40px 0 16px 0;">Turn off support for comments</h3>
                 <label>
@@ -303,4 +308,6 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_comments_off');
     // login url for brro
     register_setting('brro-plugin-settings-group', 'brro_client_help_url');
+    // append menu items in admin menu
+    register_setting('brro-plugin-settings-group', 'brro_append_menuitems');
 }
