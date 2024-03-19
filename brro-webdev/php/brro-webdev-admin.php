@@ -246,7 +246,7 @@ function brro_custom_admin_menu_order($menu_ord) {
     foreach ($menu_ord as $menu_item) {
         if (!in_array($menu_item, $custom_order)) {
             // Check if the item is a custom post type menu item
-            if (strpos($menu_item, 'edit.php?post_type=brro') !== false || strpos($menu_item, 'admin.php?page=wc-orders') !== false || strpos($menu_item, 'edit.php?post_type=product') !== false) {
+            if ( strpos($menu_item, 'edit.php?post_type=brro') !== false ) {
                 // If so, add to the custom post types array instead of the main custom order
                 $custom_post_types[] = $menu_item;
             } else {
