@@ -31,7 +31,7 @@ function brro_add_wplogin_css() {
         --logowidth: {$logowidth}px;
         --logoheight: {$logoheight}px;
         }
-        body.login.js.wp-core-ui{background:var(--backgroundmain)}.login form{background:var(--backgroundform)!important;font-weight:400!important;border:none!important;box-shadow:none!important}a,label,p{color:var(--textlabelcolor)!important;}#login h1 a,.login h1 a{background-image:var(--sitelogo);height:var(--logoheight);width:var(--logowidth);background-size:contain;background-repeat:no-repeat;margin-top:54px}.login h1{position:relative}.login h1:after{content:'';display:block;position:absolute;top:0;left:0;right:0;bottom:0;z-index:2}.wp-core-ui .button-primary{background:#fff!important;border-color:#000!important;color:#000!important;border-radius:0!important}.login .message,.login .notice,.login .success{text-align:center;border-left:0!important;margin-bottom:0!important;background-color:transparent!important;box-shadow:none!important;}#nav,#backtoblog,#loginform,#language-switcher{display:none;}div#login:not(.showlogin):after{content:'Login';display:block;text-align:center;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;color:var(--textlabelcolor);font-size:20px;margin-top:48px;}
+        body.login.js.wp-core-ui{background:var(--backgroundmain)}.login form{background:var(--backgroundform)!important;font-weight:400!important;border:none!important;box-shadow:none!important}a,label,p{color:var(--textlabelcolor)!important;}#login h1 a,.login h1 a{background-image:var(--sitelogo);height:var(--logoheight);width:var(--logowidth);background-size:contain;background-repeat:no-repeat;margin-top:54px}.login h1{position:relative}.login h1:after{content:'';display:block;position:absolute;top:0;left:0;right:0;bottom:0;z-index:2}.wp-core-ui .button-primary{background:#fff!important;border-color:#000!important;color:#000!important;border-radius:0!important}.login .message,.login .notice,.login .success{border-left:0!important;margin-bottom:0!important;background-color:transparent!important;box-shadow:none!important;}#nav,#backtoblog,#loginform,#language-switcher{display:none;}div#login:not(.showlogin):after{content:'Login';display:block;text-align:center;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;color:var(--textlabelcolor);font-size:20px;margin-top:48px;}
         ";
     // Outputting the CSS
     echo '<style>' . $custom_login_css . '</style>';
@@ -169,32 +169,6 @@ function brro_wp_admin_sidebar_jquery() {
         $('#toplevel_page_brro-toggle-content').nextUntil('#collapse-menu').addClass('brro-content');
         // Brro help link
         $('#toplevel_page_brro-help-link a').attr('href', '<?php echo esc_url($helpUrl); ?>').attr('target', '_blank');
-        
-        function brroSeparatorClick(brroSeparator, brroLiClass) {
-            $(document).on('click', brroSeparator, function(event) {
-                event.preventDefault();
-                $(this).toggleClass('wp-has-current-submenu wp-not-current-submenu');
-                $(this).find('a').toggleClass('wp-has-current-submenu wp-not-current-submenu').blur();
-                $('li' + brroLiClass).toggle();
-            });
-        }
-        // Handle click events for separator
-        brroSeparatorClick('#toplevel_page_brro-toggle-core', '.brro-core');
-        brroSeparatorClick('#toplevel_page_brro-toggle-functionality', '.brro-functionality');
-        brroSeparatorClick('#toplevel_page_brro-toggle-content', '.brro-content');
-        // Check and toggle classes on page load
-        function brroSeparatorOnLoad(brroSeparator, brroLiClass) {
-            if ($('li' + brroLiClass).hasClass('wp-has-current-submenu')) {
-                $(brroSeparator).toggleClass('wp-has-current-submenu wp-not-current-submenu');
-                $(brroSeparator + ' a').toggleClass('wp-has-current-submenu wp-not-current-submenu').blur();
-                $('li' + brroLiClass + ':not(.wp-has-current-submenu):not(.wp-menu-separator)').toggle();
-            }
-        }
-        // Toggle states on page load for each type
-        brroSeparatorOnLoad('#toplevel_page_brro-toggle-core', '.brro-core');
-        brroSeparatorOnLoad('#toplevel_page_brro-toggle-functionality', '.brro-functionality');
-        brroSeparatorOnLoad('#toplevel_page_brro-toggle-content', '.brro-content');
-        // Fade in the menu to make it visible after modifications
         setTimeout(function() {
             $('#adminmenu').css('opacity', '1');
         }, 100);
@@ -334,10 +308,7 @@ function brro_dashboard_css() {
             opacity:0;
             transition: opacity 150ms ease-in-out;
         }
-        /* Hide items by default, except active */
-        li.brro-content:not(.wp-has-current-submenu):not(#toplevel_page_brro-help-link),
-        li.brro-functionality:not(.wp-has-current-submenu),
-        li.brro-core:not(.wp-has-current-submenu),
+        /* Hide items by default */
         li#collapse-menu,
         li.wp-menu-separator{
             display:none;
@@ -345,7 +316,7 @@ function brro_dashboard_css() {
         /* Separators */
         .brro-separator .wp-menu-name {font-size:0;}
         .brro-separator .wp-menu-name:after {font-size:14px;}
-        .brro-separator {mix-blend-mode: luminosity;background-color: rgba(255, 255, 255, .1);}
+        .brro-separator {mix-blend-mode: lighten;background-color: rgba(255, 49, 176, .7);pointer-events:none;}
         .brro-separator.wp-has-current-submenu .wp-menu-image:before {transform:rotate(180deg)}
         .brro-separator:not(#toplevel_page_brro-toggle-core) a {margin-top:24px;}
         #toplevel_page_brro-help-link a {margin-bottom:20px;}
