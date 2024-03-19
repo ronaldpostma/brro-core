@@ -227,7 +227,7 @@ function brro_add_custom_menu_items() {
 //
 // WP Admin Sidebar order
 add_filter('custom_menu_order', '__return_true'); // Enable custom menu ordering.
-add_filter('menu_order', 'brro_custom_admin_menu_order', 10); // Function for the custom order
+add_filter('menu_order', 'brro_custom_admin_menu_order', 1000); // Function for the custom order
 function brro_custom_admin_menu_order($menu_ord) {
     if (!$menu_ord) return true;
     $custom_order = array(
@@ -241,16 +241,26 @@ function brro_custom_admin_menu_order($menu_ord) {
         'brro-toggle-functionality',
         'plugins.php', // Plugins
     );
-    $custom_post_types = array(); // Initialize an array to hold custom post type menu items
-    // Insert all menu items after "Plugins", except for custom posts
+    // Initialize array to hold menu items fetched from plugin settings
+    $plugin_settings_menuitems = array(); // To hold menu items fetched from plugin settings
+    $append_custom_menuitems = get_option('brro_append_menuitems'); // Fetch items to append from settings list
+    $menuitem_strings = explode("\n", $append_custom_menuitems); // Convert to array 
+    $menuitem_strings = array_map('trim', $menuitem_strings); // Trim each string to remove possible white spaces
+    // Insert all menu items after "Plugins", except for exceptions from settings
     foreach ($menu_ord as $menu_item) {
+        // Skip if the item is already in the custom order
         if (!in_array($menu_item, $custom_order)) {
-            // Check if the item is a custom post type menu item
-            if ( strpos($menu_item, 'edit.php?post_type=brro') !== false ) {
-                // If so, add to the custom post types array instead of the main custom order
-                $custom_post_types[] = $menu_item;
-            } else {
-                // Otherwise, add it to the main custom order
+            $matched = false; // Flag to indicate if a match was found in plugin settings
+            // Check against plugin settings items
+            foreach ($menuitem_strings as $item) {
+                if ($menu_item === $item) {
+                    $plugin_settings_menuitems[] = $menu_item;
+                    $matched = true;
+                    break; // Stop the loop if a match is found
+                }
+            }
+            // For items not matching specific criteria and not in plugin settings
+            if (!$matched) {
                 $custom_order[] = $menu_item;
             }
         }
@@ -260,9 +270,9 @@ function brro_custom_admin_menu_order($menu_ord) {
     $custom_order[] = 'upload.php'; // Media
     $custom_order[] = 'users.php'; // Users
     $custom_order[] = 'edit.php?post_type=page'; // Pages
-    $custom_order[]= 'edit.php'; // Posts
-    // Append brro custom post type menu items at the end
-    $custom_order = array_merge($custom_order, $custom_post_types);
+    $custom_order[] = 'edit.php'; // Posts
+    // Final assembly of the custom order array
+    $custom_order = array_merge($custom_order, $plugin_settings_menuitems);
     return $custom_order;
 }
 //
