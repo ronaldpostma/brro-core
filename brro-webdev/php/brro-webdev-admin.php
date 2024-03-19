@@ -316,7 +316,7 @@ function brro_dashboard_css() {
         /* Separators */
         .brro-separator .wp-menu-name {font-size:0;}
         .brro-separator .wp-menu-name:after {font-size:14px;}
-        .brro-separator {mix-blend-mode: lighten;background-color: rgba(255, 49, 176, .7);pointer-events:none;}
+        .brro-separator {background-color: rgba(44, 67, 170, .9);pointer-events:none;}
         .brro-separator.wp-has-current-submenu .wp-menu-image:before {transform:rotate(180deg)}
         .brro-separator:not(#toplevel_page_brro-toggle-core) a {margin-top:24px;}
         #toplevel_page_brro-help-link a {margin-bottom:20px;}
