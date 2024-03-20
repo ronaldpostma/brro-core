@@ -1,10 +1,17 @@
 <?php
 // brro-webdev-settings.php
 //
-// Create menu item under 'Tools'
+// Create menu item
 add_action('admin_menu', 'brro_plugin_add_settings_page');
 function brro_plugin_add_settings_page() {
-    add_management_page('Brro Plugin Settings', 'Brro Plugin Settings', 'manage_options', 'brro-plugin-settings', 'brro_plugin_settings_page');
+    add_menu_page(
+        'Brro Plugin Settings', // Page title
+        'Brro', // Menu title
+        'manage_options', // Capability
+        'brro-plugin-settings', // Menu slug
+        'brro_plugin_settings_page', // Function that outputs the page content
+        'dashicons-smiley', // Icon
+    );
 }
 //
 // Settings page content

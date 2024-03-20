@@ -153,7 +153,7 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
 add_action('admin_head', 'brro_wp_admin_sidebar_jquery');
 function brro_wp_admin_sidebar_jquery() {
     $user = get_current_user_id();
-    $editors = array('2', '3', '4', '5');
+    $editors = array(2, 3, 4, 5);
     if (in_array($user, $editors)) {
         $helpUrl = get_option('brro_client_help_url','https://www.brro.nl/contact');
     } else {
@@ -206,13 +206,14 @@ function brro_custom_admin_menu_order($menu_ord) {
     if (!$menu_ord) return true;
     $custom_order = array(
         'index.php', // Dashboard
-        'brro-help-link',
-        'brro-separator-core',
+        'brro-help-link', // Brro help outward link
+        'brro-separator-core', // Brro separator
         'edit-comments.php', // Comments
         'themes.php', // Appearance   
         'tools.php', // Tools
+        'brro-plugin-settings', // Brro
         'options-general.php', // Settings
-        'brro-separator-functionality',
+        'brro-separator-functionality', // Brro separator
         'plugins.php', // Plugins
     );
     // Initialize array to hold menu items fetched from plugin settings
@@ -240,7 +241,7 @@ function brro_custom_admin_menu_order($menu_ord) {
         }
     }
     // Append these specific items after plugins
-    $custom_order[] = 'brro-separator-content';
+    $custom_order[] = 'brro-separator-content'; // Brro separator
     $custom_order[] = 'upload.php'; // Media
     $custom_order[] = 'users.php'; // Users
     $custom_order[] = 'edit.php?post_type=page'; // Pages
@@ -249,6 +250,18 @@ function brro_custom_admin_menu_order($menu_ord) {
     $custom_order = array_merge($custom_order, $plugin_settings_menuitems);
     return $custom_order;
 }
+// Hook into 'admin_menu' to remove certain menu pages if not site main admin
+add_action('admin_menu', 'brro_remove_nonadmin_menus');
+function brro_remove_nonadmin_menus() {
+    $user = get_current_user_id();
+    $admin = 1;
+    if ($user !== $admin) {
+        // Remove specific menu pages for editors
+        remove_menu_page('options-general.php'); // Site settings
+        remove_menu_page('themes.php'); // Themes
+        remove_menu_page('brro-plugin-settings'); // Brro settings
+    }
+}
 //
 // ******************************************************************************************************************************************************************
 //  
@@ -256,8 +269,7 @@ function brro_custom_admin_menu_order($menu_ord) {
 add_action('admin_head', 'brro_dashboard_css');
 function brro_dashboard_css() {
     $user = get_current_user_id();
-    $admin = '1';
-    $editors = array('2', '3', '4', '5');
+    $editors = array(2, 3, 4, 5);
     if (in_array($user, $editors)) {
         ?>    
         <style> 
