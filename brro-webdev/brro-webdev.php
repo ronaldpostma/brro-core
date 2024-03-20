@@ -71,17 +71,11 @@ function brro_enqueue_script_elementor_frontend() {
 // Load CSS
 add_action( 'wp_enqueue_scripts', 'brro_enqueue_css_frontend' );
 function brro_enqueue_css_frontend() {
-    $developer_mode = get_option('brro_developer_mode', 0);
-    $var_on = get_option('brro_clampvar_mode',0);   
+    $developer_mode = get_option('brro_developer_mode', 0); 
     // Enqueue only if '$developer_mode' is "1 / Developer Mode"
     if ($developer_mode == 1) {
         // CSS file for inspector mode 
         wp_enqueue_style('brro-inspector-style', plugins_url( '/css/brro-inspector-style.css', __FILE__ ), [], '1.0.0' );
-    }
-    if ($var_on == 1) {
-        // Front-end CSS file for live website
-        $version = get_option('brro_frontend_var_css_version', '1.0.0'); // Renews each time the file is regenerated. Defaults to '1.0.0' if nothing is set
-        wp_enqueue_style( 'brro-frontend-var-style', plugins_url( '/css/brro-frontend-var-style.css', __FILE__ ), [], $version);
     }
 }
 //
