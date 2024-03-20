@@ -163,10 +163,10 @@ function brro_wp_admin_sidebar_jquery() {
     <script>
     jQuery(document).ready(function($) {
         // Add separator classes
-        $('#toplevel_page_brro-toggle-core, #toplevel_page_brro-toggle-functionality, #toplevel_page_brro-toggle-content').addClass('brro-separator');
-        $('#toplevel_page_brro-toggle-core').nextUntil('#toplevel_page_brro-toggle-functionality').addClass('brro-core');
-        $('#toplevel_page_brro-toggle-functionality').nextUntil('#toplevel_page_brro-toggle-content').addClass('brro-functionality');
-        $('#toplevel_page_brro-toggle-content').nextUntil('#collapse-menu').addClass('brro-content');
+        $('#toplevel_page_brro-separator-core, #toplevel_page_brro-separator-functionality, #toplevel_page_brro-separator-content').addClass('brro-separator');
+        $('#toplevel_page_brro-separator-core').nextUntil('#toplevel_page_brro-separator-functionality').addClass('brro-core');
+        $('#toplevel_page_brro-separator-functionality').nextUntil('#toplevel_page_brro-separator-content').addClass('brro-functionality');
+        $('#toplevel_page_brro-separator-content').nextUntil('#collapse-menu').addClass('brro-content');
         // Brro help link
         $('#toplevel_page_brro-help-link a').attr('href', '<?php echo esc_url($helpUrl); ?>').attr('target', '_blank');
         setTimeout(function() {
@@ -190,9 +190,9 @@ function brro_add_custom_menu_items() {
         }
     }
     // Add custom separators
-    add_menu_page('WP Core','|','read','brro-toggle-core','','dashicons-arrow-down-alt2');
-    add_menu_page('Plugin Settings','|','read','brro-toggle-functionality','','dashicons-arrow-down-alt2');
-    add_menu_page('Site Content','|','read','brro-toggle-content','','dashicons-arrow-down-alt2');
+    add_menu_page('WP Core','|','read','brro-separator-core','','dashicons-arrow-down-alt2');
+    add_menu_page('Plugin Settings','|','read','brro-separator-functionality','','dashicons-arrow-down-alt2');
+    add_menu_page('Site Content','|','read','brro-separator-content','','dashicons-arrow-down-alt2');
     // Add Brro help item
     add_menu_page('Brro, help!','Brro, help!','read','brro-help-link','','dashicons-external');
 }
@@ -207,12 +207,12 @@ function brro_custom_admin_menu_order($menu_ord) {
     $custom_order = array(
         'index.php', // Dashboard
         'brro-help-link',
-        'brro-toggle-core',
+        'brro-separator-core',
         'edit-comments.php', // Comments
         'themes.php', // Appearance   
         'tools.php', // Tools
         'options-general.php', // Settings
-        'brro-toggle-functionality',
+        'brro-separator-functionality',
         'plugins.php', // Plugins
     );
     // Initialize array to hold menu items fetched from plugin settings
@@ -240,7 +240,7 @@ function brro_custom_admin_menu_order($menu_ord) {
         }
     }
     // Append these specific items after plugins
-    $custom_order[] = 'brro-toggle-content';
+    $custom_order[] = 'brro-separator-content';
     $custom_order[] = 'upload.php'; // Media
     $custom_order[] = 'users.php'; // Users
     $custom_order[] = 'edit.php?post_type=page'; // Pages
@@ -318,7 +318,7 @@ function brro_dashboard_css() {
         .brro-separator .wp-menu-name:after {font-size:14px;}
         .brro-separator {background-color: rgba(44, 67, 170, .9);pointer-events:none;}
         .brro-separator.wp-has-current-submenu .wp-menu-image:before {transform:rotate(180deg)}
-        .brro-separator:not(#toplevel_page_brro-toggle-core) a {margin-top:24px;}
+        .brro-separator:not(#toplevel_page_brro-separator-core) a {margin-top:24px;}
         #toplevel_page_brro-help-link a {margin-bottom:20px;}
         /* Code Snippets */
         .cloud-connect-wrap,
