@@ -17,6 +17,7 @@
 4. Going live with brro-production
 5. License
 
+## To do: remove functions index from brro-webdev.php and place them here in the readme
 
 # File content explanation
 ## brro-webdev.php
