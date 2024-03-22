@@ -24,16 +24,28 @@
 Explanation
 
 ## /php/brro-webdev-admin.php
-Explanation
+// brro_add_wplogin_css()                          | Add WP Login CSS
+// brro_admin_redirect()                           | WP Private Mode
+// brro_temporary_unavailable()                    | SEO check for private mode
+// brro_disable_admin_bar_for_subscribers()        | Hide admin bar in private mode
+// brro_check_jquery()                             | Load jQuery if not loaded
+// brro_disable_xmlrpc_comments                    | Remove comment support
+// brro_disable_drag_metabox()
+// brro_instructions_button()
+// brro_wp_admin_sidebar_jquery()                  | Restyle the WP admin sidebar
+// brro_dashboard_css()                            | Style dashboard for users
 
 ## /php/brro-webdev-generate-css.php
-Explanation
+// brro_handle_generate_css()                      | Trigger regen CSS from frontend
+// brro_elementor_devtools_read_and_generate_css() | Conditionally calculate output for css var() and write to frontend css file
 
 ## /php/brro-webdev-global.php
-Explanation
+// brro_wp_css_body_class()
 
 ## /php/brro-webdev-settings.php
-Explanation
+// brro_plugin_add_settings_page()
+// brro_plugin_settings_page()
+// brro_plugin_register_settings()                 | all plugin settings: make page, individual settings, save settings
 
 ## /js/brro-backend-elementor-script.js
 Explanation
