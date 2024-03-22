@@ -6,8 +6,8 @@
 add_filter( 'body_class', 'brro_wp_css_body_class' );
 function brro_wp_css_body_class( $classes ){
     $user = get_current_user_id();
-    $admin = '1';
-    $editors = array('2', '3', '4', '5'); 
+    $admin = 1;
+    $editors = array(2, 3, 4, 5); 
     if (in_array($user, $editors)) {
         $classes[] = 'webeditor';  
     }
