@@ -239,7 +239,7 @@ jQuery(function($) {
                 baseValue = Math.abs(baseValue);
                 var clampMinMaxCSS = 'clamp('+ outputMin + 'px, calc(' + vwTarget + 'vw - ' + baseValue + 'px), ' + outputMax + 'px)' + cssComment;
             } else {
-                var clampMinMaxCSS = 'clamp('+ outputMin + 'px, calc(' + baseValue + 'px + ' + vwTarget + 'vw), ' + outputMax + 'px)' + cssComment;
+                var clampMinMaxCSS = 'clamp('+ outputMin + 'px, calc(' + vwTarget + 'vw + ' + baseValue + 'px), ' + outputMax + 'px)' + cssComment;
             } 
             var tempStyleQueryOutput = 'min(' + vwTargetQuery + 'vw, ' + outputMaxQuery + 'px) /* max @ w' + desktopEnd + ' */';
             // variable if screen end is larger than screen ref
