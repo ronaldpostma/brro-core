@@ -79,24 +79,26 @@ function brro_plugin_settings_page() {
             </fieldset>
         <!-- Form with Screensize references -->
             <h3 style="margin:40px 0 0 0;">Screen Size References</h3>
+            <b> NOTE: desktopEnd can not set be lower than desktopRef
                 <table class="form-table td-p0 screensizes" style="width:auto;">
                     <tr>
                         <th>Device</th>
-                        <th>screenRef (input from design)</th>
-                        <th>screenStart (generated output)</th>
-                        <th>screenEnd (generated output)</th>
+                        <th>screenRef - reference size from design</th>
+                        <th>screenStart - to generate css clamp() </th>
+                        <th>screenEnd - to generate css clamp()</th>
                     </tr>
                     <tr valign="top">
                         <td>Desktop</td>
                         <td>
                             <select name="brro_desktop_ref">
                                 <option value="1440" <?php selected('1440', get_option('brro_desktop_ref')); ?>>1440</option>
+                                <option value="1600" <?php selected('1600', get_option('brro_desktop_end')); ?>>1600</option>
                                 <option value="1920" <?php selected('1920', get_option('brro_desktop_ref')); ?>>1920</option>
                             </select>
                         </td>
                         <td>
-                            <input type="hidden" name="brro_desktop_start" value="1120" />
-                            <input type="number" value="1120" disabled />
+                            <input type="hidden" name="brro_desktop_start" value="1180" />
+                            <input type="number" value="1180" disabled />
                         </td>
                         <td>
                             <select name="brro_desktop_end">
@@ -115,8 +117,8 @@ function brro_plugin_settings_page() {
                             </select>
                         </td>
                         <td>
-                            <input type="hidden" name="brro_tablet_start" value="600" />
-                            <input type="number" value="600" disabled />
+                            <input type="hidden" name="brro_tablet_start" value="768" />
+                            <input type="number" value="768" disabled />
                         </td>
                         <td>
                             <input type="number" value="<?php echo esc_attr($tablet_end); ?>" disabled />
