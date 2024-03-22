@@ -79,7 +79,8 @@ function brro_plugin_settings_page() {
             </fieldset>
         <!-- Form with Screensize references -->
             <h3 style="margin:40px 0 0 0;">Screen Size References</h3>
-            <b> NOTE: desktopEnd can not set be lower than desktopRef
+            </br>
+            <b> NOTE: desktopEnd can not set be lower than desktopRef </b>
                 <table class="form-table td-p0 screensizes" style="width:auto;">
                     <tr>
                         <th>Device</th>
