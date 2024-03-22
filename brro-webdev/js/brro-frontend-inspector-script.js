@@ -40,9 +40,6 @@ jQuery(function ($) {
         circleContainer.append(circleElements);
         $('body').append(circleContainer);
         $('.inspector-container').append('<div class="viewport-width" >' + devScreenWidth + 'px</div>');
-        setTimeout(function() {
-            $('body:not(.elementor-editor-active) .inspector-container').append('<div id="brro-generate-css-btn">(Re)gen CSS</div>');
-        }, 800);
         // Activate inspector state in Elementor editor by default
         $('body.elementor-editor-active').addClass('inspect-parent inspect-child inspect-child-child inspect-widget');
         $('body.elementor-editor-active .inspector-button').addClass('inspector-active');
@@ -118,44 +115,5 @@ jQuery(function ($) {
                 }
             }, 50);
         });
-    }
-    //
-    // 3. PHP regenerate button
-    $(document).on('click', '#brro-generate-css-btn', function(e) {
-        e.preventDefault();
-        console.log('CSS regen clicked');
-        // Append a parameter to the current URL and reload
-        var currentUrl = window.location.href;
-        var newUrl = currentUrl.indexOf('?') > -1 ? currentUrl + '&trigger_css_regeneration=1' : currentUrl + '?trigger_css_regeneration=1';
-        setTimeout(function() {
-            window.location.href = newUrl;
-        }, 200);
-    });
-    // Function to get URL parameters
-    function getQueryParam(param) {
-        var result = window.location.search.match(new RegExp("(\\?|&)" + param + "(\\[\\])?=([^&]*)"));
-        return result ? result[3] : false;
-    }
-    // Check if the 'trigger_css_regeneration' parameter is set
-    if (getQueryParam('trigger_css_regeneration')) {
-        $.ajax({
-            url: brroAjax.ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'generate_css',
-            },
-            success: function(response) {
-                console.log('CSS Regenerated Successfully');
-                // Optionally, clear the parameter from the URL after the action is complete
-                var cleanUrl = window.location.href.split('?')[0];
-                window.history.replaceState({}, document.title, cleanUrl);
-            },
-            error: function() {
-                alert('There was an error.');
-            }
-        });
-        setTimeout(function() {
-            location.reload(true);
-        }, 200);
     }
 });
