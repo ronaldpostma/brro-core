@@ -18,7 +18,6 @@ function brro_plugin_add_settings_page() {
 function brro_plugin_settings_page() {
     $developer_mode = get_option('brro_developer_mode', 0);
     $private_mode = get_option('brro_private_mode', 0);
-    $var_mode = get_option('brro_clampvar_mode', 0);
     $mobile_end = (int)get_option('brro_tablet_start') - 1;
     $tablet_end = (int)get_option('brro_desktop_start') - 1;
     $lock_screen = get_option('brro_lock_screen', 0);
@@ -34,11 +33,6 @@ function brro_plugin_settings_page() {
     if ($developer_mode == 0) {
         ?>
         <style>.devmode_only{display:none;}</style>
-        <?php
-    }
-    if ($var_mode == 0) {
-        ?>
-        <style>.varmode_only{display:none;}</style>
         <?php
     }
     ?>
@@ -81,18 +75,6 @@ function brro_plugin_settings_page() {
                 <label>
                     <input type="radio" name="brro_private_mode" value="0" <?php checked(0, $private_mode); ?>>
                     Open publicly
-                </label>
-            </fieldset>
-        <!-- Radio button for jQuery Clamp() or Var() buttons -->
-            <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Elementor Editor × jQuery: Convert input to var() or clamp() function</h3>
-                <label>
-                    <input type="radio" name="brro_clampvar_mode" value="1" <?php checked(1, $var_mode); ?>>
-                    var()
-                </label>
-                <label>
-                    <input type="radio" name="brro_clampvar_mode" value="0" <?php checked(0, $var_mode); ?>>
-                    clamp()
                 </label>
             </fieldset>
         <!-- Form with Screensize references -->
@@ -172,7 +154,7 @@ function brro_plugin_settings_page() {
                 </label>
             </fieldset>
         <!-- Checkbox for "Minimize CSS files for live website" -->
-            <fieldset class="varmode_only">
+            <fieldset>
                 <h3 style="margin:40px 0 16px 0;">Minimize CSS files for live website</h3>
                 <label>
                     <input type="radio" name="brro_minimize_css" value="1" <?php checked(1, get_option('brro_minimize_css')); ?>>
@@ -264,7 +246,7 @@ function brro_plugin_settings_page() {
         <?php submit_button(); ?>
         </form>
         <!-- CSS front-end file for live website -->
-        <form class="devmode_only varmode_only" method="post">
+        <form class="devmode_only" method="post">
             <h3 style="margin:128px 0 16px 0;">(Re)generate CSS files for website live-mode</h3>
             <?php wp_nonce_field('brro-update-css-action', 'brro-update-css-nonce'); ?>
         <!-- (Re)generate CSS button -->
@@ -300,7 +282,6 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_tablet_start');
     register_setting('brro-plugin-settings-group', 'brro_mobile_ref');
     register_setting('brro-plugin-settings-group', 'brro_mobile_start');
-    register_setting('brro-plugin-settings-group', 'brro_clampvar_mode');
     register_setting('brro-plugin-settings-group', 'brro_lock_screen');
     register_setting('brro-plugin-settings-group', 'brro_minimize_css');
     // register settings frontend inspector
