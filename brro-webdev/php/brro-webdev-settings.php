@@ -93,7 +93,7 @@ function brro_plugin_settings_page() {
                         <td>
                             <select name="brro_desktop_ref">
                                 <option value="1440" <?php selected('1440', get_option('brro_desktop_ref')); ?>>1440</option>
-                                <option value="1600" <?php selected('1600', get_option('brro_desktop_end')); ?>>1600</option>
+                                <option value="1600" <?php selected('1600', get_option('brro_desktop_ref')); ?>>1600</option>
                                 <option value="1920" <?php selected('1920', get_option('brro_desktop_ref')); ?>>1920</option>
                             </select>
                         </td>
