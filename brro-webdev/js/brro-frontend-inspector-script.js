@@ -43,6 +43,8 @@ jQuery(function ($) {
         // Activate inspector state in Elementor editor by default
         $('body.elementor-editor-active').addClass('inspect-parent inspect-child inspect-child-child inspect-widget');
         $('body.elementor-editor-active .inspector-button').addClass('inspector-active');
+        $('html:not(.hide-admin-bar) header.brro-sticky').css('top','32px');
+        $('html.hide-admin-bar header.brro-sticky').css('top','0px');
         //
         // 2.3 Event handling for individual element inspector buttons on click
         $('.inspector-button:not(:first-of-type)').on('click', function () {
@@ -54,7 +56,7 @@ jQuery(function ($) {
                     setTimeout(function() {
                         $('html').removeClass('hide-admin-bar');
                         $('#wpadminbar').slideDown();
-                        $('header').css('top','32px');
+                        $('header.brro-sticky').css('top','32px');
                     }, 50);
                 }
                 var index = $('.inspector-button').index($(this));
@@ -75,7 +77,7 @@ jQuery(function ($) {
                     setTimeout(function() {
                         $('html').addClass('hide-admin-bar');
                         $('#wpadminbar').slideUp();
-                        $('header').css('top','0px');
+                        $('header.brro-sticky').css('top','0px');
                     }, 50);
                 }
                 var index = $('.inspector-button').index($(this));
