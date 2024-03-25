@@ -164,7 +164,7 @@ jQuery(function($) {
             outputMin = Math.round(outputMin).toString(); 
             outputMax = Math.round(outputMax).toString();
             // CSS clamp() output
-            var clampSingleCSS = 'clamp(' + outputMin + 'px, ' + vwTarget + 'vw, ' + outputMax + 'px) /* ref=' + inputSingle + 'px @ w' + screenRef + ', range w' + screenStart + ':w' + screenEnd + ' */';
+            var clampSingleCSS = 'clamp(' + outputMin + 'px, ' + vwTarget + 'vw, ' + outputMax + 'px) /*' + inputSingle + 'px @ ' + screenRef + '*/';
             // Set new value and trigger events to tell Elementor to update changes
             $input.val(clampSingleCSS).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
         //
@@ -181,7 +181,7 @@ jQuery(function($) {
                     var baseValue = inputMin - (growthRate * mobileRef);
                     var outputMin = baseValue + ((mobileStart/100) * vwTarget);
                     var outputMax = baseValue + ((desktopRef/100) * vwTarget);
-                    var cssComment = '/*ref=' + inputMin + 'px @ w' + mobileRef + ' : ' + inputMax + 'px @ w' + desktopRef + ', scale range=' + mobileStart + 'px:' + desktopEnd + 'px */';
+                    var cssComment = ' /*' + inputMin + 'px @ ' + mobileRef + ' : ' + inputMax + 'px @ ' + desktopRef + '*/';
                 } else if (mdTrue !== 'yes') {
                     var varEnd = 'desktop-start--desktop-ref';
                     var growthRate = (inputMax - inputMin) / (desktopRef - desktopStart);
@@ -194,7 +194,7 @@ jQuery(function($) {
                     console.log(outputMin);
                     var outputMax = baseValue + ((desktopRef/100) * vwTarget);
                     console.log(outputMax);
-                    var cssComment = '/*ref=' + inputMin + 'px @ w' + desktopStart + ' : ' + inputMax + 'px @ w' + desktopRef + ' */';
+                    var cssComment = ' /*' + inputMin + 'px @ ' + desktopStart + ' : ' + inputMax + 'px @ ' + desktopRef + '*/';
                 } 
             } else if ($('body').hasClass('elementor-device-tablet')) {
                 var varEnd = 'none';
@@ -203,7 +203,7 @@ jQuery(function($) {
                 var baseValue = inputMin - (growthRate * tabletStart);
                 var outputMin = baseValue + ((tabletStart/100) * vwTarget);
                 var outputMax = baseValue + ((tabletEnd/100) * vwTarget);
-                var cssComment = '/*ref=' + inputMin + 'px @ w' + tabletStart + ' : ' + inputMax + 'px @ w' + tabletEnd + ' */';
+                var cssComment = ' /*' + inputMin + 'px @ ' + tabletStart + ' : ' + inputMax + 'px @ ' + tabletEnd + '*/';
             } else if ($('body').hasClass('elementor-device-mobile')) {
                 var varEnd = 'none';
                 var growthRate = (inputMax - inputMin) / (mobileEnd - mobileRef);
@@ -211,7 +211,7 @@ jQuery(function($) {
                 var baseValue = inputMin - (growthRate * mobileRef);
                 var outputMin = baseValue + ((mobileStart/100) * vwTarget);
                 var outputMax = baseValue + ((mobileEnd/100) * vwTarget);
-                var cssComment = '/*ref=' + inputMin + 'px @ w' + mobileRef + ' : ' + inputMax + 'px @ w' + mobileEnd + ' */';
+                var cssComment = ' /*' + inputMin + 'px @ ' + mobileRef + ' : ' + inputMax + 'px @ ' + mobileEnd + '*/';
             } else {
                 var varEnd = 'none';
                 var growthRate;
