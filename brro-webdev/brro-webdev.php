@@ -3,7 +3,7 @@
  * Plugin Name: Brro Web Development Tools
  * Plugin URI: https://base.brro.nl/git-webhook/brro-plugin-info.json
  * Description: Brro web development tools
- * Version: 1.4.0
+ * Version: 1.4.1
  * Author: Ronald Postma 
  * Author URI: https://brro.nl/
  * 
@@ -23,7 +23,7 @@ require_once plugin_dir_path(__FILE__) . '/php/brro-webdev-global.php';
 add_action( 'elementor/editor/after_enqueue_scripts', 'brro_enqueue_script_elementor_editor' );
 function brro_enqueue_script_elementor_editor() {
     $developer_mode = get_option('brro_developer_mode', 0);
-    if ($developer_mode == 1) {
+    if ($developer_mode == 1 && is_user_logged_in() ) {
         wp_enqueue_script( 'brro-backend-elementor-script', plugins_url( '/js/brro-backend-elementor-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
         // Localize script with data from your settings
         $script_data = array(
@@ -44,9 +44,8 @@ function brro_enqueue_script_elementor_editor() {
 add_action( 'wp_enqueue_scripts', 'brro_enqueue_script_elementor_frontend' );
 function brro_enqueue_script_elementor_frontend() {
     $developer_mode = get_option('brro_developer_mode', 0);
-    if ($developer_mode == 1) {
+    if ($developer_mode == 1 && is_user_logged_in() ) {
         wp_enqueue_script( 'brro-frontend-inspector-script', plugins_url( '/js/brro-frontend-inspector-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
-        wp_localize_script('brro-frontend-inspector-script', 'brroAjax', array('ajaxurl' => admin_url('admin-ajax.php')));
     }
 }
 //
@@ -55,7 +54,7 @@ add_action( 'wp_enqueue_scripts', 'brro_enqueue_css_frontend' );
 function brro_enqueue_css_frontend() {
     $developer_mode = get_option('brro_developer_mode', 0); 
     // Enqueue only if '$developer_mode' is "1 / Developer Mode"
-    if ($developer_mode == 1) {
+    if ($developer_mode == 1 && is_user_logged_in() ) {
         // CSS file for inspector mode 
         wp_enqueue_style('brro-inspector-style', plugins_url( '/css/brro-inspector-style.css', __FILE__ ), [], '1.0.0' );
     }
@@ -63,14 +62,17 @@ function brro_enqueue_css_frontend() {
 //
 // Custom CSS for inspector mode
 function brro_add_inspector_css() {
-    // Fetching individual settings for each condition
-    $blend_mode_setting = get_option('brro_blend_mode', 'screen'); // Default for blend mode
-    $parent_border_color = get_option('brro_parent_border_color', '#ff0000'); // Example default color
-    $child_border_color = get_option('brro_child_border_color', '#00ff00'); // Example default color
-    $child_child_border_color = get_option('brro_child_child_border_color', '#0000ff'); // Example default color
-    $widget_text_color = get_option('brro_widget_text_color', '#ddd'); // Example default color
-    // Constructing the CSS string with dynamic values
-    $custom_css = "
+    $developer_mode = get_option('brro_developer_mode', 0); 
+    // Enqueue only if '$developer_mode' is "1 / Developer Mode"
+    if ($developer_mode == 1 && is_user_logged_in() ) {
+        // Fetching individual settings for each condition
+        $blend_mode_setting = get_option('brro_blend_mode', 'screen'); // Default for blend mode
+        $parent_border_color = get_option('brro_parent_border_color', '#ff0000'); // Example default color
+        $child_border_color = get_option('brro_child_border_color', '#00ff00'); // Example default color
+        $child_child_border_color = get_option('brro_child_child_border_color', '#0000ff'); // Example default color
+        $widget_text_color = get_option('brro_widget_text_color', '#ddd'); // Example default color
+        // Constructing the CSS string with dynamic values
+        $custom_css = "
         .elementor-container-inspector .e-con::before,
         .inspect-parent .e-con::before,
         .inspect-child .e-con::before,
@@ -96,8 +98,9 @@ function brro_add_inspector_css() {
             color: {$widget_text_color};
         }";
 
-    // Outputting the CSS
-    echo '<style>' . $custom_css . '</style>';
+        // Outputting the CSS
+        echo '<style>' . $custom_css . '</style>';
+    }
 }
 add_action('wp_head', 'brro_add_inspector_css');
 /*
