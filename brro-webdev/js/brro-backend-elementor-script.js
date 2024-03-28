@@ -76,6 +76,11 @@ jQuery(function($) {
         console.log('Input value:', newValue);
         $('#input-repeater').empty().text(newValue);
     });
+    // Print Elementor window message when value is double clicked
+    $('#elementor-panel').on('dblclick', 'input[type="text"]', function() {
+        var repeatValue = $(this).val(); // Get the current input value
+        $('#input-repeater').empty().text(repeatValue);
+    })
     //
     // 2. Create a 'Convert input' button on click in the input
     //
