@@ -21,7 +21,8 @@ jQuery(function ($) {
         // 2. Additional functionality for 'webadmin' class
         // 2.1 Define toggleable circles with colors
         var toggleCircles = [
-            { class: 'inspect-parent inspect-child inspect-child-child inspect-widget', color: 'darkviolet' },
+            { class: 'inspect-edges inspect-parent inspect-child inspect-child-child inspect-widget', color: 'darkviolet' },
+            { class: 'inspect-edges', color: 'darkolivegreen' },
             { class: 'inspect-parent', color: 'red' },
             { class: 'inspect-child', color: 'gold' },
             { class: 'inspect-child-child', color: 'pink' },
@@ -38,10 +39,10 @@ jQuery(function ($) {
             circleElements.push(circleElement);
         });
         circleContainer.append(circleElements);
-        $('body').append(circleContainer);
+        $('body').append(circleContainer).prepend('<span class="edge outer left"></span><span class="edge inner left"></span><span class="edge outer right"></span><span class="edge inner right"></span>');
         $('.inspector-container').append('<div class="viewport-width" >' + devScreenWidth + 'px</div>');
         // Activate inspector state in Elementor editor by default
-        $('body.elementor-editor-active').addClass('inspect-parent inspect-child inspect-child-child inspect-widget');
+        $('body.elementor-editor-active').addClass('inspect-edges inspect-parent inspect-child inspect-child-child inspect-widget');
         $('body.elementor-editor-active .inspector-button').addClass('inspector-active');
         $('html:not(.hide-admin-bar) header.brro-sticky').css('top','32px');
         $('html.hide-admin-bar header.brro-sticky').css('top','0px');
@@ -52,7 +53,7 @@ jQuery(function ($) {
             if ($(this).hasClass('inspector-active')) {
                 $(this).removeClass('inspector-active');
                 // sub check for admin bar check
-                if($(this).is(':nth-child(6)')) {
+                if($(this).is(':nth-child(7)')) {
                     setTimeout(function() {
                         $('html').removeClass('hide-admin-bar');
                         $('#wpadminbar').slideDown();
@@ -73,7 +74,7 @@ jQuery(function ($) {
             } else {
                 $(this).addClass('inspector-active');
                 // sub check for admin bar check
-                if($(this).is(':nth-child(6)')) {
+                if($(this).is(':nth-child(7)')) {
                     setTimeout(function() {
                         $('html').addClass('hide-admin-bar');
                         $('#wpadminbar').slideUp();
