@@ -37,7 +37,7 @@ function brro_wp_css_body_class( $classes ){
 //
 // ******************************************************************************************************************************************************************
 //  
-// Shortcode constructor from ACF field data
+// Shortcode constructor from ACF field data. Example: [acfcontent before="<span>" field="custom_title" after="</span>"]
 add_shortcode('acfcontent', 'brro_acf_content_shortcode');
 function brro_acf_content_shortcode($atts) {
     if (!function_exists('get_field')) {
@@ -64,16 +64,15 @@ function brro_acf_content_shortcode($atts) {
 
     // Return the final output
     return $output;
-    // Example: [acfcontent before="<span>" field="custom_title" after="</span>"]
 }
 //
 // ******************************************************************************************************************************************************************
 //  
-// Shortcode constructor for media query line breaks
+// Shortcode constructor for media query line breaks. Example: [break min="600" max="1200"]
 add_shortcode('break', 'brro_custom_break_shortcode');
 function brro_custom_break_shortcode($atts) {
     // Generate a random ID: 6 characters + 3 digits
-    $randomId = wp_generate_password(6, false) . wp_generate_password(3, false, 'digits');
+    $randomId = 'a' . substr(md5(uniqid(mt_rand(), true)), 0, 4) . mt_rand(10, 99);
     // Extract attributes
     $attributes = shortcode_atts(array(
         'min' => null,
@@ -104,12 +103,11 @@ function brro_custom_break_shortcode($atts) {
     }
     // Return the buffered content
     return ob_get_clean();
-    // Example: [break min="600" max="1200"]
 }
 //
 // ******************************************************************************************************************************************************************
 //  
-// Shortcode constructor for navburger
+// Shortcode constructor for navburger. Example usage: [navburger style="60px 40px 8px 3px red green"]
 add_shortcode('navburger', 'brro_navburger_shortcode');
 function brro_navburger_shortcode($atts) {
     // Shortcode attributes, expecting one 'style' attribute
