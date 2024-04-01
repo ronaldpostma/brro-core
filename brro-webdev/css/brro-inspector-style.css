@@ -177,11 +177,3 @@ body.elementor-editor-active:not([data-elementor-device-mode="desktop"])::-webki
   background: transparent!important;
   border:none!important;
 }
-/* Body width of device previews */
-body.elementor-editor-active[data-elementor-device-mode="mobile"] {
-    max-width: 767px!important;
-}
-body.elementor-editor-active[data-elementor-device-mode="tablet"],
-body.elementor-editor-active[data-elementor-device-mode="none"]{
-    max-width: 1179px!important;
-}

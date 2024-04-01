@@ -63,6 +63,11 @@ jQuery(function($) {
             background-color: rgb(12, 13, 14);
             z-index: 9999;
         }
+        @media (min-width:1921px) {
+            body.e-is-device-mode:not(.elementor-device-desktop) #elementor-preview-responsive-wrapper {
+                max-width: calc(var(--e-editor-preview-width) - .5px) !important;
+            }
+        }
     `).appendTo("head");
     // Append a style to hold temporary calculations in the head
     setTimeout(function() {
