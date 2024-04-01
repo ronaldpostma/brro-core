@@ -164,18 +164,24 @@ html.hide-admin-bar {
 
 /* Scrollbar in the editor */
 /* width */
-body.elementor-editor-active[data-elementor-device-mode="mobile"]::-webkit-scrollbar,
-body.elementor-editor-active[data-elementor-device-mode="tablet"]::-webkit-scrollbar{
+body.elementor-editor-active:not([data-elementor-device-mode="desktop"])::-webkit-scrollbar {
     width: 0px!important;
 }
+body.elementor-device-tablet body
 /* track */
-body.elementor-editor-active[data-elementor-device-mode="mobile"]::-webkit-scrollbar-track,
-body.elementor-editor-active[data-elementor-device-mode="tablet"]::-webkit-scrollbar-track{
+body.elementor-editor-active:not([data-elementor-device-mode="desktop"])::-webkit-scrollbar-track{
   background: transparent!important;
 }
 /* handle */
-body.elementor-editor-active[data-elementor-device-mode="mobile"]::-webkit-scrollbar-thumb,
-body.elementor-editor-active[data-elementor-device-mode="tablet"]::-webkit-scrollbar-thumb{
+body.elementor-editor-active:not([data-elementor-device-mode="desktop"])::-webkit-scrollbar-thumb{
   background: transparent!important;
   border:none!important;
+}
+/* Body width of device previews */
+body.elementor-editor-active[data-elementor-device-mode="mobile"] {
+    max-width: 767px!important;
+}
+body.elementor-editor-active[data-elementor-device-mode="tablet"],
+body.elementor-editor-active[data-elementor-device-mode="none"]{
+    max-width: 1179px!important;
 }
