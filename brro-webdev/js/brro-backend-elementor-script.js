@@ -64,8 +64,13 @@ jQuery(function($) {
             z-index: 9999;
         }
         @media (min-width:1921px) {
-            body.e-is-device-mode:not(.elementor-device-desktop) #elementor-preview-responsive-wrapper {
-                max-width: calc(var(--e-editor-preview-width) - .5px) !important;
+            body.e-is-device-mode.elementor-device-tablet #elementor-preview-responsive-wrapper {
+                min-width: ${tabletStart}px!important;
+                max-width: calc(${tabletEnd}px - .34px)!important;
+            }
+            body.e-is-device-mode.elementor-device-mobile #elementor-preview-responsive-wrapper {
+                min-width: ${mobileStart}px!important;
+                max-width: calc(${mobileEnd}px - .34px)!important;
             }
         }
     `).appendTo("head");
