@@ -51,18 +51,8 @@ jQuery(function($) {
         }
         .convert-button, .var-button {border-bottom:1px solid;border-color:transparent;}
         .convert-button:hover, .var-button:hover {border-color:inherit!important;}
-        #input-repeater {
-            width: auto;
-            min-width: 50px;
-            position: fixed;
-            top: 3px;
-            left: 210px;
-            font-size: 15px;
-            padding: 6px 24px;
-            line-height: 27px;
-            background-color: rgb(12, 13, 14);
-            z-index: 9999;
-        }
+        #input-repeater {padding: 12px 40px 12px 12px;}
+        #input-repeater .convert-button.calcref {position:absolute;top:18px;right:8px;}
         @media (min-width:1921px) {
             body.e-is-device-mode.elementor-device-tablet #elementor-preview-responsive-wrapper {
                 min-width: ${tabletStart}px!important;
@@ -73,33 +63,69 @@ jQuery(function($) {
                 max-width: calc(${mobileEnd}px - .34px)!important;
             }
         }
+        .elementor-device-desktop #elementor-preview-responsive-wrapper {min-width: ${desktopStart}px!important;margin:auto;width:var(--brro-desktop--preview--width)!important;}
     `).appendTo("head");
-    // Append a style to hold temporary calculations in the head
+    // Append a style to hold temporary calculations in the head and add the input repeater
     setTimeout(function() {
-        $('#elementor-preview-iframe').contents().find('head').append('<style id="brro-variables-css-preview"></style>');
+        $('#elementor-preview-iframe').contents().find('head').append('<style id="brro-variables-css-preview"></style><style id="brro-desktop-preview-width">root:{--brro-desktop--preview--width:100%;}</style>');
+        $('head').append('<style type="text/css" id="brro-desktop-preview-width">.elementor-device-desktop #elementor-preview-responsive-wrapper {--brro-desktop--preview--width:100%;}</style>');
     }, 1000);
+    var waitforHeader = setInterval(function() {
+        if ($('#elementor-panel-header-wrapper').length) {
+            if ($('#input-repeater').length === 0) {
+                $('#elementor-panel-header-wrapper').prepend('<div id="input-repeater"><input id="calcref" type="text"><div class="convert-button calcref" style="cursor: pointer;" data-input-id="calcref">Conv</div></div>');
+            }
+        clearInterval(waitforHeader);
+        }
+    }, 100);
+    // Prepend input for preview width Desktop
+    $(document).on('click', '.MuiAppBar-root button[aria-label="Desktop"], #elementor-panel .elementor-responsive-switcher-desktop', function() {
+        $('#brro-desktop-preview').remove(); // Remove existing input if any
+        $('.MuiAppBar-root button[aria-label="Desktop"]').after(`<input type="number" min="${desktopStart}" id="brro-desktop-preview" />`); // Prepend new input
+    });
+    // This handles removing the input when switching away from "Desktop" mode
+    $(document).on('click', '.MuiAppBar-root div[aria-label="Switch Device"] button:not([aria-label="Desktop"]), #elementor-panel .elementor-responsive-switcher:not(.elementor-responsive-switcher-desktop)', function() {
+        $('#brro-desktop-preview').remove(); // Remove the input
+    });
+    // Change preview width desktop
+    $('.MuiAppBar-root').on('change', 'input#brro-desktop-preview', function() {
+        var newValue = $(this).val(); // Get the latest input value
+        if ( newValue >= desktopStart) {
+            $('#brro-desktop-preview-width').empty().text(`.elementor-device-desktop #elementor-preview-responsive-wrapper {--brro-desktop--preview--width:${newValue}px;}`);
+        } else {
+            $('#brro-desktop-preview-width').empty().text('.elementor-device-desktop #elementor-preview-responsive-wrapper {--brro-desktop--preview--width:100%;}');
+        }
+    });
     //
     // 1. Print console log and Elementor window message when value has changed:
     //
     $('#elementor-panel').on('change', 'input[type="text"]', function() {
         var newValue = $(this).val(); // Get the latest input value
         console.log('Input value:', newValue);
-        $('#input-repeater').empty().text(newValue);
+        $('#input-repeater input').val(newValue);
     });
     // Print Elementor window message when value is double clicked
-    $('#elementor-panel').on('dblclick', 'input[type="text"]', function() {
-        var repeatValue = $(this).val(); // Get the current input value
-        $('#input-repeater').empty().text(repeatValue);
-    })
+    var clickCount = 0; // Initialize click count
+    var clickTimer = null; // Initialize timer
+    $('#elementor-panel').on('click', 'input[type="text"]', function() {
+        clickCount++; // Increment click count
+        if (clickCount === 1) {
+            // Start timer on first click
+            clickTimer = setTimeout(function() {
+                clickCount = 0; // Reset count after delay
+            }, 800); // Delay in milliseconds, adjust as needed
+        } else if (clickCount === 4) {
+            clearTimeout(clickTimer); // Cancel timer
+            clickCount = 0;
+            var repeatValue = $(this).val(); // Get the current input value
+            $('#input-repeater input').val(repeatValue);
+        }
+    });
     //
     // 2. Create a 'Convert input' button on click in the input
     //
     $('#elementor-panel').on('click', 'input[type="text"]', function() {
-        $('.convert-button').remove();        
-        // Add input repeater
-        if ($('#input-repeater').length === 0) {
-            $('body').prepend('<div id="input-repeater"></div>');
-        }
+        $('.convert-button:not(.calcref)').remove();
         // Add "Convert input" button
         $(this).closest('.elementor-control-content').find('.e-units-wrapper').first().before('<div class="convert-button" style="cursor: pointer;" data-input-id="' + $(this).attr('id') + '">Convert input</div>');
     });
@@ -107,7 +133,7 @@ jQuery(function($) {
     // 3. Remove the button when clicking outside the input field
     $('#elementor-panel').on('click', function(event) {
         if (!$(event.target).closest('input[type="text"]').length) {
-            $('.convert-button').remove();
+            $('.convert-button:not(.calcref)').remove();
         }
     });
     //
@@ -271,7 +297,9 @@ jQuery(function($) {
             $input.val('Nothing calculated. Check for errors').trigger('keydown').trigger('keyup').trigger('input').trigger('change');
         }
         // 3.7 Remove 'convert-button' to prevent duplicates
-        $(this).remove();
+        if (!$(this).hasClass('calcref')) {
+            $(this).remove();
+        }
         //
         //
         // 3.8 Add temporary var() css definitions into the <head><style id="brro-variables-css-preview"></style><head> 
