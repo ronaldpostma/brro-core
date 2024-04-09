@@ -137,6 +137,7 @@
     height: 100%;
 }
 /* Screen content edges */
+.inspect-edges {position:relative;}
 .inspect-edges span.edge {
     position:absolute;
     content:"";
