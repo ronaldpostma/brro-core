@@ -1,6 +1,6 @@
 jQuery(function($) {
     //
-    // 0. Basic setup 
+    // Basic setup 
     // Access settings from PHP
     var desktopEnd = Number(pluginSettings.desktopEnd);
     var desktopRef = Number(pluginSettings.desktopRef);
@@ -27,30 +27,8 @@ jQuery(function($) {
     $("<style>")
     .prop("type", "text/css")
     .html(`
-        .tooltip-calc,
-        .tooltip-var {
-            position: absolute;
-            bottom: calc(100% + 14px);
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--e-a-bg-default);
-            box-shadow:var(--e-a-popover-shadow);
-            padding: 10px;
-            border-radius: var(--e-a-border-radius);
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 10001;
-            width: 300px;
-            font-size: 12px
-        }
-        .convert-button:hover .tooltip-calc,
-        .var-button:hover .tooltip-var {
-            visibility:visible;
-            opacity:1;
-        }
-        .convert-button, .var-button {border-bottom:1px solid;border-color:transparent;}
-        .convert-button:hover, .var-button:hover {border-color:inherit!important;}
+        .convert-button {border-bottom:1px solid;border-color:transparent;}
+        .convert-button:hover {border-color:inherit!important;}
         #input-repeater {padding: 12px 40px 12px 12px;}
         #input-repeater .convert-button.calcref {position:absolute;top:18px;right:8px;}
         @media (min-width:1921px) {
@@ -65,11 +43,16 @@ jQuery(function($) {
         }
         .elementor-device-desktop #elementor-preview-responsive-wrapper {min-width: ${desktopStart}px!important;margin:auto;width:var(--brro-desktop--preview--width)!important;}
     `).appendTo("head");
-    // Append a style to hold temporary calculations in the head and add the input repeater
+    //
+    // Append a style tag to hold temporary calculations in the head
     setTimeout(function() {
+        // Style inside the preview builder
         $('#elementor-preview-iframe').contents().find('head').append('<style id="brro-variables-css-preview"></style><style id="brro-desktop-preview-width">root:{--brro-desktop--preview--width:100%;}</style>');
+        // Style for the editor
         $('head').append('<style type="text/css" id="brro-desktop-preview-width">.elementor-device-desktop #elementor-preview-responsive-wrapper {--brro-desktop--preview--width:100%;}</style>');
     }, 1000);
+    //
+    // Add input repeater with convert button
     var waitforHeader = setInterval(function() {
         if ($('#elementor-panel-header-wrapper').length) {
             if ($('#input-repeater').length === 0) {
@@ -78,16 +61,19 @@ jQuery(function($) {
         clearInterval(waitforHeader);
         }
     }, 100);
+    //
     // Prepend input for preview width Desktop
     $(document).on('click', '.MuiAppBar-root button[aria-label="Desktop"], #elementor-panel .elementor-responsive-switcher-desktop', function() {
         $('#brro-desktop-preview').remove(); // Remove existing input if any
         $('.MuiAppBar-root button[aria-label="Desktop"]').after(`<input type="number" min="${desktopStart}" id="brro-desktop-preview" />`); // Prepend new input
     });
-    // This handles removing the input when switching away from "Desktop" mode
+    //
+    // Removing input when switching away from "Desktop" mode
     $(document).on('click', '.MuiAppBar-root div[aria-label="Switch Device"] button:not([aria-label="Desktop"]), #elementor-panel .elementor-responsive-switcher:not(.elementor-responsive-switcher-desktop)', function() {
         $('#brro-desktop-preview').remove(); // Remove the input
     });
-    // Change preview width desktop
+    //
+    // Change preview width for Desktop editor
     $('.MuiAppBar-root').on('change', 'input#brro-desktop-preview', function() {
         var newValue = $(this).val(); // Get the latest input value
         if ( newValue >= desktopStart) {
@@ -97,14 +83,14 @@ jQuery(function($) {
         }
     });
     //
-    // 1. Print console log and Elementor window message when value has changed:
+    // Print to input repeater when value has changed:
     //
     $('#elementor-panel').on('change', 'input[type="text"]', function() {
         var newValue = $(this).val(); // Get the latest input value
-        console.log('Input value:', newValue);
         $('#input-repeater input').val(newValue);
     });
-    // Print Elementor window message when value is double clicked
+    //
+    // Print to input repeater when value is double clicked
     var clickCount = 0; // Initialize click count
     var clickTimer = null; // Initialize timer
     $('#elementor-panel').on('click', 'input[type="text"]', function() {
@@ -122,7 +108,7 @@ jQuery(function($) {
         }
     });
     //
-    // 2. Create a 'Convert input' button on click in the input
+    // Create a 'Convert input' button on click in the input
     //
     $('#elementor-panel').on('click', 'input[type="text"]', function() {
         $('.convert-button:not(.calcref)').remove();
@@ -130,14 +116,15 @@ jQuery(function($) {
         $(this).closest('.elementor-control-content').find('.e-units-wrapper').first().before('<div class="convert-button" style="cursor: pointer;" data-input-id="' + $(this).attr('id') + '">Convert input</div>');
     });
     //
-    // 3. Remove the button when clicking outside the input field
+    // Remove the button when clicking outside the input field
+    //
     $('#elementor-panel').on('click', function(event) {
         if (!$(event.target).closest('input[type="text"]').length) {
             $('.convert-button:not(.calcref)').remove();
         }
     });
     //
-    // 3. Calculation of new values after 'Calc' button click
+    // Calculation of new values after 'Calc' button click
     //
     $('#elementor-panel').on('click', '.convert-button', function() {
         //
@@ -168,7 +155,8 @@ jQuery(function($) {
             return;
         }
         //
-        // 3.2 Set correct reference values based on device mode
+        // Set correct reference values based on device mode
+        //
         if ( $('body').hasClass('elementor-device-desktop') ) {
             var screenEnd = desktopEnd;
             var screenRef = desktopRef;
@@ -189,10 +177,11 @@ jQuery(function($) {
             return;
         }
         //
-        // 3.3 Trigger a focus on the element
+        // Trigger a focus on the element
+        //
         $input.trigger('focus');
         // 
-        // 3.4 SINGLE INPUT: Check if the input is a singular numeric string, and not empty
+        // SINGLE INPUT: Check if the input is a singular numeric string, and not empty
         if ( inputSingle !== undefined && inputSingle !== '' ) {
             // 
             // Calculate the scaling target in vw
@@ -209,7 +198,7 @@ jQuery(function($) {
             // Set new value and trigger events to tell Elementor to update changes
             $input.val(clampSingleCSS).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
         //
-        // 3.5 DOUBLE INPUT: Check if it is desktop only, for double input from mobile to desktop scaling calculation
+        // DOUBLE INPUT: Check if it is desktop only, for double input from mobile to desktop scaling calculation
         } else if ( (inputMin !== undefined && inputMax !== undefined) ) {
             // Calculate singular calc() function for all screen sizes, by entering two ',' sep values in any order: 
             // var outputs based on screen
@@ -291,18 +280,18 @@ jQuery(function($) {
                 var cssOutput = clampMinMaxCSS;
             }
             $input.val(cssOutput).trigger('keydown').trigger('keyup').trigger('input').trigger('change'); 
-        // 3.6 Error message fallback
+        // Error message fallback
         } else {
             // Nothing calculated. Check for errors
             $input.val('Nothing calculated. Check for errors').trigger('keydown').trigger('keyup').trigger('input').trigger('change');
         }
-        // 3.7 Remove 'convert-button' to prevent duplicates
+        // Remove 'convert-button' to prevent duplicates
         if (!$(this).hasClass('calcref')) {
             $(this).remove();
         }
         //
         //
-        // 3.8 Add temporary var() css definitions into the <head><style id="brro-variables-css-preview"></style><head> 
+        // Add temporary var() css definitions into the <head><style id="brro-variables-css-preview"></style><head> 
         var newCssContent = '';
         // For Double input var
         if ( (inputMin !== undefined && inputMax !== undefined) && (desktopRef < desktopEnd) && varEnd !== 'none' ) {
