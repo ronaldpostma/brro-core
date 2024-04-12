@@ -58,8 +58,16 @@ add_action('get_header', 'brro_admin_redirect');
 function brro_admin_redirect() {
     $private_mode = get_option('brro_private_mode', 0);
     if ($private_mode == 1) {
-        if ( !is_user_logged_in()) {
-            wp_redirect( home_url('wp-login.php') );
+        $uri = $_SERVER['REQUEST_URI'];
+        $preview_regex = '/\/preview\/?$/' ;
+        // Allow temporary login link redirect to preview site
+        if (preg_match($preview_regex, $uri)) {
+            $login_link = get_option('brro_preview_url', '/');
+            wp_redirect(home_url($login_link));
+            exit; // Bypass further checks
+        }
+        if (!is_user_logged_in()) {
+            wp_redirect(home_url('wp-login.php'));
             exit;
         }
     }

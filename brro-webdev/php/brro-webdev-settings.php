@@ -242,9 +242,12 @@ function brro_plugin_settings_page() {
         </div>
         <!-- Website help dashboard button url -->
             <fieldset style="max-width:420px;">
-                <h3 style="margin:40px 0 16px 0;">Brro login URL</h3>
+                <h3 style="margin:40px 0 16px 0;">Brro.nl HELP login URL</h3>
                     <label for="brro_client_help_url">URL:</label>
                     <input style="float: right;" type="text" name="brro_client_help_url" value="<?php echo esc_attr(get_option('brro_client_help_url', 'https://www.brro.nl/contact')); ?>">
+                <h3 style="margin:40px 0 16px 0;">Preview temp login URL</h3>
+                    <label for="brro_preview_url">URL:</label>
+                    <input style="float: right;" type="text" name="brro_preview_url" value="<?php echo esc_attr(get_option('brro_preview_url', '/')); ?>">
             </fieldset>       
         <?php submit_button(); ?>
         </form>
@@ -307,6 +310,7 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_comments_off');
     // login url for brro
     register_setting('brro-plugin-settings-group', 'brro_client_help_url');
+    register_setting('brro-plugin-settings-group', 'brro_preview_url');
     // append menu items in admin menu
     register_setting('brro-plugin-settings-group', 'brro_append_menuitems');
 }
