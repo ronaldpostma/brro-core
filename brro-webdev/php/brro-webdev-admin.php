@@ -191,6 +191,7 @@ function brro_wp_admin_sidebar_jquery() {
 add_action('admin_menu', 'brro_add_custom_menu_items');
 function brro_add_custom_menu_items() {
     global $menu;
+    $brrohelp = get_option('brro_client_help_menutitle', 'Brro, help!');
     // Iterate over the menu items and remove separators
     foreach ($menu as $index => $item) {
         if ('wp-menu-separator' === $item[4]) {
@@ -202,7 +203,9 @@ function brro_add_custom_menu_items() {
     add_menu_page('Plugin Settings','|','read','brro-separator-functionality','','dashicons-arrow-down-alt2');
     add_menu_page('Site Content','|','read','brro-separator-content','','dashicons-arrow-down-alt2');
     // Add Brro help item
-    add_menu_page('Brro, help!','Brro, help!','read','brro-help-link','','dashicons-external');
+    add_menu_page($brrohelp,$brrohelp,'read','brro-help-link','','dashicons-external');
+    
+    
 }
 //
 // ******************************************************************************************************************************************************************
