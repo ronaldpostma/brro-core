@@ -284,9 +284,10 @@ function brro_dashboard_css() {
     if (in_array($user, $editors)) {
         ?>    
         <style> 
-            /* cursor draggable */
-            .postbox .hndle {
-                cursor:default !important;
+            /* Disable drag postboxes */
+            .js .postbox .hndle, .js .widget .widget-top {
+                cursor: default!important;
+                pointer-events: none!important;
             } 
             /* Display > none 
              * Hide all links in top menu and page attributes */ 
