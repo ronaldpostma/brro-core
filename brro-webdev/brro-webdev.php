@@ -125,7 +125,8 @@ function brro_check_for_plugin_update($checked_data) {
     // Fetch the latest plugin info from your custom URI
     $response = brro_get_plugin_update_info();
 
-    if ($response && version_compare($checked_data->checked[$plugin_path], $response->new_version, '<')) {
+    // Ensure the plugin_path key is set and valid before comparing versions
+    if ($response && isset($checked_data->checked[$plugin_path]) && version_compare($checked_data->checked[$plugin_path], $response->new_version, '<')) {
         $checked_data->response[$plugin_path] = (object) [
             'url' => $response->url,
             'slug' => $plugin_slug,
@@ -138,6 +139,7 @@ function brro_check_for_plugin_update($checked_data) {
     return $checked_data;
 }
 add_filter('pre_set_site_transient_update_plugins', 'brro_check_for_plugin_update');
+
 
 function brro_get_plugin_update_info() {
     $update_info_url = 'https://base.brro.nl/git-webhook/brro-plugin-info.json';
