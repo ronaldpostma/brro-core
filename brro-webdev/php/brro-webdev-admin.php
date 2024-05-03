@@ -56,17 +56,27 @@ function brro_add_wplogin_css() {
 // Wordpress private / logged in only mode
 add_action('get_header', 'brro_admin_redirect');
 function brro_admin_redirect() {
+    // Check if the private mode is enabled
     $private_mode = get_option('brro_private_mode', 0);
     if ($private_mode == 1) {
+        // If user is logged in, no action is needed
+        if (is_user_logged_in()) {
+            return;
+        }
+        // Check if the preview access cookie is set and is true
+        if (isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] == 'true') {
+            return; // Bypass further checks if the cookie is valid
+        }
         $uri = $_SERVER['REQUEST_URI'];
-        $preview_regex = '/\/preview\/?$/' ;
+        $preview_regex = '/\/preview\/?$/';
         // Allow temporary login link redirect to preview site
         if (preg_match($preview_regex, $uri)) {
-            $login_link = get_option('brro_preview_url', '/');
-            wp_redirect(home_url($login_link));
+            // Set a cookie to indicate preview access that expires in 2 hours
+            setcookie('preview_access', 'true', time() + 7200, COOKIEPATH, COOKIE_DOMAIN);
+            wp_redirect(home_url());
             exit; // Bypass further checks
-        }
-        if (!is_user_logged_in()) {
+        } else {
+            // Redirect to the login page if not logged in and not accessing a preview URL
             wp_redirect(home_url('wp-login.php'));
             exit;
         }
@@ -284,10 +294,9 @@ function brro_dashboard_css() {
     if (in_array($user, $editors)) {
         ?>    
         <style> 
-            /* Disable drag postboxes */
-            .js .postbox .hndle, .js .widget .widget-top {
-                cursor: default!important;
-                pointer-events: none!important;
+            /* cursor draggable */
+            .postbox .hndle {
+                cursor:default !important;
             } 
             /* Display > none 
              * Hide all links in top menu and page attributes */ 
@@ -340,7 +349,7 @@ function brro_dashboard_css() {
         /* Separators */
         .brro-separator .wp-menu-name {font-size:0;}
         .brro-separator .wp-menu-name:after {font-size:14px;}
-        .brro-separator {background-color: rgba(44, 67, 170, .9);pointer-events:none;}
+        .brro-separator {background-color: rgba(143, 4, 86, .9);pointer-events:none;}
         .brro-separator.wp-has-current-submenu .wp-menu-image:before {transform:rotate(180deg)}
         .brro-separator:not(#toplevel_page_brro-separator-core) a {margin-top:24px;}
         #toplevel_page_brro-help-link a {margin-bottom:20px;}

@@ -248,9 +248,6 @@ function brro_plugin_settings_page() {
                     <br>    
                     <label for="brro_client_help_menutitle">Menu title:</label>
                     <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">
-                <h3 style="margin:40px 0 16px 0;">Preview temp login URL</h3>
-                    <label for="brro_preview_url">URL:</label>
-                    <input style="float: right;" type="text" name="brro_preview_url" value="<?php echo esc_attr(get_option('brro_preview_url', '/')); ?>">
             </fieldset>       
         <?php submit_button(); ?>
         </form>
@@ -314,7 +311,6 @@ function brro_plugin_register_settings() {
     // login url for brro
     register_setting('brro-plugin-settings-group', 'brro_client_help_url');
     register_setting('brro-plugin-settings-group', 'brro_client_help_menutitle');
-    register_setting('brro-plugin-settings-group', 'brro_preview_url');
     // append menu items in admin menu
     register_setting('brro-plugin-settings-group', 'brro_append_menuitems');
 }
