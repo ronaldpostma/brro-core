@@ -48,10 +48,11 @@ function brro_acf_content_shortcode($atts) {
         'before' => '', // Default value if 'before' attribute is not provided
         'field' => '',  // The ACF field name
         'after' => '',  // Default value if 'after' attribute is not provided
+        'id' => get_the_ID(), // // Default value if 'id' attribute is not provided is the current post
     ], $atts);
 
     // Retrieve the ACF field value. get_field() function checks the current post by default
-    $acfValue = get_field($attributes['field']);
+    $acfValue = get_field($attributes['field'], $attributes['id']);
 
     // Check if the ACF field value is not empty or false
     if (!empty($acfValue)) {
