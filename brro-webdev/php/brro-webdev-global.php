@@ -2,7 +2,7 @@
 //
 // ******************************************************************************************************************************************************************
 //  
-// Add body classes
+// Add body classes frontend
 add_filter( 'body_class', 'brro_wp_css_body_class' );
 function brro_wp_css_body_class( $classes ){
     $user = get_current_user_id();
@@ -31,6 +31,24 @@ function brro_wp_css_body_class( $classes ){
     // Check if the current post has a featured image
     if ( is_single() && has_post_thumbnail() ) {
         $classes[] = 'featuredimg-set';
+    }
+    return $classes;
+}
+// Add body class backend
+add_filter('admin_body_class', 'brro_add_post_id_admin_body_class');
+function brro_add_post_id_admin_body_class($classes) {
+    // Check if we are on a post edit screen
+    if (is_admin() && get_current_screen()->base == 'post' && get_current_screen()->id != 'edit-post') {
+        // Get the current post ID
+        $post_id = get_the_ID();
+        $post_type = get_post_type($post_id);
+        if ($post_id) {
+            // Add post ID to the body class
+            $classes .= ' post-id-' . $post_id;
+        }
+        if ($post_type) {
+            $classes .= ' post-type-' . $post_type;
+        }
     }
     return $classes;
 }
