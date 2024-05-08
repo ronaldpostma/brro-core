@@ -190,9 +190,9 @@ function brro_wp_admin_sidebar_jquery() {
         setTimeout(function() {
             $('#adminmenu').css('opacity', '1');
         }, 100);
-        $('.acf-input-wrap input').each(function() {
+        $('.acf-field input, .acf-field textarea').each(function() {
             var maxLength = $(this).attr('maxlength');
-            $(this).parent().attr('data-maxlength', maxLength);
+            $(this).parent().attr('brro-acf-data-maxlength', maxLength);
         });
     });
     </script>
@@ -386,10 +386,11 @@ function brro_dashboard_css() {
         /* link select ACF */
         body:not(.post-type-locateandfiltermap) .select2-container .select2-selection--single {width:auto!important;height:auto!important;}
         /* :before character length ACF */
-        .acf-input-wrap[data-maxlength]:before {
-            content: 'Maximaal ' attr(data-maxlength) ' karakters';
-            font-weight:500;
+        div[brro-acf-data-maxlength]:before {
+            content: 'Maximaal ' attr(brro-acf-data-maxlength) ' karakters';
+            font-weight:400;
             margin:4px 0;
+            font-style:italic;
         }
     </style> 
 <?php 
