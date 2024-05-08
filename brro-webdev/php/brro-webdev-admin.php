@@ -345,6 +345,13 @@ function brro_dashboard_css() {
             opacity:0;
             transition: opacity 150ms ease-in-out;
         }
+        /* Content editor */
+        @media (min-width:1700px) {
+            #poststuff #post-body.columns-2 {
+                max-width: 1180px;
+                margin-left: calc((100% - 1500px) / 2);
+            }
+        }
         /* Hide items by default */
         li#collapse-menu,
         li.wp-menu-separator{
