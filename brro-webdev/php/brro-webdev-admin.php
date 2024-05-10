@@ -302,7 +302,7 @@ function brro_dashboard_css() {
         <style> 
             /* Display > none 
              * Hide all links in top menu and page attributes */ 
-            #wpadminbar li, .wp-admin #wpfooter, .handle-actions,
+            #wpadminbar li, .wp-admin #wpfooter, 
             /* Notices */
             .e-notice, div.notice:not(#user_switching):not(.error),
             /*attributes*/
