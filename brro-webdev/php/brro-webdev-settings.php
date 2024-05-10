@@ -213,6 +213,11 @@ function brro_plugin_settings_page() {
                 <h3 style="margin:40px 0 16px 0;">Append menu items to 'Site Content'</h3>
                     <textarea id="brro_append_menuitems" name="brro_append_menuitems" rows="10" cols="50"><?php echo esc_textarea(get_option('brro_append_menuitems', '')); ?></textarea>
             </fieldset>
+        <!-- Array of site editors -->
+            <fieldset>
+                <h3 style="margin:40px 0 16px 0;">Array of site editors</h3>
+                    <input type="text" id="brro_editors" name="brro_editors" value="<?php echo esc_attr(get_option('brro_editors', '2,3,4,5')); ?>" />
+            </fieldset>
         <!-- Checkbox for "Turn off support XML RPC" -->
             <fieldset>
                 <h3 style="margin:40px 0 16px 0;">Turn off support XML RPC</h3>
@@ -313,4 +318,6 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_client_help_menutitle');
     // append menu items in admin menu
     register_setting('brro-plugin-settings-group', 'brro_append_menuitems');
+    // Alternative site editors for older sites
+    register_setting('brro-plugin-settings-group', 'brro_editors');
 }
