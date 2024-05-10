@@ -7,7 +7,8 @@ add_filter( 'body_class', 'brro_wp_css_body_class' );
 function brro_wp_css_body_class( $classes ){
     $user = get_current_user_id();
     $admin = 1;
-    $editors = array(2, 3, 4, 5); 
+    $get_editors = get_option('brro_editors', '2,3,4,5');
+    $editors = array_map('intval', explode(',', $get_editors)); 
     if (in_array($user, $editors)) {
         $classes[] = 'webeditor';  
     }
@@ -169,66 +170,3 @@ function brro_navburger_shortcode($atts) {
     // Return the buffered content
     return ob_get_clean();
 }
-//
-// ******************************************************************************************************************************************************************
-//  
-// Prevent image scaling
-add_filter('big_image_size_threshold', function($threshold, $imagesize, $file, $attachment_id) {
-    // Check if the width of the image is 1920px or less
-    if ($imagesize[0] <= 1920) {
-        // Return false to prevent scaling down
-        return false;
-    }
-    // Otherwise, use the default threshold
-    return $threshold;
-}, 10, 4);
-//
-// ******************************************************************************************************************************************************************
-//  
-// Restrict upload size images
-function brro_restrict_upload_size( $size ) {
-    // Get the current user's data
-    $current_user = wp_get_current_user();
-    // Check if the current user is an editor
-    if ( in_array( 'editor', (array) $current_user->roles ) ) {
-        // Access the global $_FILE array
-        global $_FILES;
-        // Check if a file is being uploaded
-        if (!empty($_FILES)) {
-            // Loop through each uploaded file
-            foreach ($_FILES as $file) {
-                // Check if file type is jpg, jpeg, png, or gif
-                if ( preg_match( '/\.(jpg|jpeg|png|gif)$/i', $file['name'] ) ) {
-                    // Set the maximum upload size to 1MB for these file types
-                    $size = 1024 * 1000; // 1MB in bytes
-                    break;
-                }
-            }
-        }
-    }
-
-    return $size;
-}
-add_filter( 'upload_size_limit', 'brro_restrict_upload_size', 20 );
-//
-// ******************************************************************************************************************************************************************
-//  
-// Custom error message for images larger than 1MB
-function brro_custom_upload_size_error( $file ) {
-    // Maximum file size in bytes (1MB)
-    $max_file_size = 1024 * 1000;
-    // Allowed file types
-    $allowed_file_types = array('jpg', 'jpeg', 'png', 'gif');
-    // Get the current user's data
-    $current_user = wp_get_current_user();
-    // Check if the current user is an editor
-    if ( in_array( 'editor', (array) $current_user->roles ) ) {
-        // Check file type and size
-        if ( (in_array( strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)), $allowed_file_types )) && $file['size'] > $max_file_size ) {
-            // Set custom error
-            $file['error'] = 'Afbeelding mag maximaal 1MB groot zijn. Verklein de afbeelding tot maximaal 1600px breed via www.imageresizer.com, en/of comprimeer de afbeelding via www.tinyjpg.com';
-        }
-    }
-    return $file;
-}
-add_filter( 'wp_handle_upload_prefilter', 'brro_custom_upload_size_error' );

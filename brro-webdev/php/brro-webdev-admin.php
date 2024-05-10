@@ -171,7 +171,8 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
 add_action('admin_head', 'brro_wp_admin_sidebar_jquery');
 function brro_wp_admin_sidebar_jquery() {
     $user = get_current_user_id();
-    $editors = array(2, 3, 4, 5);
+    $get_editors = get_option('brro_editors', '2,3,4,5');
+    $editors = array_map('intval', explode(',', $get_editors));
     if (in_array($user, $editors)) {
         $helpUrl = get_option('brro_client_help_url','https://www.brro.nl/contact');
     } else {
@@ -294,7 +295,8 @@ function brro_remove_nonadmin_menus() {
 add_action('admin_head', 'brro_dashboard_css');
 function brro_dashboard_css() {
     $user = get_current_user_id();
-    $editors = array(2, 3, 4, 5);
+    $get_editors = get_option('brro_editors', '2,3,4,5');
+    $editors = array_map('intval', explode(',', $get_editors));
     if (in_array($user, $editors)) {
         ?>    
         <style> 
