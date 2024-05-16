@@ -300,11 +300,15 @@ function brro_dashboard_css() {
     if (in_array($user, $editors)) {
         ?>    
         <style> 
+            /* cursor draggable */
+            .postbox .hndle {
+                cursor:default !important;
+            } 
             /* Display > none 
              * Hide all links in top menu and page attributes */ 
-            #wpadminbar li, .wp-admin #wpfooter, 
+            #wpadminbar li, .wp-admin #wpfooter,
             /* Notices */
-            .e-notice, div.notice:not(#user_switching):not(.error),
+            .e-notice, div.notice:not(#user_switching):not(.error), .updated.woocommerce-message,
             /*attributes*/
             p.page-template-label-wrapper, #page_template {
                 display:none;
