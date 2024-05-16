@@ -300,10 +300,6 @@ function brro_dashboard_css() {
     if (in_array($user, $editors)) {
         ?>    
         <style> 
-            /* cursor draggable */
-            .postbox .hndle {
-                cursor:default !important;
-            } 
             /* Display > none 
              * Hide all links in top menu and page attributes */ 
             #wpadminbar li, .wp-admin #wpfooter,
