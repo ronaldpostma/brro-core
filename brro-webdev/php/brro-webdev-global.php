@@ -15,7 +15,7 @@ function brro_wp_css_body_class( $classes ){
     if (!is_user_logged_in())  {
         $classes[] = 'guest';  
     }
-    if ( current_user_can('administrator') ){
+    if (current_user_can('administrator')){
         $classes[] = 'webadmin';  
     }
     // Check if the current page has a parent
@@ -59,30 +59,70 @@ function brro_add_post_id_admin_body_class($classes) {
 add_shortcode('acfcontent', 'brro_acf_content_shortcode');
 function brro_acf_content_shortcode($atts) {
     if (!function_exists('get_field')) {
-        return;
+        return '';
     }
     // Shortcode attributes
     $attributes = shortcode_atts([
-        'before' => '', // Default value if 'before' attribute is not provided
-        'field' => '',  // The ACF field name
-        'after' => '',  // Default value if 'after' attribute is not provided
-        'id' => get_the_ID(), // // Default value if 'id' attribute is not provided is the current post
+        'before' => '',  // Default value if 'before' attribute is not provided
+        'field' => '',   // The ACF field name
+        'after' => '',   // Default value if 'after' attribute is not provided
+        'id' => get_the_ID(),  // Default value if 'id' attribute is not provided is the current post
+        'cache' => 'on',  // Default to using cache
+        'autop' => 'off'  // Default to not using wpautop
     ], $atts);
-
-    // Retrieve the ACF field value. get_field() function checks the current post by default
-    $acfValue = get_field($attributes['field'], $attributes['id']);
-
+    // Determine whether to use cached version or not
+    $use_cache = $attributes['cache'] !== 'off';
+    // Determine whether to use wpautop or not
+    $use_autop = $attributes['autop'] === 'on';
+    // Retrieve the ACF field value using the appropriate method
+    if ($use_cache) {
+        $acfValue = brro_get_cached_acf_field($attributes['field'], $attributes['id']);
+    } else {
+        $acfValue = get_field($attributes['field'], $attributes['id']);
+    }
+    // Apply wpautop if required
+    if ($use_autop && is_string($acfValue)) {
+        $acfValue = wpautop($acfValue);
+    }
+    // Check if the ACF field value is complex (array or object)
+    if (is_array($acfValue) || is_object($acfValue)) {
+        // Return empty if the ACF field value is not a simple string or HTML value
+        return '';
+    }
     // Check if the ACF field value is not empty or false
     if (!empty($acfValue)) {
         // Concatenate the before string, ACF field value, and after string
         $output = $attributes['before'] . $acfValue . $attributes['after'];
     } else {
         // If ACF field is empty or not found, return an empty string or a default message
-        $output = ''; // Or use a default message like "ACF field not found."
+        $output = '';  // Or use a default message like "ACF field not found."
     }
-
     // Return the final output
     return $output;
+}
+// Cache ACF get_field
+function brro_get_cached_acf_field($field_name, $post_id) {
+    $transient_key = 'acf_field_' . $post_id . '_' . $field_name;
+    $cached_value = get_transient($transient_key);
+    if ($cached_value !== false) {
+        return $cached_value;
+    }
+    $acf_value = get_field($field_name, $post_id);
+    $success = set_transient($transient_key, $acf_value, 12 * HOUR_IN_SECONDS);
+    return $acf_value;
+}
+// Hook to clear cache when ACF field is updated
+function brro_clear_acf_field_cache($post_id, $meta_key) {
+    $transient_key = 'acf_field_' . $post_id . '_' . $meta_key;
+    $success = delete_transient($transient_key);
+}
+// Hook into post metadata update actions to clear transient cache for relevant ACF fields
+add_action('updated_post_meta', 'brro_handle_updated_post_meta', 10, 4);
+add_action('added_post_meta', 'brro_handle_updated_post_meta', 10, 4);
+add_action('deleted_post_meta', 'brro_handle_updated_post_meta', 10, 4);
+
+function brro_handle_updated_post_meta($meta_id, $post_id, $meta_key, $_meta_value) {
+    brro_clear_acf_field_cache($post_id, $meta_key);
 }
 //
 // ******************************************************************************************************************************************************************
