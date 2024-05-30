@@ -276,18 +276,6 @@ function brro_custom_admin_menu_order($menu_ord) {
     $custom_order = array_merge($custom_order, $plugin_settings_menuitems);
     return $custom_order;
 }
-// Hook into 'admin_menu' to remove certain menu pages if not site main admin
-add_action('admin_menu', 'brro_remove_nonadmin_menus');
-function brro_remove_nonadmin_menus() {
-    $user = get_current_user_id();
-    $admin = 1;
-    if ($user !== $admin) {
-        // Remove specific menu pages for editors
-        remove_menu_page('options-general.php'); // Site settings
-        remove_menu_page('themes.php'); // Themes
-        remove_menu_page('brro-plugin-settings'); // Brro settings
-    }
-}
 //
 // ******************************************************************************************************************************************************************
 //  
