@@ -1,4 +1,21 @@
 <?php
+/*
+Function Index for brro-webdev-global.php:
+1. brro_wp_css_body_class
+   - Adds custom classes to the body tag based on user roles and page properties.
+2. brro_add_post_id_admin_body_class
+   - Adds post ID and post type as classes in the admin body for styling purposes.
+3. brro_acf_content_shortcode
+   - Creates a shortcode to display ACF field data with optional before and after HTML.
+4. brro_get_cached_acf_field
+   - Retrieves an ACF field value with caching to improve performance.
+5. brro_clear_acf_field_cache
+   - Clears the cached ACF field value when the ACF field is updated.
+6. brro_handle_updated_post_meta
+   - Hooks into post meta updates to clear cached ACF field values.
+7. brro_navburger_shortcode
+   - Generates a customizable navigation burger icon via a shortcode.
+*/
 //
 // ******************************************************************************************************************************************************************
 //  
@@ -123,45 +140,6 @@ add_action('deleted_post_meta', 'brro_handle_updated_post_meta', 10, 4);
 
 function brro_handle_updated_post_meta($meta_id, $post_id, $meta_key, $_meta_value) {
     brro_clear_acf_field_cache($post_id, $meta_key);
-}
-//
-// ******************************************************************************************************************************************************************
-//  
-// Shortcode constructor for media query line breaks. Example: [break min="600" max="1200"]
-add_shortcode('break', 'brro_custom_break_shortcode');
-function brro_custom_break_shortcode($atts) {
-    // Generate a random ID: 6 characters + 3 digits
-    $randomId = 'a' . substr(md5(uniqid(mt_rand(), true)), 0, 4) . mt_rand(10, 99);
-    // Extract attributes
-    $attributes = shortcode_atts(array(
-        'min' => null,
-        'max' => null,
-    ), $atts);
-    $min = $attributes['min'];
-    $max = $attributes['max'];
-    // Start output buffering
-    ob_start();
-    // Construct output based on parameters given in the shortcode
-    if (!is_null($min) || !is_null($max)) {
-        echo '<style>';
-        if (!is_null($min) && !is_null($max)) {
-            // Both min and max provided
-            echo "@media (min-width:{$min}px) and (max-width:{$max}px){#{$randomId} {display:block!important;}}";
-        } elseif (!is_null($min)) {
-            // Only min provided
-            echo "@media (min-width:{$min}px){#{$randomId} {display:block!important;}}";
-        } elseif (!is_null($max)) {
-            // Only max provided
-            echo "@media (max-width:{$max}px){#{$randomId} {display:block!important;}}";
-        }
-        echo '</style>';
-        echo "<span style='display:none' id='{$randomId}'></span>";
-    } else {
-        // Neither min nor max provided, output only a line break
-        echo '<br>';
-    }
-    // Return the buffered content
-    return ob_get_clean();
 }
 //
 // ******************************************************************************************************************************************************************

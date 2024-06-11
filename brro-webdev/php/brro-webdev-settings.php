@@ -200,7 +200,7 @@ function brro_plugin_settings_page() {
                     <input style="float: right;" type="text" name="brro_login_textlabelcolor" value="<?php echo esc_attr(get_option('brro_login_textlabelcolor', '#ffffff')); ?>">
                     <br><br>
                     <label for="brro_login_sitelogo">Logo URL:</label>
-                    <input style="float: right;" type="text" name="brro_login_sitelogo" value="<?php echo esc_attr(get_option('brro_login_sitelogo', 'https://brro.nl/wp-content/uploads/2023/10/brro.svg')); ?>">
+                    <input style="float: right;" type="text" name="brro_login_sitelogo" value="<?php echo esc_attr(get_option('brro_login_sitelogo', 'https://brro.nl/base/brro.svg')); ?>">
                     <br><br>
                     <label for="brro_login_logowidth">Logo width (px):</label>
                     <input style="float: right;" type="number" name="brro_login_logowidth" value="<?php echo esc_attr(get_option('brro_login_logowidth', '140')); ?>">
@@ -256,28 +256,8 @@ function brro_plugin_settings_page() {
             </fieldset>       
         <?php submit_button(); ?>
         </form>
-        <!-- CSS front-end file for live website -->
-        <form class="devmode_only" method="post">
-            <h3 style="margin:128px 0 16px 0;">(Re)generate CSS files for website live-mode</h3>
-            <?php wp_nonce_field('brro-update-css-action', 'brro-update-css-nonce'); ?>
-        <!-- (Re)generate CSS button -->
-            <input style="background:#f1f1f1;border-color:#4e4e4e;color:#4e4e4e;" type="submit" name="brro_update_css" value="(Re)generate CSS" class="button button-primary">
-        </form>
     </div>
     <?php
-    // If (Re)generate CSS is clicked, run the related code
-    if (isset($_POST['brro_update_css']) && check_admin_referer('brro-update-css-action', 'brro-update-css-nonce')) {
-        // Call the function to generate CSS
-        // Write the CSS
-        $filePath = WP_PLUGIN_DIR . '/brro-production/css/brro-vars.css';
-        $content = brro_elementor_devtools_read_and_generate_css('brro_vars_elementor_extract_all');
-        if (!empty($content)) {
-            brro_write_css_to_files($filePath, $content);
-        } else {
-            // Optionally, log a message or handle the case where no content is generated
-            error_log('No CSS content generated to write to the file.');
-        }
-    }
 }
 //
 // Register settings

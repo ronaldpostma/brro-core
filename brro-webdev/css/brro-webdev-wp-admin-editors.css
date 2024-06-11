@@ -1,0 +1,48 @@
+/* Display > none 
+ * Hide all links in top menu and page attributes */ 
+#wpadminbar li, .wp-admin #wpfooter,
+/* Notices */
+.e-notice, div.notice:not(#user_switching):not(.error), .updated.woocommerce-message,
+/*attributes*/
+p.page-template-label-wrapper, #page_template {
+    display:none;
+}
+
+/* Display > reset initial
+ * Show Admin top menu */
+#wpadminbar li#wp-admin-bar-site-name, #wpadminbar li#wp-admin-bar-my-account, #wpadminbar li#wp-admin-bar-logout {
+    display:inherit!important;
+}
+
+/* Customize media page */
+.upload-php .row-actions .edit,
+.upload-php .row-actions .delete,
+.upload-php .bulkactions,
+.media-new-php a.edit-attachment {
+    display:none;
+}
+.upload-php .filename {
+    font-weight:bold;
+    font-size:14px;
+}
+             
+/* Hide publishing actions in pages and posts */
+#misc-publishing-actions > div:not(.curtime):not(.misc-pub-post-status), 
+#minor-publishing-actions {
+    visibility:hidden;
+    height:2px;
+    overflow:hidden;
+    padding:0;
+}
+
+/* Custom dashboard */
+.index-php .wrap h1,
+.index-php #dashboard-widgets-wrap {
+    visibility:hidden;
+}
+.index-php #dashboard-widgets-wrap:before {
+    visibility: visible;
+    margin-bottom:64px;
+    margin-top:68px;
+    display:block;
+}

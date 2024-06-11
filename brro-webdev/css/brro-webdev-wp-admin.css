@@ -1,0 +1,73 @@
+/* CSS for everybody in WP Admin */
+/* WP Sidebar */
+#adminmenu {
+    opacity: 0;
+    transition: opacity 150ms ease-in-out;
+}
+
+/* Content editor */
+@media (min-width: 1700px) {
+    #poststuff #post-body.columns-2 {
+        max-width: 1180px;
+        margin-left: calc((100% - 1500px) / 2);
+    }
+}
+
+/* Hide items by default */
+li#collapse-menu,
+li.wp-menu-separator {
+    display: none;
+}
+
+/* Brro Separators */
+.brro-separator .wp-menu-name {
+    font-size: 0;
+}
+.brro-separator .wp-menu-name:after {
+    font-size: 14px;
+}
+.brro-separator {
+    background-color: rgba(143, 4, 86, .9);
+    pointer-events: none;
+}
+.brro-separator.wp-has-current-submenu .wp-menu-image:before {
+    transform: rotate(180deg);
+}
+.brro-separator:not(#toplevel_page_brro-separator-core) a {
+    margin-top: 24px;
+}
+#toplevel_page_brro-help-link a {
+    margin-bottom: 20px;
+}
+
+/* Uitleg bij featured image */
+#postimagediv h2:after {
+    margin-left: 6px;
+}
+#postimagediv h2 {
+    justify-content: start;
+}
+
+/* Tekst uitleg bij 'samenvatting */
+textarea#excerpt + p:before {
+    display: block;
+    font-size: 13px;
+    line-height: 1.5;
+}
+textarea#excerpt + p {
+    font-size: 0px !important;
+}
+
+/* link select ACF */
+body:not(.post-type-locateandfiltermap) .select2-container .select2-selection--single {
+    width: auto !important;
+    height: auto !important;
+}
+
+/* :before character length ACF */
+div[brro-acf-data-maxlength]:before {
+    content: 'Maximaal ' attr(brro-acf-data-maxlength) ' karakters';
+    font-weight: 400;
+    margin: 4px 0;
+    font-style: italic;
+}

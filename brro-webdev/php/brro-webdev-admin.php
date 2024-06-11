@@ -1,13 +1,21 @@
 <?php
-// brro-webdev-admin.php
-//
-// Login page wp-login.php
-// Private / logged in only mode
-// Disable admin bar for subscribers/viewers
-// Check jQuery
-// Remove XML RPC and Comments
-// WP Admin Menu Customization
-// CSS for WP Admin 
+/*
+Function Index for brro-webdev-admin.php:
+1. brro_add_wplogin_css
+   - Adds custom CSS to the WordPress login page based on dynamic settings.
+2. brro_admin_redirect
+   - Redirects non-logged-in users to the login page if private mode is enabled.
+3. brro_disable_admin_bar_for_subscribers
+   - Disables the WordPress admin bar for users with the subscriber role when private mode is active.
+4. brro_check_jquery
+   - Ensures jQuery is loaded on the site, enqueuing it if necessary.
+5. brro_add_custom_menu_items
+   - Customizes the admin menu by removing default separators and adding custom items.
+6. brro_custom_admin_menu_order
+   - Reorders the admin menu items based on a specified custom order.
+7. brro_disable_xmlrpc_comments
+   - Disables XML-RPC and comments site-wide based on settings.
+*/
 //
 // ******************************************************************************************************************************************************
 //
@@ -18,7 +26,7 @@ function brro_add_wplogin_css() {
     $backgroundmain = get_option('brro_login_backgroundmain', 'linear-gradient(270deg, beige, blue, purple, pink)'); 
     $backgroundform = get_option('brro_login_backgroundform', 'transparent'); 
     $textlabelcolor = get_option('brro_login_textlabelcolor', '#ffffff'); 
-    $sitelogo = get_option('brro_login_sitelogo', 'https://brro.nl/wp-content/uploads/2023/10/brro.svg'); 
+    $sitelogo = get_option('brro_login_sitelogo', 'https://brro.nl/base/brro.svg'); 
     $logowidth = get_option('brro_login_logowidth', '140'); 
     $logoheight = get_option('brro_login_logoheight', '160');
         // Constructing the CSS string with dynamic values
@@ -107,99 +115,6 @@ function brro_check_jquery() {
     }
 }
 //
-// ******************************************************************************************************************************************************
-//
-// Remove XML RPC and Comments
-// Hook XML-RPCinto 'after_setup_theme'
-add_action('after_setup_theme', 'brro_disable_xmlrpc_comments');
-function brro_disable_xmlrpc_comments() {
-    $xmlrpc_off = get_option('brro_xmlrpc_off', 0);
-    if ($xmlrpc_off == 1) {
-        add_filter('xmlrpc_enabled', '__return_false');
-    }
-    $comments_off = get_option('brro_comments_off', 0);
-    if ($comments_off == 1) {
-        add_filter('comments_open', '__return_false', 20, 2); // Close comments on the front-end
-        add_filter('pings_open', '__return_false', 20, 2); // Close pings on the front-end
-        add_filter('comments_array', '__return_empty_array', 10, 2); // Hide existing comments
-    }
-}
-// Remove comments
-add_action('admin_init', function () {
-    $comments_off = get_option('brro_comments_off', 0);
-    if ($comments_off == 1) {
-        global $pagenow;
-        if ($pagenow === 'edit-comments.php') {
-            wp_safe_redirect(admin_url());
-            exit;
-        }
-        // Remove comments metabox from dashboard
-        remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
-        // Disable support for comments and trackbacks in post types
-        foreach (get_post_types() as $post_type) {
-            if ( (class_exists( 'WooCommerce' )) && ($post_type === 'shop_order') )  {
-                if (post_type_supports($post_type, 'comments')) {
-                    remove_post_type_support($post_type, 'trackbacks');
-                }
-                continue;
-                } 
-            if (post_type_supports($post_type, 'comments')) {
-                remove_post_type_support($post_type, 'comments');
-                remove_post_type_support($post_type, 'trackbacks');
-            }
-        }
-    }
-});
-add_action('admin_menu', function () {
-    $comments_off = get_option('brro_comments_off', 0);
-    if ($comments_off == 1) {
-        remove_menu_page('edit-comments.php'); // Remove comments page in menu
-    }
-});
-add_action('admin_bar_menu', function ($wp_admin_bar) {
-    $comments_off = get_option('brro_comments_off', 0);
-    if ($comments_off == 1) {
-        $wp_admin_bar->remove_node('comments'); // Remove comments links from admin bar
-    }
-}, 999);
-//
-// ******************************************************************************************************************************************************************
-// 
-// WP Admin UX for site owners and editors
-//
-// jQuery for WP Admin Sidebar
-add_action('admin_head', 'brro_wp_admin_sidebar_jquery');
-function brro_wp_admin_sidebar_jquery() {
-    $user = get_current_user_id();
-    $get_editors = get_option('brro_editors', '2,3,4,5');
-    $editors = array_map('intval', explode(',', $get_editors));
-    if (in_array($user, $editors)) {
-        $helpUrl = get_option('brro_client_help_url','https://www.brro.nl/contact');
-    } else {
-        $helpUrl = 'https://www.brro.nl/';
-    }
-    ?>
-    <script>
-    jQuery(document).ready(function($) {
-        // Add separator classes
-        $('#toplevel_page_brro-separator-core, #toplevel_page_brro-separator-functionality, #toplevel_page_brro-separator-content').addClass('brro-separator');
-        $('#toplevel_page_brro-separator-core').nextUntil('#toplevel_page_brro-separator-functionality').addClass('brro-core');
-        $('#toplevel_page_brro-separator-functionality').nextUntil('#toplevel_page_brro-separator-content').addClass('brro-functionality');
-        $('#toplevel_page_brro-separator-content').nextUntil('#collapse-menu').addClass('brro-content');
-        // Brro help link
-        $('#toplevel_page_brro-help-link a').attr('href', '<?php echo esc_url($helpUrl); ?>').attr('target', '_blank');
-        setTimeout(function() {
-            $('#adminmenu').css('opacity', '1');
-        }, 100);
-        $('.acf-field input, .acf-field textarea').each(function() {
-            var maxLength = $(this).attr('maxlength');
-            $(this).parent().attr('brro-acf-data-maxlength', maxLength);
-        });
-    });
-    </script>
-    <?php
-}
-//
 // ******************************************************************************************************************************************************************
 //  
 //  Add custom separators and delete the default ons
@@ -218,9 +133,7 @@ function brro_add_custom_menu_items() {
     add_menu_page('Plugin Settings','|','read','brro-separator-functionality','','dashicons-arrow-down-alt2');
     add_menu_page('Site Content','|','read','brro-separator-content','','dashicons-arrow-down-alt2');
     // Add Brro help item
-    add_menu_page($brrohelp,$brrohelp,'read','brro-help-link','','dashicons-external');
-    
-    
+    add_menu_page($brrohelp,$brrohelp,'read','brro-help-link','','dashicons-external');   
 }
 //
 // ******************************************************************************************************************************************************************
@@ -277,114 +190,58 @@ function brro_custom_admin_menu_order($menu_ord) {
     return $custom_order;
 }
 //
-// ******************************************************************************************************************************************************************
-//  
-// Dashboard CSS
-add_action('admin_head', 'brro_dashboard_css');
-function brro_dashboard_css() {
-    $user = get_current_user_id();
-    $get_editors = get_option('brro_editors', '2,3,4,5');
-    $editors = array_map('intval', explode(',', $get_editors));
-    if (in_array($user, $editors)) {
-        ?>    
-        <style> 
-            /* Display > none 
-             * Hide all links in top menu and page attributes */ 
-            #wpadminbar li, .wp-admin #wpfooter,
-            /* Notices */
-            .e-notice, div.notice:not(#user_switching):not(.error), .updated.woocommerce-message,
-            /*attributes*/
-            p.page-template-label-wrapper, #page_template {
-                display:none;
-            }
-            /* Display > reset initial
-            /* Show Admin top menu */
-            #wpadminbar li#wp-admin-bar-site-name, #wpadminbar li#wp-admin-bar-my-account, #wpadminbar li#wp-admin-bar-logout {
-                display:inherit!important;
-            }
-            /* Customize media page */
-            .upload-php .row-actions .edit,
-            .upload-php .row-actions .delete,
-            .upload-php .bulkactions,
-            .media-new-php a.edit-attachment {display:none;}
-            .upload-php .filename {font-weight:bold;font-size:14px;}
-            /* Hide publishing actions in pages and posts */
-            #misc-publishing-actions > div:not(.curtime):not(.misc-pub-post-status), 
-            #minor-publishing-actions {
-                visibility:hidden;
-                height:2px;
-                overflow:hidden;
-                padding:0;
-            }
-            /* Custom dashboard */
-            .index-php .wrap h1,
-            .index-php #dashboard-widgets-wrap {visibility:hidden;}
-            .index-php #dashboard-widgets-wrap:before {visibility: visible;margin-bottom:64px;margin-top:68px;display:block;}
-        </style>
-        <?php 
+// ******************************************************************************************************************************************************
+//
+// Remove XML RPC and Comments
+// Hook XML-RPCinto 'after_setup_theme'
+add_action('after_setup_theme', 'brro_disable_xmlrpc_comments');
+function brro_disable_xmlrpc_comments() {
+    $xmlrpc_off = get_option('brro_xmlrpc_off', 0);
+    if ($xmlrpc_off == 1) {
+        add_filter('xmlrpc_enabled', '__return_false');
     }
-    ?>
-    <style>   
-        /* CSS for everybody in WP Admin */
-        /* WP Sidebar */
-        #adminmenu {
-            opacity:0;
-            transition: opacity 150ms ease-in-out;
+    $comments_off = get_option('brro_comments_off', 0);
+    if ($comments_off == 1) {
+        add_filter('comments_open', '__return_false', 20, 2); // Close comments on the front-end
+        add_filter('pings_open', '__return_false', 20, 2); // Close pings on the front-end
+        add_filter('comments_array', '__return_empty_array', 10, 2); // Hide existing comments
+    }
+}
+// Remove comments
+add_action('admin_init', function () {
+    $comments_off = get_option('brro_comments_off', 0);
+    if ($comments_off == 1) {
+        global $pagenow;
+        if ($pagenow === 'edit-comments.php') {
+            wp_safe_redirect(admin_url());
+            exit;
         }
-        /* Content editor */
-        @media (min-width:1700px) {
-            #poststuff #post-body.columns-2 {
-                max-width: 1180px;
-                margin-left: calc((100% - 1500px) / 2);
+        // Remove comments metabox from dashboard
+        remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
+        // Disable support for comments and trackbacks in post types
+        foreach (get_post_types() as $post_type) {
+            if ( (class_exists( 'WooCommerce' )) && ($post_type === 'shop_order') )  {
+                if (post_type_supports($post_type, 'comments')) {
+                    remove_post_type_support($post_type, 'trackbacks');
+                }
+                continue;
+                } 
+            if (post_type_supports($post_type, 'comments')) {
+                remove_post_type_support($post_type, 'comments');
+                remove_post_type_support($post_type, 'trackbacks');
             }
         }
-        /* Hide items by default */
-        li#collapse-menu,
-        li.wp-menu-separator{
-            display:none;
-        }
-        /* Separators */
-        .brro-separator .wp-menu-name {font-size:0;}
-        .brro-separator .wp-menu-name:after {font-size:14px;}
-        .brro-separator {background-color: rgba(143, 4, 86, .9);pointer-events:none;}
-        .brro-separator.wp-has-current-submenu .wp-menu-image:before {transform:rotate(180deg)}
-        .brro-separator:not(#toplevel_page_brro-separator-core) a {margin-top:24px;}
-        #toplevel_page_brro-help-link a {margin-bottom:20px;}
-        /* Code Snippets */
-        .cloud-connect-wrap,
-        a[data-snippet-type="bundles"],
-        a[data-snippet-type="cloud_search"],
-        a[data-snippet-type="cloud"],
-        span.cloud,
-        .submit-inline button:first-of-type,
-        .generate-button {
-            display:none;
-        }
-        /* Uitleg bij featured image */
-        #postimagediv h2:after {
-            margin-left:6px;
-        }
-        #postimagediv h2 {
-            justify-content:start;
-        }
-        /* Tekst uitleg bij 'samenvatting */
-        textarea#excerpt + p:before {
-            display: block;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-        textarea#excerpt + p {
-            font-size:0px!important;
-        }
-        /* link select ACF */
-        body:not(.post-type-locateandfiltermap) .select2-container .select2-selection--single {width:auto!important;height:auto!important;}
-        /* :before character length ACF */
-        div[brro-acf-data-maxlength]:before {
-            content: 'Maximaal ' attr(brro-acf-data-maxlength) ' karakters';
-            font-weight:400;
-            margin:4px 0;
-            font-style:italic;
-        }
-    </style> 
-<?php 
-}
+    }
+});
+add_action('admin_menu', function () {
+    $comments_off = get_option('brro_comments_off', 0);
+    if ($comments_off == 1) {
+        remove_menu_page('edit-comments.php'); // Remove comments page in menu
+    }
+});
+add_action('admin_bar_menu', function ($wp_admin_bar) {
+    $comments_off = get_option('brro_comments_off', 0);
+    if ($comments_off == 1) {
+        $wp_admin_bar->remove_node('comments'); // Remove comments links from admin bar
+    }
+}, 999);
