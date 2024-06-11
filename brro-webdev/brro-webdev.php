@@ -13,9 +13,7 @@
 // 
 require_once plugin_dir_path(__FILE__) . '/php/brro-webdev-settings.php';
 // 
-if (is_admin()) {
-    require_once plugin_dir_path(__FILE__) . '/php/brro-webdev-admin.php';
-}
+require_once plugin_dir_path(__FILE__) . '/php/brro-webdev-admin.php';
 // 
 require_once plugin_dir_path(__FILE__) . '/php/brro-webdev-global.php';
 //
