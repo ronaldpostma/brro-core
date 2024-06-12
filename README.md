@@ -1,76 +1,43 @@
-# Brro Development Plugin for Wordpress
-## /brro-webdev
+# Brro Core Functions & Devtools
+## /brro-core
  
-# Index:
-1. File content explanation
-	* brro-webdev.php
- 	* /php/brro-webdev-admin.php
- 	* /php/brro-webdev-generate-css.php
- 	* /php/brro-webdev-global.php
- 	* /php/brro-webdev-settings.php
- 	* /js/brro-backend-elementor-script.js
- 	* /js/brro-frontend-inspector-script.js
- 	* /css/brro-frontend-var-style.css
- 	* /css/brro-inspector-style.css
-2. Scope of usability
-3. Developing with Code Snippets
-4. Going live with brro-production
-5. License
 
-## To do: remove functions index from brro-webdev.php and place them here in the readme
+# 1. File index
+1. `brro-core.php`
+   - Main plugin file that includes other PHP files, enqueues scripts and styles, and handles plugin updates.
+   - Contains functions for loading scripts in Elementor editor, frontend inspector, and admin area.
+   - Adds custom CSS for inspector mode and handles plugin update checks.
+2. `php/brro-core-settings.php`
+	- Handles the settings page for the plugin.
+	- Registers settings for various plugin functionalities like developer mode, Elementor breakpoints, and frontend inspector settings.
+3. `php/brro-core-admin.php`
+	- Manages admin-specific functionalities.
+	- Includes functions for customizing the admin menu order, disabling XML-RPC and comments, and adding custom CSS to the WordPress login page.
+4. `php/brro-core-global.php`
+	- Contains global functions used across the site.
+	- Functions include adding custom classes to the body tag, handling ACF field data, and creating shortcodes like `acfcontent` and `navburger`.
 
-# File content explanation
-## brro-webdev.php
-Explanation
+5. `js/brro-core-elementor-editor.js`
+	- JavaScript file for functionalities within the Elementor editor.
+6. `js/brro-core-inspector-script.js`
+	- JavaScript for the frontend inspector tool.
+7. `js/brro-core-wp-admin-script.js`
+	- Admin area specific scripts.
 
-## /php/brro-webdev-admin.php
-// brro_add_wplogin_css()                          | Add WP Login CSS
-// brro_admin_redirect()                           | WP Private Mode
-// brro_temporary_unavailable()                    | SEO check for private mode
-// brro_disable_admin_bar_for_subscribers()        | Hide admin bar in private mode
-// brro_check_jquery()                             | Load jQuery if not loaded
-// brro_disable_xmlrpc_comments                    | Remove comment support
-// brro_disable_drag_metabox()
-// brro_instructions_button()
-// brro_wp_admin_sidebar_jquery()                  | Restyle the WP admin sidebar
-// brro_dashboard_css()                            | Style dashboard for users
+8. `css/brro-core-inspector-style.css`
+	- Styles for the frontend inspector tool.
+9. `css/brro-core-wp-admin-style.css`
+	- General styles for the WordPress admin area.
+10. `css/brro-core-wp-admin-editors-style.css`
+	- Additional admin styles specific to certain user roles.
+11. `css/brro-core-wp-admin-admin-style.css`
+	- Styles specifically for the WordPress administrator role.
 
-## /php/brro-webdev-generate-css.php
-// brro_handle_generate_css()                      | Trigger regen CSS from frontend
-// brro_elementor_devtools_read_and_generate_css() | Conditionally calculate output for css var() and write to frontend css file
+# 2. Scope of usability
+GLobal core functions for all sites developed by Brro and development tools used within Elementor and the frontend.
 
-## /php/brro-webdev-global.php
-// brro_wp_css_body_class()
+# 3. Custom functions with brro-production
+Project specific functions are be placed in [brro-production](https://github.com/ronaldpostma/brro-production).
 
-## /php/brro-webdev-settings.php
-// brro_plugin_add_settings_page()
-// brro_plugin_settings_page()
-// brro_plugin_register_settings()                 | all plugin settings: make page, individual settings, save settings
-
-## /js/brro-backend-elementor-script.js
-Explanation
-
-## /js/brro-frontend-inspector-script.js
-Explanation
-
-## /css/brro-frontend-var-style.css
-Explanation
-
-## /css/brro-inspector-style.css
-Explanation
-
-
-# Scope of usability
-Explanation
-
-
-# Developing Code Snippets
-Explanation
-
-
-# Going live with brro-production
-Explanation
-
-
-# License
+# 4. License
 This project is licensed under the MIT License - see the LICENSE file for details.
