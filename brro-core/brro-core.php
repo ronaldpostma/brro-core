@@ -3,7 +3,7 @@
  * Plugin Name: Brro Core Functions & Devtools
  * Plugin URI: https://github.com/ronaldpostma/brro-core
  * Description: Global core functions for all sites developed by Brro and development tools used within Elementor and the frontend.
- * Version: 1.5.0
+ * Version: 1.5.1
  * Author: Ronald Postma 
  * Author URI: https://brro.nl/
  * 
@@ -22,7 +22,7 @@ add_action( 'elementor/editor/after_enqueue_scripts', 'brro_enqueue_script_eleme
 function brro_enqueue_script_elementor_editor() {
     $developer_mode = get_option('brro_developer_mode', 0);
     if ($developer_mode == 1 && is_user_logged_in() ) {
-        wp_enqueue_script( 'brro-core-elementor-editor', plugins_url( '/js/brro-core-elementor-editor.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
+        wp_enqueue_script( 'brro-core-elementor-editor-script', plugins_url( '/js/brro-core-elementor-editor-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
         // Localize script with data from your settings
         $script_data = array(
             'desktopEnd' => get_option('brro_desktop_end'),
@@ -34,7 +34,7 @@ function brro_enqueue_script_elementor_editor() {
             'mobileStart'  => get_option('brro_mobile_start'),
             'developerMode'  => get_option('brro_developer_mode'),
         );
-        wp_localize_script('brro-core-elementor-editor', 'pluginSettings', $script_data);
+        wp_localize_script('brro-core-elementor-editor-script', 'pluginSettings', $script_data);
     }
 }
 //
@@ -43,38 +43,36 @@ add_action( 'wp_enqueue_scripts', 'brro_enqueue_script_elementor_frontend' );
 function brro_enqueue_script_elementor_frontend() {
     $developer_mode = get_option('brro_developer_mode', 0);
     if ($developer_mode == 1 && is_user_logged_in() ) {
-        wp_enqueue_script( 'brro-core-inspector-script', plugins_url( '/js/brro-core-inspector-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
-        wp_enqueue_style('brro-core-inspector-style', plugins_url( '/css/brro-core-inspector-style.css', __FILE__ ), [], '1.0.0' );
+        wp_enqueue_script( 'brro-core-frontend-inspector-script', plugins_url( '/js/brro-core-frontend-inspector-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
+        wp_enqueue_style('brro-core-frontend-inspector-style', plugins_url( '/css/brro-core-frontend-inspector-style.css', __FILE__ ), [], '1.0.0' );
     }
 }
 //
 // Load assets for wp admin area
 add_action( 'admin_enqueue_scripts', 'brro_webdev_enqueue_admin_assets');
 function brro_webdev_enqueue_admin_assets() {
-    if (is_admin()) {
-        // For all users
-        wp_enqueue_style( 'brro-core-wp-admin-style', plugins_url( '/css/brro-core-wp-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
-        wp_enqueue_script( 'brro-core-wp-admin-script', plugins_url( '/js/brro-core-wp-admin-script.js', __FILE__ ), ['jquery'], '1.0.0', true );
-        // Localize script with data from your settings
-        $script_data = array(
-            'helpUrl' => get_option('brro_client_help_url'),
-        );
-        wp_localize_script('brro-core-wp-admin', 'pluginSettings', $script_data);
-        // 
-        // For specific users
-        $user = get_current_user_id();
-        $get_editors = get_option('brro_editors', '2,3,4,5');
-        $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
-		    return $id > 0;
-	    }); 
-        // Client users / editors
-        if (in_array($user, $editors)) {
-            wp_enqueue_style( 'brro-core-wp-admin-editors-style', plugins_url( '/css/brro-core-wp-admin-editors-style.css', __FILE__ ), [], '1.0.0', 'all' );
-        } 
-        // Main Brro admin & 3rd parties
-        if ( current_user_can('administrator') ) {
-            wp_enqueue_style( 'brro-core-wp-admin-admin-style', plugins_url( '/css/brro-core-wp-admin-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
-        }
+    // For all users
+    wp_enqueue_style( 'brro-core-wp-admin-style', plugins_url( '/css/brro-core-wp-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
+    wp_enqueue_script( 'brro-core-wp-admin-script', plugins_url( '/js/brro-core-wp-admin-script.js', __FILE__ ), ['jquery'], '1.0.0', true );
+    // Localize script with data from your settings
+    $script_data = array(
+        'helpUrl' => get_option('brro_client_help_url'),
+    );
+    wp_localize_script('brro-core-wp-admin-script', 'pluginSettings', $script_data);
+    // 
+    // For specific users
+    $user = get_current_user_id();
+    $get_editors = get_option('brro_editors', '2,3,4,5');
+    $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
+	    return $id > 0;
+	}); 
+    // Client users / editors
+    if (in_array($user, $editors)) {
+        wp_enqueue_style( 'brro-core-wp-admin-editors-style', plugins_url( '/css/brro-core-wp-admin-editors-style.css', __FILE__ ), [], '1.0.0', 'all' );
+    } 
+    // Main Brro admin & 3rd parties
+    if ( current_user_can('administrator') ) {
+        wp_enqueue_style( 'brro-core-wp-admin-admin-style', plugins_url( '/css/brro-core-wp-admin-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
     }
 }
 //
