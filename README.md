@@ -34,7 +34,7 @@
 	- Styles specifically for the WordPress administrator role.
 
 # 2. Scope of usability
-GLobal core functions for all sites developed by Brro and development tools used within Elementor and the frontend.
+Global core functions for all sites developed by Brro and development tools used within Elementor and the frontend. More info and documentation on [brro.nl](https://brro.nl/brro-core/).
 
 # 3. Custom functions with brro-production
 Project specific functions are be placed in [brro-production](https://github.com/ronaldpostma/brro-production).
