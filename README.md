@@ -41,6 +41,7 @@ Project specific functions should be placed in <a href="https://github.com/ronal
 
 # 4. Development next steps
 1. In `js/brro-core-elementor-editor.js` change the desktop `calc` function for ranges: remove the `var(--)` and output direct CSS, if needed with `@media` appended in a `/* comment */` 
+2. Add to settings `Brro Debugging` something like `define('BRRO_DEBUG', true);` and set to false in production
 
 # 5. License
 This project is licensed under the MIT License - see the LICENSE file for details.
