@@ -34,10 +34,10 @@
 	- Styles specifically for the WordPress administrator role.
 
 # 2. Scope of usability
-Global core functions for all sites developed by Brro and development tools used within Elementor and the frontend. More info and documentation on [brro.nl](https://brro.nl/brro-core/).
+Global core functions for all sites developed by Brro and development tools used within Elementor and the frontend. More info and documentation on <a href="https://brro.nl/brro-core/" target="_blank">brro.nl</a>.
 
 # 3. Custom functions with brro-production
-Project specific functions are be placed in [brro-production](https://github.com/ronaldpostma/brro-production).
+Project specific functions should be placed in <a href="https://github.com/ronaldpostma/brro-production" target="_blank">brro-production</a>.
 
 # 4. License
 This project is licensed under the MIT License - see the LICENSE file for details.
