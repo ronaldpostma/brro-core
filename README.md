@@ -36,8 +36,8 @@
 # 2. Scope of usability
 Global core functions for all sites developed by Brro and development tools used within Elementor and the frontend. More info and documentation on <a href="https://brro.nl/brro-core/" target="_blank">brro.nl</a>.
 
-# 3. Custom functions with brro-production
-Project specific functions should be placed in <a href="https://github.com/ronaldpostma/brro-production" target="_blank">brro-production</a>.
+# 3. Custom functions with brro-project
+Project specific functions should be placed in <a href="https://github.com/ronaldpostma/brro-project" target="_blank">brro-project</a>.
 
 # 4. Development next steps
 1. In `js/brro-core-elementor-editor.js` change the desktop `calc` function for ranges: remove the `var(--)` and output direct CSS, if needed with `@media` appended in a `/* comment */` 
