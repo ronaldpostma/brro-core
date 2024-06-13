@@ -248,12 +248,27 @@ function brro_plugin_settings_page() {
         <!-- Website help dashboard button url -->
             <fieldset style="max-width:420px;">
                 <h3 style="margin:40px 0 16px 0;">Brro.nl HELP login URL</h3>
-                    <label for="brro_client_help_url">URL:</label>
-                    <input style="float: right;" type="text" name="brro_client_help_url" value="<?php echo esc_attr(get_option('brro_client_help_url', 'https://www.brro.nl/contact')); ?>">
-                    <br>    
-                    <label for="brro_client_help_menutitle">Menu title:</label>
-                    <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">
-            </fieldset>       
+                <label for="brro_client_help_url">URL:</label>
+                <input style="float: right;" type="text" name="brro_client_help_url" value="<?php echo esc_attr(get_option('brro_client_help_url', 'https://www.brro.nl/contact')); ?>">
+                <br><br>      
+                <label for="brro_client_help_menutitle">Menu title:</label>
+                <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">    
+            </fieldset> 
+        <!-- Radio button for Gallery Field -->
+            <fieldset style="max-width:420px;">
+                <h3 style="margin:40px 0 16px 0;">Display Brro Gallery Field</h3>
+                <label>
+                    <input type="radio" name="brro_gallery" value="1" <?php checked(1, get_option('brro_gallery')); ?>>
+                    On
+                </label>
+                <label>
+                    <input type="radio" name="brro_gallery" value="0" <?php checked(0, get_option('brro_gallery')); ?>>
+                    Off
+                </label>
+				<br><br>        
+                <label for="brro_gallery_post_types">For post types:</label>
+                <input style="float: right;" type="text" name="brro_gallery_post_types" value="<?php echo esc_attr(get_option('brro_gallery_post_types', 'post')); ?>">
+            </fieldset>      
         <?php submit_button(); ?>
         </form>
     </div>
@@ -300,4 +315,7 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_append_menuitems');
     // Alternative site editors for older sites
     register_setting('brro-plugin-settings-group', 'brro_editors');
+    // Custom Gallery Box
+    register_setting('brro-plugin-settings-group', 'brro_gallery');
+    register_setting('brro-plugin-settings-group', 'brro_gallery_post_types');
 }
