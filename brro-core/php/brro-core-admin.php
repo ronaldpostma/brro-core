@@ -165,19 +165,23 @@ function brro_custom_admin_menu_order($menu_ord) {
     // Initialize array to hold menu items fetched from plugin settings
     $plugin_settings_menuitems = array(); // To hold menu items fetched from plugin settings
     $append_custom_menuitems = get_option('brro_append_menuitems'); // Fetch items to append from settings list
-    $menuitem_strings = explode("\n", $append_custom_menuitems); // Convert to array 
-    $menuitem_strings = array_map('trim', $menuitem_strings); // Trim each string to remove possible white spaces
+    if (!empty($append_custom_menuitems)) {
+        $menuitem_strings = explode("\n", $append_custom_menuitems); // Convert to array 
+        $menuitem_strings = array_map('trim', $menuitem_strings); // Trim each string to remove possible white spaces
+    }
     // Insert all menu items after "Plugins", except for exceptions from settings
     foreach ($menu_ord as $menu_item) {
         // Skip if the item is already in the custom order
         if (!in_array($menu_item, $custom_order)) {
             $matched = false; // Flag to indicate if a match was found in plugin settings
             // Check against plugin settings items
-            foreach ($menuitem_strings as $item) {
-                if ($menu_item === $item) {
-                    $plugin_settings_menuitems[] = $menu_item;
-                    $matched = true;
-                    break; // Stop the loop if a match is found
+            if (!empty($menuitem_strings)) {
+                foreach ($menuitem_strings as $item) {
+                    if ($menu_item === $item) {
+                        $plugin_settings_menuitems[] = $menu_item;
+                        $matched = true;
+                        break; // Stop the loop if a match is found
+                    }
                 }
             }
             // For items not matching specific criteria and not in plugin settings
@@ -221,16 +225,17 @@ function brro_remove_comments() {
     if ($comments_off == 1) {
         global $pagenow;
         if ($pagenow === 'edit-comments.php') {
-            wp_safe_redirect(admin_url());
+            wp_safe_redirect(admin_url(), 301);
             exit;
         }
         // Remove comments metabox from dashboard
         remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
         // Disable support for comments and trackbacks in post types
         $post_types = get_post_types();
+        $woocommerce_active = class_exists('WooCommerce');
         if (is_array($post_types)) {
             foreach ($post_types as $post_type) {
-                if ((class_exists('WooCommerce')) && ($post_type === 'shop_order')) {
+                if ($woocommerce_active && $post_type === 'shop_order') {
                     if (post_type_supports($post_type, 'comments')) {
                         remove_post_type_support($post_type, 'trackbacks');
                     }
