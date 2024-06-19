@@ -215,7 +215,8 @@ function brro_disable_xmlrpc_comments() {
     }
 }
 // Remove comments
-add_action('admin_init', function () {
+add_action('admin_init', 'brro_remove_comments');
+function brro_remove_comments() {
     $comments_off = get_option('brro_comments_off', 0);
     if ($comments_off == 1) {
         global $pagenow;
@@ -226,20 +227,23 @@ add_action('admin_init', function () {
         // Remove comments metabox from dashboard
         remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
         // Disable support for comments and trackbacks in post types
-        foreach (get_post_types() as $post_type) {
-            if ( (class_exists( 'WooCommerce' )) && ($post_type === 'shop_order') )  {
+        $post_types = get_post_types();
+        if (is_array($post_types)) {
+            foreach ($post_types as $post_type) {
+                if ((class_exists('WooCommerce')) && ($post_type === 'shop_order')) {
+                    if (post_type_supports($post_type, 'comments')) {
+                        remove_post_type_support($post_type, 'trackbacks');
+                    }
+                    continue;
+                }
                 if (post_type_supports($post_type, 'comments')) {
+                    remove_post_type_support($post_type, 'comments');
                     remove_post_type_support($post_type, 'trackbacks');
                 }
-                continue;
-                } 
-            if (post_type_supports($post_type, 'comments')) {
-                remove_post_type_support($post_type, 'comments');
-                remove_post_type_support($post_type, 'trackbacks');
             }
         }
     }
-});
+}
 add_action('admin_menu', function () {
     $comments_off = get_option('brro_comments_off', 0);
     if ($comments_off == 1) {
