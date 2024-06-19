@@ -121,6 +121,10 @@ function brro_check_jquery() {
 add_action('admin_menu', 'brro_add_custom_menu_items');
 function brro_add_custom_menu_items() {
     global $menu;
+    if (!is_array($menu)) {
+        error_log('Global menu is not an array in brro_add_custom_menu_items');
+        return;
+    }
     $brrohelp = get_option('brro_client_help_menutitle', 'Brro, help!');
     // Iterate over the menu items and remove separators
     foreach ($menu as $index => $item) {
@@ -142,7 +146,10 @@ function brro_add_custom_menu_items() {
 add_filter('custom_menu_order', '__return_true'); // Enable custom menu ordering.
 add_filter('menu_order', 'brro_custom_admin_menu_order', 1000); // Function for the custom order
 function brro_custom_admin_menu_order($menu_ord) {
-    if (!$menu_ord) return true;
+    if (!is_array($menu_ord)) {
+        error_log('Menu order is not an array in brro_custom_admin_menu_order');
+        return true;
+    }
     $custom_order = array(
         'index.php', // Dashboard
         'brro-help-link', // Brro help outward link

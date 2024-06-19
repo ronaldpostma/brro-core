@@ -177,3 +177,43 @@ function brro_save_gallery_meta($post_id, $post) {
         update_post_meta($post_id, 'brro_image_gallery_ids', $images);
     }
 }
+
+
+/*
+*
+add_action("elementor/dynamic_tags/register_tags", function ($dynamic_tags) {
+    class Brro_Custom_Gallery_Image_Tag extends \Elementor\Core\DynamicTags\Data_Tag
+    {
+        public function get_name() {
+            return "brro-custom-gallery-image";
+        }
+    
+        public function get_title() {
+            return __("Brro Custom Gallery Image", "brro-core");
+        }
+    
+        public function get_group() {
+            return [\ElementorPro\Modules\DynamicTags\Module::SITE_GROUP];
+        }
+    
+        public function get_categories() {
+            return [\ElementorPro\Modules\DynamicTags\Module::GALLERY_CATEGORY];
+        }
+    
+        protected function get_value(array $options = []) {
+            $gallery_ids = get_post_meta(get_the_ID(), 'brro_image_gallery_ids', true);
+            $ids = explode(',', $gallery_ids);
+            $images = array_map(function ($id) {
+                return [
+                    "id" => $id,
+                    "url" => wp_get_attachment_url($id),
+                ];
+            }, $ids);
+    
+            return $images;
+        }
+    }
+    $dynamic_tags->register_tag("Brro_Custom_Gallery_Image_Tag");
+});
+*
+*/
