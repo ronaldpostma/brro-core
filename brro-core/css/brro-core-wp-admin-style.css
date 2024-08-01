@@ -39,6 +39,9 @@ li.wp-menu-separator {
 #toplevel_page_brro-help-link a {
     margin-bottom: 20px;
 }
+#toplevel_page_brro-separator-core .wp-menu-name:after {content:"Core";}
+#toplevel_page_brro-separator-functionality .wp-menu-name:after {content:"Functions";}
+#toplevel_page_brro-separator-content .wp-menu-name:after {content:"Content";}
 
 /* Uitleg bij featured image */
 #postimagediv h2:after {
