@@ -44,7 +44,7 @@ jQuery(function ($) {
         // Activate inspector state in Elementor editor by default
         $('body.elementor-editor-active').addClass('inspect-edges inspect-parent inspect-child inspect-child-child inspect-widget');
         $('body.elementor-editor-active .inspector-button').addClass('inspector-active');
-        $('html:not(.hide-admin-bar) body.admin-bar(.elementor-editor-active) header.brro-sticky').css('top','32px');
+        $('html:not(.hide-admin-bar) body.admin-bar:not(.elementor-editor-active) header.brro-sticky').css('top','32px');
         $('html.hide-admin-bar header.brro-sticky').css('top','0px');
         //
         // 2.3 Event handling for individual element inspector buttons on click
