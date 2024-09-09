@@ -15,6 +15,7 @@ Function Index for brro-webdev-global.php:
    - Hooks into post meta updates to clear cached ACF field values.
 7. brro_navburger_shortcode
    - Generates a customizable navigation burger icon via a shortcode.
+8. - brro_allow_page_excerpt
 */
 //
 // ******************************************************************************************************************************************************************
@@ -186,4 +187,12 @@ function brro_navburger_shortcode($atts) {
     echo '</div>';
     // Return the buffered content
     return ob_get_clean();
+}
+//
+// ******************************************************************************************************************************************************************
+//  
+// Add excerpts to pages for SEO page description
+add_action('init', 'brro_allow_page_excerpt');
+function brro_allow_page_excerpt() {
+    add_post_type_support('page', 'excerpt');
 }
