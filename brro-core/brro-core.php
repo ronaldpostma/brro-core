@@ -3,7 +3,7 @@
  * Plugin Name: Brro Core Functions & Devtools
  * Plugin URI: https://github.com/ronaldpostma/brro-core
  * Description: Global core functions for all sites developed by Brro and development tools used within Elementor and the frontend.
- * Version: 1.5.4
+ * Version: 1.5.5
  * Author: Ronald Postma 
  * Author URI: https://brro.nl/
  * 
@@ -17,9 +17,6 @@ require_once plugin_dir_path(__FILE__) . '/php/brro-core-admin.php';
 // 
 require_once plugin_dir_path(__FILE__) . '/php/brro-core-global.php';
 //
-if (is_admin()) {
-    require_once plugin_dir_path(__FILE__) . '/php/brro-core-gallery.php';
-}
 // Load script for Elementor Editor Panel
 add_action( 'elementor/editor/after_enqueue_scripts', 'brro_enqueue_script_elementor_editor' );
 function brro_enqueue_script_elementor_editor() {

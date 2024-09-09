@@ -143,7 +143,7 @@ function brro_plugin_settings_page() {
                         </td>
                     </tr>
                 </table>
-        <!-- Checkbox for "Turn off pre-loaded CSS files" -->
+        <!-- Lock settings for the screen references" -->
             <fieldset>
                 <h3 style="margin:40px 0 16px 0;">Lock screen references</h3>
                 <label>
@@ -153,19 +153,6 @@ function brro_plugin_settings_page() {
                 
                 <label>
                     <input type="radio" name="brro_lock_screen" value="0" <?php checked(0, get_option('brro_lock_screen')); ?>>
-                    No
-                </label>
-            </fieldset>
-        <!-- Checkbox for "Minimize CSS files for live website" -->
-            <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Minimize CSS files for live website</h3>
-                <label>
-                    <input type="radio" name="brro_minimize_css" value="1" <?php checked(1, get_option('brro_minimize_css')); ?>>
-                    Yes
-                </label>
-                
-                <label>
-                    <input type="radio" name="brro_minimize_css" value="0" <?php checked(0, get_option('brro_minimize_css')); ?>>
                     No
                 </label>
             </fieldset>
@@ -253,22 +240,7 @@ function brro_plugin_settings_page() {
                 <br><br>      
                 <label for="brro_client_help_menutitle">Menu title:</label>
                 <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">    
-            </fieldset> 
-        <!-- Radio button for Gallery Field -->
-            <fieldset style="max-width:420px;">
-                <h3 style="margin:40px 0 16px 0;">Display Brro Gallery Field</h3>
-                <label>
-                    <input type="radio" name="brro_gallery" value="1" <?php checked(1, get_option('brro_gallery')); ?>>
-                    On
-                </label>
-                <label>
-                    <input type="radio" name="brro_gallery" value="0" <?php checked(0, get_option('brro_gallery')); ?>>
-                    Off
-                </label>
-				<br><br>        
-                <label for="brro_gallery_post_types">For post types:</label>
-                <input style="float: right;" type="text" name="brro_gallery_post_types" value="<?php echo esc_attr(get_option('brro_gallery_post_types', 'post')); ?>">
-            </fieldset>      
+            </fieldset>    
         <?php submit_button(); ?>
         </form>
     </div>
@@ -289,7 +261,6 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_mobile_ref');
     register_setting('brro-plugin-settings-group', 'brro_mobile_start');
     register_setting('brro-plugin-settings-group', 'brro_lock_screen');
-    register_setting('brro-plugin-settings-group', 'brro_minimize_css');
     // register settings frontend inspector
     register_setting('brro-plugin-settings-group', 'brro_blend_mode');
     register_setting('brro-plugin-settings-group', 'brro_parent_border_color');
@@ -315,7 +286,4 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_append_menuitems');
     // Alternative site editors for older sites
     register_setting('brro-plugin-settings-group', 'brro_editors');
-    // Custom Gallery Box
-    register_setting('brro-plugin-settings-group', 'brro_gallery');
-    register_setting('brro-plugin-settings-group', 'brro_gallery_post_types');
 }
