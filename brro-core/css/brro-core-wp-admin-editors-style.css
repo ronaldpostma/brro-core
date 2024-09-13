@@ -5,7 +5,7 @@
 .e-notice, div.notice:not(#user_switching):not(.error), .updated.woocommerce-message,
 /*attributes*/
 p.page-template-label-wrapper, #page_template {
-    display:none;
+    display:none!important;
 }
 
 /* Display > reset initial
@@ -19,7 +19,7 @@ p.page-template-label-wrapper, #page_template {
 .upload-php .row-actions .delete,
 .upload-php .bulkactions,
 .media-new-php a.edit-attachment {
-    display:none;
+    display:none!important;
 }
 .upload-php .filename {
     font-weight:bold;

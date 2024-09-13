@@ -124,7 +124,7 @@ jQuery(function($) {
         }
     });
     //
-    // Calculation of new values after 'Calc' button click
+    // Calculation of new values after 'Convert' button click
     //
     $('#elementor-panel').on('click', '.convert-button', function() {
         //
@@ -144,7 +144,7 @@ jQuery(function($) {
             var parts = inputValue.trim().split(',').map(Number);
             var inputMin = Math.min.apply(null, parts);
             var inputMax = Math.max.apply(null, parts);
-        // convert-button: Check if inputValue is a two-part string, separated by a comma
+        // convert-button: Check if inputValue is a three-part string, separated by a comma
         } else if (/^md,\d+,\d+$/.test(inputValue.trim())) { //.......................................IF RANGE INPUT md,##,## mobile to desktop
             var parts = inputValue.trim().split(',').slice(1).map(Number); // ........Skip the first element ('md')
             var inputMin = Math.min.apply(null, parts);
@@ -161,17 +161,14 @@ jQuery(function($) {
             var screenEnd = desktopEnd;
             var screenRef = desktopRef;
             var screenStart = desktopStart;
-            var screenVar = 'desktop';
         } else if ( $('body').hasClass('elementor-device-tablet') ) {
             var screenEnd = tabletEnd;
             var screenRef = tabletRef;
             var screenStart = tabletStart;
-            var screenVar = 'tablet';
         } else if ( $('body').hasClass('elementor-device-mobile') ) {
             var screenEnd = mobileEnd;
             var screenRef = mobileRef;
             var screenStart = mobileStart;
-            var screenVar = 'mobile';
         } else {
             console.log('Error: No screensize reference values. Script terminates.');
             return;

@@ -6,6 +6,7 @@
  * Version: 1.5.5
  * Author: Ronald Postma 
  * Author URI: https://brro.nl/
+ * Plugin Icon: https://example.com/path-to-your-icon.png
  * 
  */
 //

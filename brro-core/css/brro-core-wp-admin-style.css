@@ -16,7 +16,7 @@
 /* Hide items by default */
 li#collapse-menu,
 li.wp-menu-separator {
-    display: none;
+    display: none!important;
 }
 
 /* Brro Separators */
