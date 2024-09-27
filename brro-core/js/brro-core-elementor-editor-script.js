@@ -15,6 +15,9 @@ jQuery(function($) {
     console.log('developerMode: ' + developerMode + ' ( 1 = on) ( 0 = off )');
     console.log('desktopEnd: ' + desktopEnd + 'px');
     console.log('desktopRef: ' + desktopRef + 'px');
+    if ( desktopRef !== desktopEnd) {
+        console.log('desktopRef and desktopEnd are not equal. Can not use range calc for desktop');
+    }
     console.log('desktopStart: ' + desktopStart + 'px'); 
     console.log('tabletEnd: ' + tabletEnd + 'px'); 
     console.log('tabletRef: ' + tabletRef + 'px'); 
@@ -44,11 +47,8 @@ jQuery(function($) {
         .elementor-device-desktop #elementor-preview-responsive-wrapper {min-width: ${desktopStart}px!important;margin:auto;width:var(--brro-desktop--preview--width)!important;}
     `).appendTo("head");
     //
-    // Append a style tag to hold temporary calculations in the head
+    // Append a style tag for css in the head for preview width panel
     setTimeout(function() {
-        // Style inside the preview builder
-        $('#elementor-preview-iframe').contents().find('head').append('<style id="brro-variables-css-preview"></style><style id="brro-desktop-preview-width">root:{--brro-desktop--preview--width:100%;}</style>');
-        // Style for the editor
         $('head').append('<style type="text/css" id="brro-desktop-preview-width">.elementor-device-desktop #elementor-preview-responsive-wrapper {--brro-desktop--preview--width:100%;}</style>');
     }, 1000);
     //
@@ -149,7 +149,7 @@ jQuery(function($) {
             var parts = inputValue.trim().split(',').slice(1).map(Number); // ........Skip the first element ('md')
             var inputMin = Math.min.apply(null, parts);
             var inputMax = Math.max.apply(null, parts);
-            mdTrue = 'yes'; 
+            mdTrue = 'yes'; // ........Set a marker to remember range mobile to desktop
         } else {
             console.log('Error, wrong input. Script terminates.');
             return;
@@ -178,6 +178,8 @@ jQuery(function($) {
         //
         $input.trigger('focus');
         // 
+        //
+        //
         // SINGLE INPUT: Check if the input is a singular numeric string, and not empty
         if ( inputSingle !== undefined && inputSingle !== '' ) {
             // 
@@ -192,17 +194,30 @@ jQuery(function($) {
             outputMax = Math.round(outputMax).toString();
             // CSS clamp() output
             var clampSingleCSS = 'clamp(' + outputMin + 'px, ' + vwTarget + 'vw, ' + outputMax + 'px) /*' + inputSingle + 'px @ ' + screenRef + '*/';
+            var maxSingleCSS = 'max(' + outputMin + 'px, ' + vwTarget + 'vw) /*' + inputSingle + 'px @ ' + screenRef + '*/';
             // Set new value and trigger events to tell Elementor to update changes
-            $input.val(clampSingleCSS).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
+            // Exception for full fluidity, if desktopEnd === 0
+            if ( desktopEnd === 0 ) {
+                $input.val(maxSingleCSS).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
+            } else {
+                $input.val(clampSingleCSS).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
+            }
         //
-        // DOUBLE INPUT: Check if it is desktop only, for double input from mobile to desktop scaling calculation
+        //
+        //
+        // DOUBLE INPUT: Check if the input has a min and max value for scaling calculation
         } else if ( (inputMin !== undefined && inputMax !== undefined) ) {
             // Calculate singular calc() function for all screen sizes, by entering two ',' sep values in any order: 
             // var outputs based on screen
             // Desktop, scale from desktopStart to desktopRef
             if ($('body').hasClass('elementor-device-desktop') ) {
-                if ((mdTrue === 'yes')) {
-                    var varEnd = 'mobile-ref--desktop-ref';
+                if ( desktopRef !== desktopEnd) {
+                    $input.val('Invalid: desktopRef is unequal to desktopEnd').trigger('keydown').trigger('keyup').trigger('input').trigger('change');
+                    if (!$(this).hasClass('calcref')) {
+                        $(this).remove();
+                    }
+                    return;
+                } else if ((mdTrue === 'yes')) {
                     var growthRate = (inputMax - inputMin) / (desktopRef - mobileRef);
                     var vwTarget = growthRate * 100;
                     var baseValue = inputMin - (growthRate * mobileRef);
@@ -210,21 +225,14 @@ jQuery(function($) {
                     var outputMax = baseValue + ((desktopRef/100) * vwTarget);
                     var cssComment = ' /*' + inputMin + 'px @ ' + mobileRef + ' : ' + inputMax + 'px @ ' + desktopRef + '*/';
                 } else if (mdTrue !== 'yes') {
-                    var varEnd = 'desktop-start--desktop-ref';
                     var growthRate = (inputMax - inputMin) / (desktopRef - desktopStart);
-                    console.log(growthRate);
                     var vwTarget = growthRate * 100;
-                    console.log(vwTarget);
                     var baseValue = inputMin - (growthRate * desktopStart);
-                    console.log(baseValue);
                     var outputMin = baseValue + ((desktopStart/100) * vwTarget);
-                    console.log(outputMin);
                     var outputMax = baseValue + ((desktopRef/100) * vwTarget);
-                    console.log(outputMax);
                     var cssComment = ' /*' + inputMin + 'px @ ' + desktopStart + ' : ' + inputMax + 'px @ ' + desktopRef + '*/';
                 } 
             } else if ($('body').hasClass('elementor-device-tablet')) {
-                var varEnd = 'none';
                 var growthRate = (inputMax - inputMin) / (tabletEnd - tabletStart);
                 var vwTarget = growthRate * 100;
                 var baseValue = inputMin - (growthRate * tabletStart);
@@ -232,7 +240,6 @@ jQuery(function($) {
                 var outputMax = baseValue + ((tabletEnd/100) * vwTarget);
                 var cssComment = ' /*' + inputMin + 'px @ ' + tabletStart + ' : ' + inputMax + 'px @ ' + tabletEnd + '*/';
             } else if ($('body').hasClass('elementor-device-mobile')) {
-                var varEnd = 'none';
                 var growthRate = (inputMax - inputMin) / (mobileEnd - mobileRef);
                 var vwTarget = growthRate * 100;
                 var baseValue = inputMin - (growthRate * mobileRef);
@@ -240,16 +247,13 @@ jQuery(function($) {
                 var outputMax = baseValue + ((mobileEnd/100) * vwTarget);
                 var cssComment = ' /*' + inputMin + 'px @ ' + mobileRef + ' : ' + inputMax + 'px @ ' + mobileEnd + '*/';
             } else {
-                var varEnd = 'none';
                 var growthRate;
                 var vwTarget;
                 var baseValue;
                 var outputMin;
                 var outputMax;
+                $input.val('No device mode class detected in preview panel').trigger('keydown').trigger('keyup').trigger('input').trigger('change');
             }
-            // Additional for if @media query is used, when $desktop_ref < $desktop_end
-            var vwTargetQuery = (inputMax / desktopRef) * 100;
-            var outputMaxQuery = (desktopEnd / 100) * vwTargetQuery;
             //
             // Round to 2 decimal places only if the number is not a whole number
             growthRate = (growthRate % 1) ? growthRate.toFixed(2) : growthRate;
@@ -257,8 +261,6 @@ jQuery(function($) {
             baseValue = (baseValue % 1) ? baseValue.toFixed(2) : baseValue;
             outputMin = Math.round(outputMin).toString();
             outputMax = Math.round(outputMax).toString();
-            vwTargetQuery = (vwTargetQuery % 1) ? vwTargetQuery.toFixed(2) : vwTargetQuery;
-            outputMaxQuery = Math.round(outputMaxQuery).toString();
             // 
             // CSS output
             //
@@ -268,14 +270,9 @@ jQuery(function($) {
             } else {
                 var clampMinMaxCSS = 'clamp('+ outputMin + 'px, calc(' + vwTarget + 'vw + ' + baseValue + 'px), ' + outputMax + 'px)' + cssComment;
             } 
-            var tempStyleQueryOutput = 'min(' + vwTargetQuery + 'vw, ' + outputMaxQuery + 'px) /* max @ w' + desktopEnd + ' */';
-            // variable if screen end is larger than screen ref
-            if ( $('body').hasClass('elementor-device-desktop') && (desktopRef < desktopEnd) ) {
-                var cssOutput = 'var(--range--' + inputMin + 'px--' + inputMax + 'px--' + varEnd + ')';
-                var rootRangeVarCSS = '--range--' + inputMin + 'px--' + inputMax + 'px--' + varEnd + ':';
-            } else {
-                var cssOutput = clampMinMaxCSS;
-            }
+            // Final calculated input
+            var cssOutput = clampMinMaxCSS;
+            // Input and apply to field
             $input.val(cssOutput).trigger('keydown').trigger('keyup').trigger('input').trigger('change'); 
         // Error message fallback
         } else {
@@ -286,19 +283,5 @@ jQuery(function($) {
         if (!$(this).hasClass('calcref')) {
             $(this).remove();
         }
-        //
-        //
-        // Add temporary var() css definitions into the <head><style id="brro-variables-css-preview"></style><head> 
-        var newCssContent = '';
-        // For Double input var
-        if ( (inputMin !== undefined && inputMax !== undefined) && (desktopRef < desktopEnd) && varEnd !== 'none' ) {
-            newCssContent = ':root {' + rootRangeVarCSS + clampMinMaxCSS + '; }';
-            if (desktopRef < desktopEnd) {
-                var queryMin = desktopRef + 1;
-                var newCssContentMediaQuery = '@media (min-width:' + queryMin + 'px) {:root {' + rootRangeVarCSS + tempStyleQueryOutput + '; }}';
-            }   
-            newCssContent = newCssContent + newCssContentMediaQuery;
-        }
-        $('#elementor-preview-iframe').contents().find('#brro-variables-css-preview').append(newCssContent);
     });
 });

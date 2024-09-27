@@ -106,6 +106,7 @@ function brro_plugin_settings_page() {
                                 <option value="1440" <?php selected('1440', get_option('brro_desktop_end')); ?>>1440</option>
                                 <option value="1600" <?php selected('1600', get_option('brro_desktop_end')); ?>>1600</option>
                                 <option value="1920" <?php selected('1920', get_option('brro_desktop_end')); ?>>1920</option>
+                                <option value="0" <?php selected('0', get_option('brro_desktop_end')); ?>>0: open-ended scaling</option>
                             </select>
                         </td>
                     </tr>
