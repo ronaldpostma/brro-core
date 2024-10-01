@@ -69,7 +69,7 @@ jQuery(function($) {
     });
     //
     // Removing input when switching away from "Desktop" mode
-    $(document).on('click', '.MuiAppBar-root div[aria-label="Switch Device"] button:not([aria-label="Desktop"]), #elementor-panel .elementor-responsive-switcher:not(.elementor-responsive-switcher-desktop)', function() {
+    $(document).on('click', '.MuiAppBar-root button:not([aria-label="Desktop"]), #elementor-panel .elementor-responsive-switcher:not(.elementor-responsive-switcher-desktop)', function() {
         $('#brro-desktop-preview').remove(); // Remove the input
     });
     //
