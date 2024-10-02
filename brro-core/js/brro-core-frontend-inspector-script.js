@@ -4,13 +4,13 @@ jQuery(function ($) {
         // 1. Function to update the viewport width
         function updateDevScreenWidth() {
             $('.viewport-width').remove(); // 1.1 Remove existing viewport width display
-            devScreenWidth = $('body').width(); // 1.2 Get the current width of the body
+            devScreenWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0); // 1.2 Get the current width of the browser window
             console.log('Updated devScreenWidth:', devScreenWidth); // 1.3 Log the updated width
             $('.inspector-container').append('<div class="viewport-width">' + devScreenWidth + 'px</div>'); // 1.4 Display the new width
         }
         // 1.1 Initial viewport width setup
-        var devScreenWidth = $('body').width(); 
-        console.log('Initial devScreenWidth:', devScreenWidth); 
+        var devScreenWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        console.log('Initial window devScreenWidth:', devScreenWidth); 
         // 1.2 Attach resize event handler to update width
         $(window).on('resize', updateDevScreenWidth); 
         // 1.3 Observe body for size changes
