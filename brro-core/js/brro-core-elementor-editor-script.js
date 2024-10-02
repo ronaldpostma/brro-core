@@ -197,7 +197,7 @@ jQuery(function($) {
             var maxSingleCSS = 'max(' + outputMin + 'px, ' + vwTarget + 'vw) /*' + inputSingle + 'px @ ' + screenRef + '*/';
             // Set new value and trigger events to tell Elementor to update changes
             // Exception for full fluidity, if desktopEnd === 0
-            if ( desktopEnd === 0 ) {
+            if ( $('body').hasClass('elementor-device-desktop') && desktopEnd === 0 ) {
                 $input.val(maxSingleCSS).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
             } else {
                 $input.val(clampSingleCSS).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
