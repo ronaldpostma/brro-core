@@ -170,7 +170,7 @@ add_filter('plugin_row_meta', 'brro_plugin_row_meta', 10, 2);
 function brro_plugin_row_meta($links, $file) {
     if ($file == plugin_basename(__FILE__)) {
         $new_links = array(
-            '<a href="https://github.com/ronaldpostma/brro-core/compare/4be88b938d98ab5572d5c37b401e32fc146c5f22...main" target="_blank">' . __('View changes', 'brro-core') . '</a>',
+            '<a href="https://github.com/ronaldpostma/brro-core/releases" target="_blank">' . __('View changes', 'brro-core') . '</a>',
         );
         $links = array_merge($links, $new_links);
     }
