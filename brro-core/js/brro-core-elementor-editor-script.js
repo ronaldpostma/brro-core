@@ -90,7 +90,7 @@ jQuery(function($) {
         $('#input-repeater input').val(newValue);
     });
     //
-    // Print to input repeater when value is double clicked
+    // Print to input repeater when value is double clicked twice in 800ms
     var clickCount = 0; // Initialize click count
     var clickTimer = null; // Initialize timer
     $('#elementor-panel').on('click', 'input[type="text"]', function() {
@@ -135,21 +135,24 @@ jQuery(function($) {
         var outputMin;
         var outputMax;
         var inputSingle;
-        var mdTrue;
-        // convert-button: Check if inputValue is a continuous string (no spaces, no commas, etc.)
-        if ($.isNumeric(inputValue) && /^\d+$/.test(inputValue)) { //.................................IF SINGLE INPUT
-            var inputSingle = inputValue;
-        // convert-button: Check if inputValue is a two-part string, separated by a comma
-        } else if (/^\d+,\d+$/.test(inputValue.trim())) { //..........................................IF RANGE INPUT
+        var inputOne;
+        var inputTwo;
+        var mdTrue = false;
+        var negativeNr = false;
+        // convert-button: Check if inputValue is a numeric string (including negative numbers)
+        if ($.isNumeric(inputValue) && /^-?\d+(\.\d+)?$/.test(inputValue)) { //.................................IF SINGLE INPUT
+            inputSingle = inputValue;
+            if (parseFloat(inputValue) < 0) {
+                negativeNr = true;
+            }
+        // convert-button: Check if inputValue is a two-part string, possibly with negative numbers, separated by a comma
+        } else if ( /^-?\d+,-?\d+$/.test(inputValue.trim()) || /^md,-?\d+,-?\d+$/.test(inputValue.trim()) ) { //..........................................IF RANGE INPUT
             var parts = inputValue.trim().split(',').map(Number);
-            var inputMin = Math.min.apply(null, parts);
-            var inputMax = Math.max.apply(null, parts);
-        // convert-button: Check if inputValue is a three-part string, separated by a comma
-        } else if (/^md,\d+,\d+$/.test(inputValue.trim())) { //.......................................IF RANGE INPUT md,##,## mobile to desktop
-            var parts = inputValue.trim().split(',').slice(1).map(Number); // ........Skip the first element ('md')
-            var inputMin = Math.min.apply(null, parts);
-            var inputMax = Math.max.apply(null, parts);
-            mdTrue = 'yes'; // ........Set a marker to remember range mobile to desktop
+            inputOne = parts[0];
+            inputTwo = parts[1];
+            if (inputValue.includes('md')) {
+                mdTrue = true;
+            }
         } else {
             console.log('Error, wrong input. Script terminates.');
             return;
@@ -186,15 +189,15 @@ jQuery(function($) {
             // Calculate the scaling target in vw
             var vwTarget = (inputSingle / screenRef) * 100;
             // Calculate the minimum value based on vw and minimum screen size for this device
-            var outputMin = (screenStart / 100) * vwTarget;
-            var outputMax = (screenEnd / 100) * vwTarget;
+            outputMin = (screenStart / 100) * vwTarget;
+            outputMax = (screenEnd / 100) * vwTarget;
             // Round results, vwTarget 2 decimals, outputMin to nearest integer
             vwTarget = (vwTarget % 1) ? vwTarget.toFixed(2) : vwTarget;
             outputMin = Math.round(outputMin).toString(); 
             outputMax = Math.round(outputMax).toString();
             // CSS clamp() output
-            var clampSingleCSS = 'clamp(' + outputMin + 'px, ' + vwTarget + 'vw, ' + outputMax + 'px) /*' + inputSingle + 'px @ ' + screenRef + '*/';
-            var maxSingleCSS = 'max(' + outputMin + 'px, ' + vwTarget + 'vw) /*' + inputSingle + 'px @ ' + screenRef + '*/';
+            var clampSingleCSS = 'clamp(' + (negativeNr ? outputMax : outputMin) + 'px, ' + vwTarget + 'vw, ' + (negativeNr ? outputMin : outputMax) + 'px) /*' + inputSingle + 'px @ ' + screenRef + '*/';
+            var maxSingleCSS = 'max(' + (negativeNr ? outputMax : outputMin) + 'px, ' + vwTarget + 'vw) /*' + inputSingle + 'px @ ' + screenRef + '*/';
             // Set new value and trigger events to tell Elementor to update changes
             // Exception for full fluidity, if desktopEnd === 0
             if ( $('body').hasClass('elementor-device-desktop') && desktopEnd === 0 ) {
@@ -206,7 +209,7 @@ jQuery(function($) {
         //
         //
         // DOUBLE INPUT: Check if the input has a min and max value for scaling calculation
-        } else if ( (inputMin !== undefined && inputMax !== undefined) ) {
+        } else if ( (inputOne !== undefined && inputTwo !== undefined) ) {
             // Calculate singular calc() function for all screen sizes, by entering two ',' sep values in any order: 
             // var outputs based on screen
             // Desktop, scale from desktopStart to desktopRef
@@ -217,59 +220,43 @@ jQuery(function($) {
                         $(this).remove();
                     }
                     return;
-                } else if ((mdTrue === 'yes')) {
-                    var growthRate = (inputMax - inputMin) / (desktopRef - mobileRef);
+                } else if (mdTrue) {
+                    var growthRate = (inputTwo - inputOne) / (desktopRef - mobileRef);
                     var vwTarget = growthRate * 100;
-                    var baseValue = inputMin - (growthRate * mobileRef);
-                    var outputMin = baseValue + ((mobileStart/100) * vwTarget);
-                    var outputMax = baseValue + ((desktopRef/100) * vwTarget);
-                    var cssComment = ' /*' + inputMin + 'px @ ' + mobileRef + ' : ' + inputMax + 'px @ ' + desktopRef + '*/';
-                } else if (mdTrue !== 'yes') {
-                    var growthRate = (inputMax - inputMin) / (desktopRef - desktopStart);
+                    var baseValue = inputOne - (growthRate * mobileRef);
+                    var cssComment = ' /*' + inputOne + 'px @ ' + mobileRef + ' : ' + inputTwo + 'px @ ' + desktopRef + '*/';
+                } else {
+                    var growthRate = (inputTwo - inputOne) / (desktopRef - desktopStart);
                     var vwTarget = growthRate * 100;
-                    var baseValue = inputMin - (growthRate * desktopStart);
-                    var outputMin = baseValue + ((desktopStart/100) * vwTarget);
-                    var outputMax = baseValue + ((desktopRef/100) * vwTarget);
-                    var cssComment = ' /*' + inputMin + 'px @ ' + desktopStart + ' : ' + inputMax + 'px @ ' + desktopRef + '*/';
+                    var baseValue = inputOne - (growthRate * desktopStart);
+                    var cssComment = ' /*' + inputOne + 'px @ ' + desktopStart + ' : ' + inputTwo + 'px @ ' + desktopRef + '*/';
                 } 
             } else if ($('body').hasClass('elementor-device-tablet')) {
-                var growthRate = (inputMax - inputMin) / (tabletEnd - tabletStart);
+                var growthRate = (inputTwo - inputOne) / (tabletEnd - tabletStart);
                 var vwTarget = growthRate * 100;
-                var baseValue = inputMin - (growthRate * tabletStart);
-                var outputMin = baseValue + ((tabletStart/100) * vwTarget);
-                var outputMax = baseValue + ((tabletEnd/100) * vwTarget);
-                var cssComment = ' /*' + inputMin + 'px @ ' + tabletStart + ' : ' + inputMax + 'px @ ' + tabletEnd + '*/';
+                var baseValue = inputOne - (growthRate * tabletStart);
+                var cssComment = ' /*' + inputOne + 'px @ ' + tabletStart + ' : ' + inputTwo + 'px @ ' + tabletEnd + '*/';
             } else if ($('body').hasClass('elementor-device-mobile')) {
-                var growthRate = (inputMax - inputMin) / (mobileEnd - mobileRef);
+                var growthRate = (inputTwo - inputOne) / (mobileEnd - mobileRef);
                 var vwTarget = growthRate * 100;
-                var baseValue = inputMin - (growthRate * mobileRef);
-                var outputMin = baseValue + ((mobileStart/100) * vwTarget);
-                var outputMax = baseValue + ((mobileEnd/100) * vwTarget);
-                var cssComment = ' /*' + inputMin + 'px @ ' + mobileRef + ' : ' + inputMax + 'px @ ' + mobileEnd + '*/';
+                var baseValue = inputOne - (growthRate * mobileRef);
+                var cssComment = ' /*' + inputOne + 'px @ ' + mobileRef + ' : ' + inputTwo + 'px @ ' + mobileEnd + '*/';
             } else {
-                var growthRate;
-                var vwTarget;
-                var baseValue;
-                var outputMin;
-                var outputMax;
                 $input.val('No device mode class detected in preview panel').trigger('keydown').trigger('keyup').trigger('input').trigger('change');
+                return;
             }
             //
             // Round to 2 decimal places only if the number is not a whole number
             growthRate = (growthRate % 1) ? growthRate.toFixed(2) : growthRate;
             vwTarget = (vwTarget % 1) ? vwTarget.toFixed(2) : vwTarget;
             baseValue = (baseValue % 1) ? baseValue.toFixed(2) : baseValue;
-            outputMin = Math.round(outputMin).toString();
-            outputMax = Math.round(outputMax).toString();
+            outputMin = Math.min(inputOne, inputTwo);
+            outputMax = Math.max(inputOne, inputTwo);
             // 
             // CSS output
             //
-            if (baseValue < 0) {
-                baseValue = Math.abs(baseValue);
-                var clampMinMaxCSS = 'clamp('+ outputMin + 'px, calc(' + vwTarget + 'vw - ' + baseValue + 'px), ' + outputMax + 'px)' + cssComment;
-            } else {
-                var clampMinMaxCSS = 'clamp('+ outputMin + 'px, calc(' + vwTarget + 'vw + ' + baseValue + 'px), ' + outputMax + 'px)' + cssComment;
-            } 
+            baseValue = (baseValue < 0) ? '- ' + Math.abs(baseValue) : '+ ' + baseValue;
+            var clampMinMaxCSS = 'clamp('+ outputMin + 'px, calc(' + vwTarget + 'vw ' + baseValue + 'px), ' + outputMax + 'px)' + cssComment;
             // Final calculated input
             var cssOutput = clampMinMaxCSS;
             // Input and apply to field
