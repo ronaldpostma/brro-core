@@ -66,17 +66,29 @@ add_action('get_header', 'brro_admin_redirect');
 function brro_admin_redirect() {
     // Check if the private mode is enabled
     $private_mode = get_option('brro_private_mode', 0);
+    $private_mode_redirect = get_option('brro_private_mode_redirect', home_url('wp-login.php'));
+    $private_redirect_exceptions = get_option('brro_private_redirect_exceptions', '');
+    $exceptions = array_filter(array_map('trim', explode("\n", $private_redirect_exceptions)));
+
+    $uri = $_SERVER['REQUEST_URI'];
+    if (in_array($uri, $exceptions)) {
+        return; // Bypass further checks if the URI is in the exceptions list
+    }
     if ($private_mode == 1) {
         // If user is logged in, no action is needed
         if (is_user_logged_in()) {
             return;
         }
-        // Check if the preview access cookie is set and is true
-        if (isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] == 'true') {
-            return; // Bypass further checks if the cookie is valid
-        }
         $uri = $_SERVER['REQUEST_URI'];
         $preview_regex = '/\/preview\/?$/';
+        // Check if the preview access cookie is set and is true
+        if (isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] == 'true') {
+            if (preg_match($preview_regex, $uri)) {
+                wp_redirect(home_url());
+                exit; // Redirect to home page if the cookie is valid and the URL contains 'preview'
+            }
+            return; // Bypass further checks if the cookie is valid
+        }
         // Allow temporary login link redirect to preview site
         if (preg_match($preview_regex, $uri)) {
             // Set a cookie to indicate preview access that expires in 2 hours
@@ -85,7 +97,11 @@ function brro_admin_redirect() {
             exit; // Bypass further checks
         } else {
             // Redirect to the login page if not logged in and not accessing a preview URL
-            wp_redirect(home_url('wp-login.php'));
+            if (!empty($private_mode_redirect)) {
+                wp_redirect($private_mode_redirect);
+            } else {
+                wp_redirect(home_url('wp-login.php'));
+            }
             exit;
         }
     }

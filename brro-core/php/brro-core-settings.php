@@ -75,7 +75,11 @@ function brro_plugin_settings_page() {
                 <label>
                     <input type="radio" name="brro_private_mode" value="0" <?php checked(0, $private_mode); ?>>
                     Open publicly
-                </label>
+                </label><br><br>
+                <label for="brro_private_mode_redirect">Redirect URL:</label><br>
+                    <input type="text" name="brro_private_mode_redirect" id="brro_private_mode_redirect" value="<?php echo esc_url(get_option('brro_private_mode_redirect', home_url('/wp-login.php'))); ?>"><br><br>
+                <label for="brro_private_redirect_exceptions">Enter URLs, one per line:</label><br>
+                    <textarea name="brro_private_redirect_exceptions" id="brro_private_redirect_exceptions" rows="5" cols="50"><?php echo esc_textarea(get_option('brro_private_redirect_exceptions')); ?></textarea>
             </fieldset>
         <!-- Form with Screensize references -->
             <h3 style="margin:40px 0 0 0;">Screen Size References</h3>
@@ -277,6 +281,8 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_login_logoheight');
     // wp private mode
     register_setting('brro-plugin-settings-group', 'brro_private_mode');
+    register_setting('brro-plugin-settings-group', 'brro_private_redirect_exceptions');
+    register_setting('brro-plugin-settings-group', 'brro_private_mode_redirect');
     // register comments settings
     register_setting('brro-plugin-settings-group', 'brro_xmlrpc_off');
     register_setting('brro-plugin-settings-group', 'brro_comments_off');
