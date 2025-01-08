@@ -66,43 +66,49 @@ add_action('get_header', 'brro_admin_redirect');
 function brro_admin_redirect() {
     // Check if the private mode is enabled
     $private_mode = get_option('brro_private_mode', 0);
-    $private_mode_redirect = get_option('brro_private_mode_redirect', home_url('wp-login.php'));
+    if ($private_mode == 0) {return;}
+    $private_mode_redirect = trailingslashit(get_option('brro_private_mode_redirect', home_url('wp-login.php')));
     $private_redirect_exceptions = get_option('brro_private_redirect_exceptions', '');
     $exceptions = array_filter(array_map('trim', explode("\n", $private_redirect_exceptions)));
-
-    $uri = $_SERVER['REQUEST_URI'];
-    if (in_array($uri, $exceptions)) {
-        return; // Bypass further checks if the URI is in the exceptions list
+    // Ensure all exceptions have a trailing slash
+    $exceptions = array_map('trailingslashit', $exceptions);
+    $uri = trailingslashit(esc_url_raw($_SERVER['REQUEST_URI']));
+    $is_preview_uri = preg_match('/\/preview\/?$/', $uri);
+    $has_preview_access = isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] == 'true';
+    $headers_not_sent = !headers_sent();
+    // Bypass further checks if the URI is in the exceptions list or is the same as the private mode redirect
+	if (in_array($uri, $exceptions) || $uri == $private_mode_redirect) {
+        return; 
     }
     if ($private_mode == 1) {
         // If user is logged in, no action is needed
         if (is_user_logged_in()) {
             return;
         }
-        $uri = $_SERVER['REQUEST_URI'];
-        $preview_regex = '/\/preview\/?$/';
         // Check if the preview access cookie is set and is true
-        if (isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] == 'true') {
-            if (preg_match($preview_regex, $uri)) {
-                wp_redirect(home_url());
+        if ($has_preview_access) {
+            if ($is_preview_uri && $headers_not_sent) {
+                wp_safe_redirect(home_url());
                 exit; // Redirect to home page if the cookie is valid and the URL contains 'preview'
             }
             return; // Bypass further checks if the cookie is valid
         }
         // Allow temporary login link redirect to preview site
-        if (preg_match($preview_regex, $uri)) {
-            // Set a cookie to indicate preview access that expires in 2 hours
-            setcookie('preview_access', 'true', time() + 7200, COOKIEPATH, COOKIE_DOMAIN);
-            wp_redirect(home_url());
-            exit; // Bypass further checks
-        } else {
-            // Redirect to the login page if not logged in and not accessing a preview URL
-            if (!empty($private_mode_redirect)) {
-                wp_redirect($private_mode_redirect);
-            } else {
-                wp_redirect(home_url('wp-login.php'));
+        if ($is_preview_uri) {
+            if (!isset($_COOKIE['preview_access']) && $headers_not_sent) {
+                // Set a cookie to indicate preview access that expires in 2 hours
+                setcookie('preview_access', 'true', time() + 7200, COOKIEPATH, COOKIE_DOMAIN);
             }
-            exit;
+            if ($headers_not_sent) {
+                wp_safe_redirect(home_url());
+                exit; // Bypass further checks
+            }
+        } else {
+            // Redirect to the redirect page if not logged in and not accessing a preview URL
+            if ($headers_not_sent) {
+                wp_safe_redirect(!empty($private_mode_redirect) ? $private_mode_redirect : home_url('wp-login.php'));
+                exit;
+            }
         }
     }
 }
