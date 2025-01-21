@@ -40,7 +40,7 @@ Global core functions for all sites developed by Brro and development tools used
 Project specific functions should be placed in <a href="https://github.com/ronaldpostma/brro-project" target="_blank">brro-project</a>.
 
 # 4. Development next steps
-1. Add to settings `Brro Debugging` something like `define('BRRO_DEBUG', true);` and set to false in production
+1. / none at the moment
 
 # 5. License
 This project is licensed under the MIT License - see the LICENSE file for details.
