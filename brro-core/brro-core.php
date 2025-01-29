@@ -153,7 +153,7 @@ function brro_check_for_plugin_update($checked_data) {
 }
 add_filter('pre_set_site_transient_update_plugins', 'brro_check_for_plugin_update');
 function brro_get_plugin_update_info() {
-    $update_info_url = 'https://base.brro.nl/git-webhook/brro-plugin-info.json';
+    $update_info_url = 'https://www.brro.nl/git-webhook/brro-plugin-info.json';
     $response = wp_remote_get($update_info_url);
     if (is_wp_error($response)) {
         return false; // Bail early on request error
