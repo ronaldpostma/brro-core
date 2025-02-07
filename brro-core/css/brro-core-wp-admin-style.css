@@ -51,6 +51,11 @@ li.wp-menu-separator {
     justify-content: start;
 }
 
+/* Tekst uitleg bij 'samenvatting */
+textarea#excerpt + p:not(.cust-excerpt) {
+    font-size: 0px !important;
+}
+
 /* link select ACF */
 body:not(.post-type-locateandfiltermap) .select2-container .select2-selection--single {
     width: auto !important;
