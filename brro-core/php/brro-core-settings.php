@@ -239,7 +239,7 @@ function brro_plugin_settings_page() {
         </div>
         <!-- Website help dashboard button url -->
             <fieldset style="max-width:420px;">
-                <h3 style="margin:40px 0 16px 0;">Brro.nl HELP login URL</h3>
+                <h3 style="margin:40px 0 16px 0;">Custom URL @ top of admin side menu</h3>
                 <label for="brro_client_help_url">URL:</label>
                 <input style="float: right;" type="text" name="brro_client_help_url" value="<?php echo esc_attr(get_option('brro_client_help_url', 'https://www.brro.nl/contact')); ?>">
                 <br><br>      
