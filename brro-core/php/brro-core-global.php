@@ -36,14 +36,18 @@ function brro_wp_css_body_class( $classes ){
     if (current_user_can('administrator')){
         $classes[] = 'webadmin';  
     }
-    // Check if the current page has a parent
+    // Check if the current page is hierarchical and determine if it's a child or parent
     if ( $post = get_post() ) {
-        if ( $post->post_parent ) {
-            // Add 'child' class if the current page has a parent
-            $classes[] = 'child';
+        if ( is_post_type_hierarchical( $post->post_type ) ) {
+            if ( $post->post_parent ) {
+                // Add 'child' class if the current hierarchical post has a parent
+                $classes[] = 'child';
+            } else {
+                // Add 'parent' class if the current hierarchical post doesn't have a parent
+                $classes[] = 'parent';
+            }
         } else {
-            // Add 'parent' class if the current page doesn't have a parent
-            $classes[] = 'parent';
+            $classes[] = 'not-hierarchical';
         }
     }
     // Check if the current post has a featured image
