@@ -1,6 +1,6 @@
 <?php
 /*
-Function Index for brro-webdev-admin.php:
+Function Index for brro-core-admin.php:
 1. brro_add_wplogin_css
    - Adds custom CSS to the WordPress login page based on dynamic settings.
 2. brro_admin_redirect
@@ -13,8 +13,12 @@ Function Index for brro-webdev-admin.php:
    - Customizes the admin menu by removing default separators and adding custom items.
 6. brro_custom_admin_menu_order
    - Reorders the admin menu items based on a specified custom order.
-7. brro_disable_xmlrpc_comments
+7. brro_css_calc_popup_handler
+   - Renders the chromeless CSS calculator (AJAX, admins only).
+8. brro_disable_xmlrpc_comments
    - Disables XML-RPC and comments site-wide based on settings.
+9. brro_remove_comments
+   - Removes comment UIs and disables comment supports in admin.
 */
 //
 // ******************************************************************************************************************************************************
@@ -43,21 +47,6 @@ function brro_add_wplogin_css() {
         ";
     // Outputting the CSS
     echo '<style>' . $custom_login_css . '</style>';
-    ?>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script>
-        jQuery(function($) {
-            return;
-            $('div#login:not(.showlogin)').css('cursor','pointer');
-            $(document).on('click', 'div#login:not(.showlogin)', function() {
-                $('#nav, #backtoblog, #loginform').slideToggle('slow');
-                $('.password-input').removeAttr('disabled');
-                $('div#login').addClass('showlogin');
-                $('div#login.showlogin').css('cursor','default');
-            });
-        }); 
-    </script>    
-    <?php
 }
 //
 // ******************************************************************************************************************************************************
@@ -68,17 +57,24 @@ function brro_admin_redirect() {
     // Check if the private mode is enabled
     $private_mode = get_option('brro_private_mode', 0);
     if ($private_mode == 0) {return;}
-    $private_mode_redirect = trailingslashit(get_option('brro_private_mode_redirect', home_url('wp-login.php')));
+    $private_mode_redirect_url = get_option('brro_private_mode_redirect', home_url('wp-login.php'));
+    $private_mode_redirect = trailingslashit($private_mode_redirect_url);
     $private_redirect_exceptions = get_option('brro_private_redirect_exceptions', '');
     $exceptions = array_filter(array_map('trim', explode("\n", $private_redirect_exceptions)));
-    // Ensure all exceptions have a trailing slash
-    $exceptions = array_map('trailingslashit', $exceptions);
-    $uri = trailingslashit(esc_url_raw($_SERVER['REQUEST_URI']));
-    $is_preview_uri = preg_match('/\/preview\/?$/', $uri);
+    // Normalize exceptions to path-only and ensure trailing slash
+    $exception_paths = array_map(function($url){
+        $path = parse_url($url, PHP_URL_PATH);
+        return trailingslashit($path ? $path : '/');
+    }, $exceptions);
+    // Normalize current request path
+    $uri_raw = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+    $uri_path = trailingslashit(parse_url($uri_raw, PHP_URL_PATH) ?: '/');
+    $is_preview_uri = preg_match('/\/preview\/?$/', $uri_path);
     $has_preview_access = isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] == 'true';
     $headers_not_sent = !headers_sent();
     // Bypass further checks if the URI is in the exceptions list or is the same as the private mode redirect
-	if (in_array($uri, $exceptions) || $uri == $private_mode_redirect) {
+    $redirect_path = trailingslashit(parse_url($private_mode_redirect, PHP_URL_PATH) ?: '/');
+    if (in_array($uri_path, $exception_paths, true) || $uri_path === $redirect_path) {
         return; 
     }
     if ($private_mode == 1) {
@@ -98,7 +94,14 @@ function brro_admin_redirect() {
         if ($is_preview_uri) {
             if (!isset($_COOKIE['preview_access']) && $headers_not_sent) {
                 // Set a cookie to indicate preview access that expires in 2 hours
-                setcookie('preview_access', 'true', time() + 7200, COOKIEPATH, COOKIE_DOMAIN);
+                setcookie('preview_access', 'true', array(
+                    'expires' => time() + 7200,
+                    'path' => COOKIEPATH,
+                    'domain' => COOKIE_DOMAIN,
+                    'secure' => is_ssl(),
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ));
             }
             if ($headers_not_sent) {
                 wp_safe_redirect(home_url());
