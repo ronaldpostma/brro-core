@@ -1,6 +1,6 @@
 <?php
 /*
-Function Index for brro-webdev-global.php:
+Function Index for brro-core-global.php:
 1. brro_wp_css_body_class
    - Adds custom classes to the body tag based on user roles and page properties.
 2. brro_add_post_id_admin_body_class
@@ -15,7 +15,8 @@ Function Index for brro-webdev-global.php:
    - Hooks into post meta updates to clear cached ACF field values.
 7. brro_navburger_shortcode
    - Generates a customizable navigation burger icon via a shortcode.
-8. - brro_allow_page_excerpt
+8. brro_allow_page_excerpt
+   - Enables excerpts on the 'page' post type for SEO descriptions.
 */
 //
 // ******************************************************************************************************************************************************************
@@ -59,18 +60,25 @@ function brro_wp_css_body_class( $classes ){
 // Add body class backend
 add_filter('admin_body_class', 'brro_add_post_id_admin_body_class');
 function brro_add_post_id_admin_body_class($classes) {
-    // Check if we are on a post edit screen
-    if (is_admin() && get_current_screen()->base == 'post' && get_current_screen()->id != 'edit-post') {
-        // Get the current post ID
-        $post_id = get_the_ID();
-        $post_type = get_post_type($post_id);
-        if ($post_id) {
-            // Add post ID to the body class
-            $classes .= ' post-id-' . $post_id;
-        }
-        if ($post_type) {
-            $classes .= ' post-type-' . $post_type;
-        }
+    // Check if we are on a post edit screen robustly
+    if (!is_admin() || !function_exists('get_current_screen')) {
+        return $classes;
+    }
+    $screen = get_current_screen();
+    if (!is_object($screen) || $screen->base !== 'post' || $screen->id === 'edit-post') {
+        return $classes;
+    }
+    // Get the current post ID (fallback to request if needed)
+    $post_id = get_the_ID();
+    if (empty($post_id) && isset($_GET['post'])) {
+        $post_id = (int) $_GET['post'];
+    }
+    $post_type = $post_id ? get_post_type($post_id) : '';
+    if ($post_id) {
+        $classes .= ' post-id-' . $post_id;
+    }
+    if (!empty($post_type)) {
+        $classes .= ' post-type-' . $post_type;
     }
     return $classes;
 }
@@ -113,8 +121,10 @@ function brro_acf_content_shortcode($atts) {
     }
     // Check if the ACF field value is not empty or false
     if (!empty($acfValue)) {
-        // Concatenate the before string, ACF field value, and after string
-        $output = $attributes['before'] . $acfValue . $attributes['after'];
+        // Concatenate the before string, ACF field value, and after string safely
+        $before = is_string($attributes['before']) ? wp_kses_post($attributes['before']) : '';
+        $after = is_string($attributes['after']) ? wp_kses_post($attributes['after']) : '';
+        $output = $before . $acfValue . $after;
     } else {
         // If ACF field is empty or not found, return an empty string or a default message
         $output = '';  // Or use a default message like "ACF field not found."
@@ -156,8 +166,14 @@ function brro_navburger_shortcode($atts) {
     $attributes = shortcode_atts(array(
         'style' => '',
     ), $atts);
-    // Explode the 'style' string into an array based on spaces
-    $style = explode(' ', $attributes['style']);
+    // Explode the 'style' string into an array and sanitize parts
+    $style = array_map('trim', explode(' ', $attributes['style']));
+    $w = esc_attr($style[0]);
+    $h = esc_attr($style[1]);
+    $bar_h = esc_attr($style[2]);
+    $bar_r = esc_attr($style[3]);
+    $color = esc_attr($style[4]);
+    $color_hover = esc_attr($style[5]);
     // Check if all necessary parameters are provided
     if (count($style) < 6) {
         return 'Wrong parameters for shortcode [navburger]. Example usage: [navburger style="60px 40px 8px 3px red green"]';
@@ -176,18 +192,18 @@ function brro_navburger_shortcode($atts) {
         });
         </script>";
     echo "<style>
-        #nav-icon .bar {width: 100%; height: {$style[2]}; border-radius: {$style[3]}; background-color: {$style[4]};transition:transform 300ms ease, opacity 300ms ease, background-color 300ms ease;}
-        #nav-icon.open .bar,#nav-icon:hover .bar {background-color: {$style[5]};}
-        #nav-icon:not(.open):hover .bar.three {transform: translateY(calc(.25 * {$style[2]}));}
-        #nav-icon:not(.open):hover .bar.one {transform: translateY(calc(0px - (.25 * {$style[2]})));}
+        #nav-icon .bar {width: 100%; height: {$bar_h}; border-radius: {$bar_r}; background-color: {$color};transition:transform 300ms ease, opacity 300ms ease, background-color 300ms ease;}
+        #nav-icon.open .bar,#nav-icon:hover .bar {background-color: {$color_hover};}
+        #nav-icon:not(.open):hover .bar.three {transform: translateY(calc(.25 * {$bar_h}));}
+        #nav-icon:not(.open):hover .bar.one {transform: translateY(calc(0px - (.25 * {$bar_h})));}
         .bar.one {align-self:flex-start;}
         .bar.three {align-self:flex-end;}
         #nav-icon.open .bar.two {transform: rotate(45deg);}
-        #nav-icon.open .bar.one {transform: translateY(calc(({$style[1]} - (3 * {$style[2]})) / 2 + {$style[2]})) rotate(-45deg);}
-        #nav-icon.open:not(:hover) .bar.one,#nav-icon.open:not(:hover) .bar.two {background-color: {$style[4]};}
+        #nav-icon.open .bar.one {transform: translateY(calc(({$h} - (3 * {$bar_h})) / 2 + {$bar_h})) rotate(-45deg);}
+        #nav-icon.open:not(:hover) .bar.one,#nav-icon.open:not(:hover) .bar.two {background-color: {$color};}
         #nav-icon.open .bar.three {opacity:0;} 
         </style>";
-    echo '<div id="nav-icon" style="width:'.$style[0].';height:'.$style[1].';position:relative;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;"><span class="bar one"></span><span class="bar two"></span><span class="bar three"></span></div>';
+    echo '<div id="nav-icon" style="width:'.$w.';height:'.$h.';position:relative;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;"><span class="bar one"></span><span class="bar two"></span><span class="bar three"></span></div>';
     echo '</div>';
     // Return the buffered content
     return ob_get_clean();
