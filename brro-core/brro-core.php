@@ -46,6 +46,27 @@ function brro_enqueue_script_elementor_editor() {
     }
 }
 //
+// Load script and popout window for responsive CSS calculator
+add_action( 'admin_enqueue_scripts', 'brro_enqueue_script_css_calculator' );
+function brro_enqueue_script_css_calculator() {
+    $developer_mode = get_option('brro_developer_mode', 0);
+    if ($developer_mode == 1 && is_user_logged_in() ) {
+        wp_enqueue_script( 'brro-core-css-calculator-script', plugins_url( '/js/brro-core-css-calculator-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
+        // Localize script with data from your settings
+        $script_data = array(
+            'desktopEnd' => get_option('brro_desktop_end'),
+            'desktopRef' => get_option('brro_desktop_ref'),
+            'desktopStart' => get_option('brro_desktop_start'),
+            'tabletRef'  => get_option('brro_tablet_ref'),
+            'tabletStart'  => get_option('brro_tablet_start'),
+            'mobileRef'  => get_option('brro_mobile_ref'),
+            'mobileStart'  => get_option('brro_mobile_start'),
+            'developerMode'  => get_option('brro_developer_mode'),
+        );
+        wp_localize_script('brro-core-css-calculator-script', 'pluginSettings', $script_data);
+    }
+}
+//
 // Load script for site back- and frontend 'inspector'
 add_action( 'wp_enqueue_scripts', 'brro_enqueue_script_frontend_inspector' );
 function brro_enqueue_script_frontend_inspector() {
@@ -53,6 +74,9 @@ function brro_enqueue_script_frontend_inspector() {
     $developer_mode = get_option('brro_developer_mode', 0);
     if ($developer_mode == 1 && is_user_logged_in() ) {
         wp_enqueue_script( 'brro-core-frontend-inspector-script', plugins_url( '/js/brro-core-frontend-inspector-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
+        wp_localize_script('brro-core-frontend-inspector-script', 'pluginSettings', array(
+            'elementorActive' => $elementor_active
+        ));
         wp_enqueue_style('brro-core-frontend-inspector-style', plugins_url( '/css/brro-core-frontend-inspector-style.css', __FILE__ ), [], '1.0.0' );
     }
 }
