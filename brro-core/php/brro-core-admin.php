@@ -267,14 +267,14 @@ function brro_css_calc_popup_handler() {
         button {background:#5a2a82;color:#fff;border:1px solid #7a44ab;border-radius:4px;padding:8px 14px;cursor:pointer}
         button:hover {background:#6a3596}
         .error {color:#ff8585;font-size:12px;min-height:16px;margin:4px 0 10px}
-        .outputs {display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+        .outputs {display:block;margin-top:8px}
+        .outputs .output {margin-top:8px}
         .output {background:#161616;border:1px solid #2a2a2a;border-radius:6px;padding:10px;display:flex;justify-content:space-between;align-items:center}
         .label {font-size:12px;color:#bbb;margin-right:8px}
         code {display:block;white-space:pre-wrap;word-break:break-all;color:#e8e8e8}
         .copy {margin-left:12px;font-size:12px;color:#aaa;cursor:pointer;user-select:none}
         .copy:hover {color:#fff}
         .copied {color:#6cff9b}
-        @media (min-width:640px){.outputs{grid-template-columns:1fr 1fr 1fr}}
     </style>
 </head>
 <body>

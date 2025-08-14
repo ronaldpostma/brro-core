@@ -11,7 +11,7 @@ jQuery(function($) {
     // CSS calc chromeless popup
     $(document).on('click', '#toplevel_page_brro-calc-popup > a', function(e) {
         e.preventDefault();
-        var w = 900, h = 600;
+        var w = 760, h = 290;
         var y = window.top.outerHeight / 2 + window.top.screenY - ( h / 2);
         var x = window.top.outerWidth / 2 + window.top.screenX - ( w / 2);
         var url = ajaxurl + '?action=brro_css_calc_popup';

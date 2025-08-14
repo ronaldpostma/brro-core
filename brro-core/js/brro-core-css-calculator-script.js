@@ -24,6 +24,15 @@ jQuery(function($) {
 
     function parseInput(raw) {
         var trimmed = (raw || '').trim();
+        // New: explicit min prefix → min,[minPx],[valueAtRef]
+        if (trimmed.toLowerCase().indexOf('min,') === 0) {
+            var rest = trimmed.slice(4);
+            var partsMin = rest.split(',');
+            if (partsMin.length === 2 && isNumericString(partsMin[0]) && isNumericString(partsMin[1])) {
+                return { type: 'min', minPx: Number(partsMin[0]), value: Number(partsMin[1]) };
+            }
+            return null;
+        }
         var mdPrefix = false;
         if (trimmed.toLowerCase().indexOf('md,') === 0) {
             mdPrefix = true;
@@ -74,6 +83,19 @@ jQuery(function($) {
             var isOpenEnded = (desktopEnd === 0);
             return buildClampSingle(parsed.value, desktopRef, desktopStart, (isOpenEnded ? (desktopStart + (desktopRef - desktopStart)) : desktopEnd), isOpenEnded);
         }
+        if (parsed.type === 'min') {
+            var vwTarget = (parsed.value / desktopRef) * 100;
+            vwTarget = roundIfNeeded(vwTarget);
+            if (desktopEnd === 0) {
+                // Open-ended desktop: follow single-input rule using the forced minimum bound
+                return 'max(' + parsed.minPx + 'px, ' + vwTarget + 'vw) /*' + parsed.value + 'px @ ' + desktopRef + '*/';
+            }
+            var screenEndPx = (desktopEnd / 100) * ((parsed.value / desktopRef) * 100);
+            var endPx = Math.round(screenEndPx);
+            var lowerBound = Math.min(parsed.minPx, endPx);
+            var upperBound = Math.max(parsed.minPx, endPx);
+            return 'clamp(' + lowerBound + 'px, ' + vwTarget + 'vw, ' + upperBound + 'px) /*' + parsed.value + 'px @ ' + desktopRef + '*/';
+        }
         if (parsed.type === 'range') {
             // If md prefix: span from mobileRef -> desktopRef, else desktopStart -> desktopRef
             if (parsed.md) {
@@ -109,7 +131,7 @@ jQuery(function($) {
     }
 
     function validateInput(raw) {
-        var ok = /^\s*(?:md,)?-?\d+(?:\.\d+)?(?:,-?\d+(?:\.\d+)?)?\s*$/.test(raw || '');
+        var ok = /^\s*(?:(?:min,-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?)|(?:(?:md,)?-?\d+(?:\.\d+)?(?:,-?\d+(?:\.\d+)?)?))\s*$/.test(raw || '');
         return ok;
     }
 
@@ -121,7 +143,7 @@ jQuery(function($) {
         $outTablet.text('');
         $outMobile.text('');
         if (!validateInput(raw)) {
-            $error.text('Invalid input. Use a number like 300 or a range like 300,600. Prefix with md, for mobile->desktop ranges. Negatives allowed.');
+            $error.text('Invalid input. Use 300 or 300,600. Prefix with md, for mobile->desktop ranges, or min,16,32 for minimum clamp. Negatives allowed.');
             return;
         }
         var parsed = parseInput(raw);
@@ -129,9 +151,14 @@ jQuery(function($) {
             $error.text('Could not parse input.');
             return;
         }
-        var outD = calcForDesktop(parsed);
-        var outT = calcForTablet(parsed);
-        var outM = calcForMobile(parsed);
+		var outD = calcForDesktop(parsed);
+		var outT = '';
+		var outM = '';
+		// If input uses md prefix, only output Desktop and leave Tablet/Mobile empty
+        if (!parsed.md && parsed.type !== 'min') {
+			outT = calcForTablet(parsed);
+			outM = calcForMobile(parsed);
+		}
         $outDesktop.text(outD);
         $outTablet.text(outT);
         $outMobile.text(outM);
