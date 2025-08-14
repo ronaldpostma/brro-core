@@ -43,8 +43,10 @@ jQuery(function ($) {
         $('body').append(circleContainer).prepend('<span class="edge outer left"></span><span class="edge inner left"></span><span class="edge outer right"></span><span class="edge inner right"></span>');
         $('.inspector-container').append('<div class="viewport-width" >' + devScreenWidth + 'px</div>');
         // Activate inspector state in Elementor editor by default
-        $('body.elementor-editor-active').addClass('inspect-edges inspect-parent inspect-child inspect-child-child inspect-widget');
-        $('body.elementor-editor-active .inspector-button').addClass('inspector-active');
+        if (elementorActive) {
+            $('body.elementor-editor-active').addClass('inspect-edges inspect-parent inspect-child inspect-child-child inspect-widget');
+            $('body.elementor-editor-active .inspector-button').addClass('inspector-active');
+        }
         $('html:not(.hide-admin-bar) body.admin-bar:not(.elementor-editor-active) header.brro-sticky').css('top','32px');
         $('html.hide-admin-bar header.brro-sticky').css('top','0px');
         //
