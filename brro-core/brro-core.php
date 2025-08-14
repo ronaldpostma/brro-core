@@ -19,8 +19,8 @@ require_once plugin_dir_path(__FILE__) . '/php/brro-core-admin.php';
 // 
 require_once plugin_dir_path(__FILE__) . '/php/brro-core-global.php';
 //
-// Detect if Elementor is active (as set in settings page)
-$elementor_active = intval( get_option('brro_elementor_active', 0) );
+// Detect if Elementor is active (runtime detection only)
+$elementor_active = ( did_action('elementor/loaded') || class_exists('\\Elementor\\Plugin') || defined('ELEMENTOR_VERSION') ) ? 1 : 0;
 //
 // Load script for Elementor Editor Panel
 if ( $elementor_active === 1 ) {

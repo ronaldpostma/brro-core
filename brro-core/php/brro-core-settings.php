@@ -21,9 +21,6 @@ function brro_plugin_settings_page() {
     $mobile_end = (int)get_option('brro_tablet_start') - 1;
     $tablet_end = (int)get_option('brro_desktop_start') - 1;
     $lock_screen = get_option('brro_lock_screen', 0);
-    // Detect if Elementor is active and store as option (read-only in UI)
-    $elementor_active_detected = ( did_action('elementor/loaded') || class_exists('\\Elementor\\Plugin') || defined('ELEMENTOR_VERSION') ) ? 1 : 0;
-    update_option('brro_elementor_active', $elementor_active_detected);
     if ($lock_screen == 1) {
         ?>
         <script>
@@ -67,19 +64,7 @@ function brro_plugin_settings_page() {
                     Website Live
                 </label>
             </fieldset>
-        <!-- Elementor detection (read-only) -->
-            <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Site built with Elementor?</h3>
-                <label>
-                    <input type="radio" name="brro_elementor_active__ui" value="1" <?php checked(1, $elementor_active_detected); ?> disabled>
-                    Yes
-                </label>
-                <label>
-                    <input type="radio" name="brro_elementor_active__ui" value="0" <?php checked(0, $elementor_active_detected); ?> disabled>
-                    No
-                </label>
-                <input type="hidden" name="brro_elementor_active" value="<?php echo esc_attr($elementor_active_detected); ?>">
-            </fieldset>
+        
             <div class="devmode_only">
         <!-- Radio button for Private Mode -->
             <fieldset>
@@ -273,8 +258,6 @@ add_action('admin_init', 'brro_plugin_register_settings');
 function brro_plugin_register_settings() {
     // register settings devmode
     register_setting('brro-plugin-settings-group', 'brro_developer_mode');
-    // register elementor detection flag (auto-managed)
-    register_setting('brro-plugin-settings-group', 'brro_elementor_active');
     // register settings elementor css clamp/var
     register_setting('brro-plugin-settings-group', 'brro_desktop_end');
     register_setting('brro-plugin-settings-group', 'brro_desktop_ref');
