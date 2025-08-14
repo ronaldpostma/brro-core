@@ -121,7 +121,7 @@ function brro_add_inspector_css() {
         $child_border_color = get_option('brro_child_border_color', '#00ff00'); // Example default color
         $child_child_border_color = get_option('brro_child_child_border_color', '#0000ff'); // Example default color
         $widget_text_color = get_option('brro_widget_text_color', '#ddd'); // Example default color
-        $desktopEnd = get_option('brro_desktop_end', '1600px');
+        $desktopEnd = get_option('brro_desktop_end', '1600');
         // Constructing the CSS string with dynamic values
         $custom_css = "
         .elementor-container-inspector .e-con::before,
