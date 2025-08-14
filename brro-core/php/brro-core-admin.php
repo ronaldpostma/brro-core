@@ -161,6 +161,8 @@ function brro_add_custom_menu_items() {
     add_menu_page('Site Content','|','read','brro-separator-content','','dashicons-arrow-down-alt2');
     // Add Brro help item
     add_menu_page($brrohelp,$brrohelp,'read','brro-help-link','','dashicons-external');   
+    // Add Chromeless Popup mock link (placeholder)
+    add_menu_page('CSS calc','CSS calc','read','brro-calc-popup','','dashicons-calculator');
 }
 //
 // ******************************************************************************************************************************************************************

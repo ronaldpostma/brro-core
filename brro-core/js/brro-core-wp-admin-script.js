@@ -8,6 +8,8 @@ jQuery(function($) {
     $('#toplevel_page_brro-separator-content').nextUntil('#collapse-menu').addClass('brro-content');
     // Brro help link
     $('#toplevel_page_brro-help-link a').attr('href', helpUrl).attr('target', '_blank');
+    // Chromeless Popup mock link (no functionality yet)
+    $('#toplevel_page_brro-calc-popup a').attr('href', '#').attr('target', '_blank');
     setTimeout(function() {
         $('#adminmenu').css('opacity', '1');
     }, 100);
