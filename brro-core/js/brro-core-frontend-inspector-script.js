@@ -1,6 +1,7 @@
 jQuery(function ($) {
     if ($('body').hasClass('webadmin')) {
-        console.log('Brro Elementor Devtools Frontend Script Runs');
+        console.log('Brro Frontend Inspector Script Runs');
+        var elementorActive = pluginSettings.elementorActive;
         // 1. Function to update the viewport width
         function updateDevScreenWidth() {
             $('.viewport-width').remove(); // 1.1 Remove existing viewport width display

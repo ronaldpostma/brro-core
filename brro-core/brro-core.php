@@ -2,11 +2,12 @@
 /**
  * Plugin Name: Brro Core
  * Plugin URI: https://github.com/ronaldpostma/brro-core
- * Description: Global core functions for all sites developed by Brro and development tools used within Elementor and the frontend.
- * Version: 1.6.0
+ * Description: Global core functions and development tools for sites developed by Brro.
+ * Version: 2.0.0
  * Author: Ronald Postma @ Brro.nl
  * Author URI: https://brro.nl/
- * Plugin Icon: https://example.com/path-to-your-icon.png
+ * License: GPLv2 or later
+ * Text Domain: brro-core
  * 
  */
 //
@@ -18,11 +19,17 @@ require_once plugin_dir_path(__FILE__) . '/php/brro-core-admin.php';
 // 
 require_once plugin_dir_path(__FILE__) . '/php/brro-core-global.php';
 //
+// Detect if Elementor is active (as set in settings page)
+$elementor_active = intval( get_option('brro_elementor_active', 0) );
+//
 // Load script for Elementor Editor Panel
-add_action( 'elementor/editor/after_enqueue_scripts', 'brro_enqueue_script_elementor_editor' );
+if ( $elementor_active === 1 ) {
+    add_action( 'elementor/editor/after_enqueue_scripts', 'brro_enqueue_script_elementor_editor' );
+}
 function brro_enqueue_script_elementor_editor() {
+    global $elementor_active;
     $developer_mode = get_option('brro_developer_mode', 0);
-    if ($developer_mode == 1 && is_user_logged_in() ) {
+    if ($elementor_active === 1 && $developer_mode == 1 && is_user_logged_in() ) {
         wp_enqueue_script( 'brro-core-elementor-editor-script', plugins_url( '/js/brro-core-elementor-editor-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
         // Localize script with data from your settings
         $script_data = array(
@@ -39,9 +46,10 @@ function brro_enqueue_script_elementor_editor() {
     }
 }
 //
-// Load script for site back- and frontend 'element inspector'
-add_action( 'wp_enqueue_scripts', 'brro_enqueue_script_elementor_frontend' );
-function brro_enqueue_script_elementor_frontend() {
+// Load script for site back- and frontend 'inspector'
+add_action( 'wp_enqueue_scripts', 'brro_enqueue_script_frontend_inspector' );
+function brro_enqueue_script_frontend_inspector() {
+    global $elementor_active;
     $developer_mode = get_option('brro_developer_mode', 0);
     if ($developer_mode == 1 && is_user_logged_in() ) {
         wp_enqueue_script( 'brro-core-frontend-inspector-script', plugins_url( '/js/brro-core-frontend-inspector-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
@@ -78,6 +86,7 @@ function brro_webdev_enqueue_admin_assets() {
 }
 //
 // Custom CSS for inspector mode
+add_action('wp_head', 'brro_add_inspector_css');
 function brro_add_inspector_css() {
     $developer_mode = get_option('brro_developer_mode', 0); 
     // Enqueue only if '$developer_mode' is "1 / Developer Mode"
@@ -126,7 +135,6 @@ function brro_add_inspector_css() {
         echo '<style>' . $custom_css . '</style>';
     }
 }
-add_action('wp_head', 'brro_add_inspector_css');
 /*
 *
 * Update mechanism
