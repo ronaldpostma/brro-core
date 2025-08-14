@@ -161,8 +161,8 @@ function brro_add_custom_menu_items() {
     add_menu_page('Site Content','|','read','brro-separator-content','','dashicons-arrow-down-alt2');
     // Add Brro help item
     add_menu_page($brrohelp,$brrohelp,'read','brro-help-link','','dashicons-external');   
-    // Add Chromeless Popup mock link (placeholder)
-    add_menu_page('CSS calc','CSS calc','read','brro-calc-popup','','dashicons-calculator');
+    // Add Chromeless Popup mock link (placeholder) for site administrator role
+    add_menu_page('CSS calc','CSS calc','manage_options','brro-calc-popup','','dashicons-calculator');
 }
 //
 // ******************************************************************************************************************************************************************
@@ -178,6 +178,7 @@ function brro_custom_admin_menu_order($menu_ord) {
     $custom_order = array(
         'index.php', // Dashboard
         'brro-help-link', // Brro help outward link
+        'brro-calc-popup', // CSS calc
         'brro-separator-core', // Brro separator
         'edit-comments.php', // Comments
         'themes.php', // Appearance   
