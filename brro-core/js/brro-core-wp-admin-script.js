@@ -8,8 +8,20 @@ jQuery(function($) {
     $('#toplevel_page_brro-separator-content').nextUntil('#collapse-menu').addClass('brro-content');
     // Brro help link
     $('#toplevel_page_brro-help-link a').attr('href', helpUrl).attr('target', '_blank');
-    // Chromeless Popup mock link (no functionality yet)
-    $('#toplevel_page_brro-calc-popup a').attr('href', '#').attr('target', '_blank');
+    // CSS calc chromeless popup
+    $(document).on('click', '#toplevel_page_brro-calc-popup > a', function(e) {
+        e.preventDefault();
+        var w = 900, h = 600;
+        var y = window.top.outerHeight / 2 + window.top.screenY - ( h / 2);
+        var x = window.top.outerWidth / 2 + window.top.screenX - ( w / 2);
+        var url = ajaxurl + '?action=brro_css_calc_popup';
+        var features = [
+            'popup=yes','toolbar=no','location=no','directories=no','status=no','menubar=no',
+            'scrollbars=yes','resizable=yes','copyhistory=no',
+            'width=' + w,'height=' + h,'top=' + Math.max(0, Math.round(y)),'left=' + Math.max(0, Math.round(x))
+        ].join(',');
+        window.open(url, 'brroCssCalc', features);
+    });
     setTimeout(function() {
         $('#adminmenu').css('opacity', '1');
     }, 100);

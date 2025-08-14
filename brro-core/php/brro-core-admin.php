@@ -226,6 +226,89 @@ function brro_custom_admin_menu_order($menu_ord) {
     $custom_order = array_merge($custom_order, $plugin_settings_menuitems);
     return $custom_order;
 }
+
+//
+// ******************************************************************************************************************************************************
+//
+// Chromeless CSS calculator popup endpoint (AJAX, admins only)
+add_action('wp_ajax_brro_css_calc_popup', 'brro_css_calc_popup_handler');
+function brro_css_calc_popup_handler() {
+    if ( ! is_user_logged_in() || ! current_user_can('manage_options') ) {
+        status_header(403);
+        echo 'Forbidden';
+        wp_die();
+    }
+    // Settings for calculations
+    $desktop_end   = (int) get_option('brro_desktop_end');
+    $desktop_ref   = (int) get_option('brro_desktop_ref');
+    $desktop_start = (int) get_option('brro_desktop_start');
+    $tablet_ref    = (int) get_option('brro_tablet_ref');
+    $tablet_start  = (int) get_option('brro_tablet_start');
+    $mobile_ref    = (int) get_option('brro_mobile_ref');
+    $mobile_start  = (int) get_option('brro_mobile_start');
+    $admin_title   = 'Brro CSS calc';
+    $jquery_src    = includes_url('js/jquery/jquery.min.js');
+    $calc_js_src   = plugins_url('../js/brro-core-css-calculator-script.js', __FILE__);
+    header('Content-Type: text/html; charset=' . get_bloginfo('charset'));
+    ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="<?php echo esc_attr(get_bloginfo('charset')); ?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><?php echo esc_html($admin_title); ?></title>
+    <style>
+        html,body {margin:0;padding:0;background:#111;color:#eee;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+        .wrap {padding:16px 20px;max-width:720px;margin:0 auto;}
+        h1 {font-size:16px;margin:0 0 12px 0;font-weight:600;color:#fff;}
+        form {display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+        input[type=text] {background:#1b1b1b;border:1px solid #333;color:#eee;border-radius:4px;padding:8px 10px;min-width:260px;outline:none}
+        input[type=text]:focus {border-color:#555}
+        button {background:#5a2a82;color:#fff;border:1px solid #7a44ab;border-radius:4px;padding:8px 14px;cursor:pointer}
+        button:hover {background:#6a3596}
+        .error {color:#ff8585;font-size:12px;min-height:16px;margin:4px 0 10px}
+        .outputs {display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+        .output {background:#161616;border:1px solid #2a2a2a;border-radius:6px;padding:10px;display:flex;justify-content:space-between;align-items:center}
+        .label {font-size:12px;color:#bbb;margin-right:8px}
+        code {display:block;white-space:pre-wrap;word-break:break-all;color:#e8e8e8}
+        .copy {margin-left:12px;font-size:12px;color:#aaa;cursor:pointer;user-select:none}
+        .copy:hover {color:#fff}
+        .copied {color:#6cff9b}
+        @media (min-width:640px){.outputs{grid-template-columns:1fr 1fr 1fr}}
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1><?php echo esc_html($admin_title); ?></h1>
+        <form id="brro-calc-form" autocomplete="off">
+            <input id="brro-calc-input" type="text" inputmode="text" spellcheck="false" aria-label="Enter number or range" />
+            <button id="brro-calc-submit" type="submit">Calc</button>
+        </form>
+        <div id="brro-calc-error" class="error" role="alert" aria-live="polite"></div>
+        <div class="outputs">
+            <div class="output" data-device="desktop"><span class="label">Desktop</span><code id="brro-out-desktop"></code><span class="copy" data-copy="#brro-out-desktop">Copy</span></div>
+            <div class="output" data-device="tablet"><span class="label">Tablet</span><code id="brro-out-tablet"></code><span class="copy" data-copy="#brro-out-tablet">Copy</span></div>
+            <div class="output" data-device="mobile"><span class="label">Mobile</span><code id="brro-out-mobile"></code><span class="copy" data-copy="#brro-out-mobile">Copy</span></div>
+        </div>
+    </div>
+    <script>
+        window.brroSettings = {
+            desktopEnd: <?php echo (int) $desktop_end; ?>,
+            desktopRef: <?php echo (int) $desktop_ref; ?>,
+            desktopStart: <?php echo (int) $desktop_start; ?>,
+            tabletRef: <?php echo (int) $tablet_ref; ?>,
+            tabletStart: <?php echo (int) $tablet_start; ?>,
+            mobileRef: <?php echo (int) $mobile_ref; ?>,
+            mobileStart: <?php echo (int) $mobile_start; ?>
+        };
+    </script>
+    <script src="<?php echo esc_url( $jquery_src ); ?>"></script>
+    <script src="<?php echo esc_url( $calc_js_src ); ?>"></script>
+</body>
+</html>
+    <?php
+    wp_die();
+}
 //
 // ******************************************************************************************************************************************************
 //
