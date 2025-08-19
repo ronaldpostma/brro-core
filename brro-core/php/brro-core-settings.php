@@ -1,5 +1,14 @@
 <?php
 if (!defined('ABSPATH')) exit;
+/*
+Function Index for brro-core-settings.php:
+1. brro_plugin_add_settings_page
+   - Creates the admin menu page for Brro plugin settings.
+2. brro_plugin_settings_page
+   - Renders the settings page content with all configuration options.
+3. brro_plugin_register_settings
+   - Registers all settings fields with WordPress settings API.
+*/
 //
 // Create menu item
 add_action('admin_menu', 'brro_plugin_add_settings_page');

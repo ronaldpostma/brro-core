@@ -317,18 +317,38 @@ function brro_css_calc_popup_handler() {
 // ******************************************************************************************************************************************************
 //
 // Remove XML RPC and Comments
-// Hook XML-RPCinto 'after_setup_theme'
+// Hook XML-RPC into 'after_setup_theme'
 add_action('after_setup_theme', 'brro_disable_xmlrpc_comments');
 function brro_disable_xmlrpc_comments() {
     $xmlrpc_off = get_option('brro_xmlrpc_off', 0);
     if ($xmlrpc_off == 1) {
         add_filter('xmlrpc_enabled', '__return_false');
+        // Remove X-Pingback header
+        add_filter('wp_headers', function($headers) {
+            unset($headers['X-Pingback']);
+            return $headers;
+        });
+        // Block XML-RPC endpoints completely
+        add_action('init', function() {
+            if (strpos($_SERVER['REQUEST_URI'], 'xmlrpc.php') !== false) {
+                wp_die('XML-RPC is disabled', 'XML-RPC Disabled', ['response' => 403]);
+            }
+        });
     }
     $comments_off = get_option('brro_comments_off', 0);
     if ($comments_off == 1) {
         add_filter('comments_open', '__return_false', 20, 2); // Close comments on the front-end
         add_filter('pings_open', '__return_false', 20, 2); // Close pings on the front-end
         add_filter('comments_array', '__return_empty_array', 10, 2); // Hide existing comments
+        // Remove comment feeds
+        add_action('wp_loaded', function() {
+            remove_action('wp_head', 'feed_links_extra', 3);
+            remove_action('wp_head', 'feed_links', 2);
+        });
+        // Remove comment-related REST API endpoints
+        add_action('rest_api_init', function() {
+            remove_action('rest_api_init', 'create_initial_rest_routes', 99);
+        }, 1);
     }
 }
 // Remove comments
