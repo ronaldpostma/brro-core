@@ -55,67 +55,67 @@ function brro_add_wplogin_css() {
 // Wordpress private / logged in only mode
 add_action('get_header', 'brro_admin_redirect');
 function brro_admin_redirect() {
-    // Check if the private mode is enabled
+    // Only act when private mode is enabled
     $private_mode = get_option('brro_private_mode', 0);
-    if ($private_mode == 0) {return;}
-    $private_mode_redirect_url = get_option('brro_private_mode_redirect', home_url('wp-login.php'));
-    $private_mode_redirect = trailingslashit($private_mode_redirect_url);
+    if ($private_mode != 1) { return; }
+
+    // Logged-in users proceed
+    if (is_user_logged_in()) { return; }
+
+    // Normalize current request path
+    $uri_raw = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+    $current_path = trailingslashit(parse_url($uri_raw, PHP_URL_PATH) ?: '/');
+
+    // Exceptions
+    $exception_paths = brro_get_private_mode_exceptions();
+    if (in_array($current_path, $exception_paths, true)) { return; }
+
+    // Preview access flow (handles its own redirects)
+    if (brro_handle_preview_access($current_path)) { return; }
+
+    // Redirect to configured URL or login
+    $redirect_url = get_option('brro_private_mode_redirect', home_url('wp-login.php'));
+    if (!headers_sent()) {
+        wp_safe_redirect($redirect_url);
+        exit;
+    }
+}
+
+function brro_get_private_mode_exceptions() {
     $private_redirect_exceptions = get_option('brro_private_redirect_exceptions', '');
     $exceptions = array_filter(array_map('trim', explode("\n", $private_redirect_exceptions)));
-    // Normalize exceptions to path-only and ensure trailing slash
-    $exception_paths = array_map(function($url){
+    return array_map(function($url){
         $path = parse_url($url, PHP_URL_PATH);
         return trailingslashit($path ? $path : '/');
     }, $exceptions);
-    // Normalize current request path
-    $uri_raw = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
-    $uri_path = trailingslashit(parse_url($uri_raw, PHP_URL_PATH) ?: '/');
-    $is_preview_uri = preg_match('/\/preview\/?$/', $uri_path);
-    $has_preview_access = isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] == 'true';
-    $headers_not_sent = !headers_sent();
-    // Bypass further checks if the URI is in the exceptions list or is the same as the private mode redirect
-    $redirect_path = trailingslashit(parse_url($private_mode_redirect, PHP_URL_PATH) ?: '/');
-    if (in_array($uri_path, $exception_paths, true) || $uri_path === $redirect_path) {
-        return; 
+}
+
+function brro_handle_preview_access($current_path) {
+    $is_preview = (bool) preg_match('/\/preview\/?$/', $current_path);
+    if (!$is_preview) { return false; }
+
+    $has_preview_access = isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] === 'true';
+    if ($has_preview_access) {
+        if (!headers_sent()) {
+            wp_safe_redirect(home_url());
+            exit;
+        }
+        return true;
     }
-    if ($private_mode == 1) {
-        // If user is logged in, no action is needed
-        if (is_user_logged_in()) {
-            return;
-        }
-        // Check if the preview access cookie is set and is true
-        if ($has_preview_access) {
-            if ($is_preview_uri && $headers_not_sent) {
-                wp_safe_redirect(home_url());
-                exit; // Redirect to home page if the cookie is valid and the URL contains 'preview'
-            }
-            return; // Bypass further checks if the cookie is valid
-        }
-        // Allow temporary login link redirect to preview site
-        if ($is_preview_uri) {
-            if (!isset($_COOKIE['preview_access']) && $headers_not_sent) {
-                // Set a cookie to indicate preview access that expires in 2 hours
-                setcookie('preview_access', 'true', array(
-                    'expires' => time() + 7200,
-                    'path' => COOKIEPATH,
-                    'domain' => COOKIE_DOMAIN,
-                    'secure' => is_ssl(),
-                    'httponly' => true,
-                    'samesite' => 'Lax',
-                ));
-            }
-            if ($headers_not_sent) {
-                wp_safe_redirect(home_url());
-                exit; // Bypass further checks
-            }
-        } else {
-            // Redirect to the redirect page if not logged in and not accessing a preview URL
-            if ($headers_not_sent) {
-                wp_safe_redirect(!empty($private_mode_redirect) ? $private_mode_redirect : home_url('wp-login.php'));
-                exit;
-            }
-        }
+
+    if (!headers_sent()) {
+        setcookie('preview_access', 'true', array(
+            'expires' => time() + 7200,
+            'path' => COOKIEPATH,
+            'domain' => COOKIE_DOMAIN,
+            'secure' => is_ssl(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ));
+        wp_safe_redirect(home_url());
+        exit;
     }
+    return true;
 }
 //
 // ******************************************************************************************************************************************************
