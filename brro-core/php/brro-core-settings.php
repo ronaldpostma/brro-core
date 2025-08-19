@@ -39,22 +39,23 @@ function brro_plugin_settings_page() {
     <div class="wrap">
         <h2>Brro Plugin Settings</h2>
         <style>
-            .td-p0 td {padding-left:0px;}
-            label + label {margin-left:16px;}
+            .td-p0 td { padding-left: 0px; }
+            label + label { margin-left: 16px; }
             .manual-disable {
-                pointer-events:none;
-                background: rgba(255,255,255,.5)!important;
-                border-color: rgba(220,220,222,.75)!important;
-                box-shadow: inset 0 1px 2px rgba(0,0,0,.04)!important;
-                color: rgba(44,51,56,.5)!important;
+                pointer-events: none;
+                background: rgba(255, 255, 255, .5) !important;
+                border-color: rgba(220, 220, 222, .75) !important;
+                box-shadow: inset 0 1px 2px rgba(0, 0, 0, .04) !important;
+                color: rgba(44, 51, 56, .5) !important;
             }
         </style>
         <form method="post" action="options.php">
             <?php settings_fields('brro-plugin-settings-group'); ?>
             <?php do_settings_sections('brro-plugin-settings-group'); ?>
-        <!-- Radio button for Developer Mode and Website Live -->
+            
+            <!-- Plugin Mode -->
             <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Choose Plugin Mode</h3>
+                <legend><h3 style="margin: 40px 0 16px 0;">Choose Plugin Mode</h3></legend>
                 <label>
                     <input type="radio" name="brro_developer_mode" value="1" <?php checked(1, $developer_mode); ?>>
                     Development
@@ -64,107 +65,110 @@ function brro_plugin_settings_page() {
                     Website Live
                 </label>
             </fieldset>
-        
+
             <div class="devmode_only">
-        <!-- Radio button for Private Mode -->
-            <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Website Private Mode</h3>
-                <label>
-                    <input type="radio" name="brro_private_mode" value="1" <?php checked(1, $private_mode); ?>>
-                    Private (logged in only)
-                </label>
-                <label>
-                    <input type="radio" name="brro_private_mode" value="0" <?php checked(0, $private_mode); ?>>
-                    Open publicly
-                </label><br><br>
-                <label for="brro_private_mode_redirect">Redirect URL:</label><br>
+                <!-- Private Mode -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Website Private Mode</h3></legend>
+                    <label>
+                        <input type="radio" name="brro_private_mode" value="1" <?php checked(1, $private_mode); ?>>
+                        Private (logged in only)
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_private_mode" value="0" <?php checked(0, $private_mode); ?>>
+                        Open publicly
+                    </label><br><br>
+                    <label for="brro_private_mode_redirect">Redirect URL:</label><br>
                     <input type="text" name="brro_private_mode_redirect" id="brro_private_mode_redirect" value="<?php echo esc_url(get_option('brro_private_mode_redirect', home_url('/wp-login.php'))); ?>"><br><br>
-                <label for="brro_private_redirect_exceptions">Enter URLs, one per line:</label><br>
+                    <label for="brro_private_redirect_exceptions">Enter URLs, one per line:</label><br>
                     <textarea name="brro_private_redirect_exceptions" id="brro_private_redirect_exceptions" rows="5" cols="50"><?php echo esc_textarea(get_option('brro_private_redirect_exceptions')); ?></textarea>
-            </fieldset>
-        <!-- Form with Screensize references -->
-            <h3 style="margin:40px 0 0 0;">Screen Size References</h3>
-            <br>
-            <b> NOTE: desktopEnd can not set be lower than desktopRef </b>
-                <table class="form-table td-p0 screensizes" style="width:auto;">
-                    <tr>
-                        <th>Device</th>
-                        <th>screenRef - reference size from design</th>
-                        <th>screenStart - to generate css clamp() </th>
-                        <th>screenEnd - to generate css clamp()</th>
-                    </tr>
-                    <tr valign="top">
-                        <td>Desktop</td>
-                        <td>
-                            <select name="brro_desktop_ref">
-                                <option value="1440" <?php selected('1440', get_option('brro_desktop_ref')); ?>>1440</option>
-                                <option value="1600" <?php selected('1600', get_option('brro_desktop_ref')); ?>>1600</option>
-                                <option value="1920" <?php selected('1920', get_option('brro_desktop_ref')); ?>>1920</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="hidden" name="brro_desktop_start" value="1180" />
-                            <input type="number" value="1180" disabled />
-                        </td>
-                        <td>
-                            <select name="brro_desktop_end">
-                                <option value="1440" <?php selected('1440', get_option('brro_desktop_end')); ?>>1440</option>
-                                <option value="1600" <?php selected('1600', get_option('brro_desktop_end')); ?>>1600</option>
-                                <option value="1920" <?php selected('1920', get_option('brro_desktop_end')); ?>>1920</option>
-                                <option value="0" <?php selected('0', get_option('brro_desktop_end')); ?>>0: open-ended scaling</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <td>Tablet</td>
-                        <td>
-                            <select name="brro_tablet_ref">
-                                <option value="768" <?php selected('768', get_option('brro_tablet_ref')); ?>>768</option>
-                                <option value="810" <?php selected('810', get_option('brro_tablet_ref')); ?>>810</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="hidden" name="brro_tablet_start" value="768" />
-                            <input type="number" value="768" disabled />
-                        </td>
-                        <td>
-                            <input type="number" value="<?php echo esc_attr($tablet_end); ?>" disabled />
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <td>Mobile</td>
-                        <td>
-                            <select name="brro_mobile_ref">
-                                <option value="360" <?php selected('360', get_option('brro_mobile_ref')); ?>>360</option>
-                                <option value="390" <?php selected('390', get_option('brro_mobile_ref')); ?>>390</option>
-                                <option value="414" <?php selected('414', get_option('brro_mobile_ref')); ?>>414</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="hidden" name="brro_mobile_start" value="320" />
-                            <input type="number" value="320" disabled />
-                        </td>
-                        <td>
-                            <input type="number" value="<?php echo esc_attr($mobile_end); ?>" disabled />
-                        </td>
-                    </tr>
-                </table>
-        <!-- Lock settings for the screen references" -->
-            <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Lock screen references</h3>
-                <label>
-                    <input type="radio" name="brro_lock_screen" value="1" <?php checked(1, get_option('brro_lock_screen')); ?>>
-                    Yes
-                </label>
+                </fieldset>
                 
-                <label>
-                    <input type="radio" name="brro_lock_screen" value="0" <?php checked(0, get_option('brro_lock_screen')); ?>>
-                    No
-                </label>
-            </fieldset>
-        <!-- Custom CSS Settings for Inspector -->
-            <fieldset style="max-width:420px;">
-                <h3 style="margin:40px 0 16px 0;">Inspector CSS colors</h3>
+                <!-- Screen Size References -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 0 0;">Screen Size References</h3></legend>
+                    <p><strong>NOTE: desktopEnd cannot be set lower than desktopRef</strong></p>
+                    <table class="form-table td-p0 screensizes" style="width: auto;">
+                        <tr>
+                            <th>Device</th>
+                            <th>screenRef - reference size from design</th>
+                            <th>screenStart - to generate css clamp() </th>
+                            <th>screenEnd - to generate css clamp()</th>
+                        </tr>
+                        <tr valign="top">
+                            <td>Desktop</td>
+                            <td>
+                                <select name="brro_desktop_ref">
+                                    <option value="1440" <?php selected('1440', get_option('brro_desktop_ref')); ?>>1440</option>
+                                    <option value="1600" <?php selected('1600', get_option('brro_desktop_ref')); ?>>1600</option>
+                                    <option value="1920" <?php selected('1920', get_option('brro_desktop_ref')); ?>>1920</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="hidden" name="brro_desktop_start" value="1180" />
+                                <input type="number" value="1180" disabled />
+                            </td>
+                            <td>
+                                <select name="brro_desktop_end">
+                                    <option value="1440" <?php selected('1440', get_option('brro_desktop_end')); ?>>1440</option>
+                                    <option value="1600" <?php selected('1600', get_option('brro_desktop_end')); ?>>1600</option>
+                                    <option value="1920" <?php selected('1920', get_option('brro_desktop_end')); ?>>1920</option>
+                                    <option value="0" <?php selected('0', get_option('brro_desktop_end')); ?>>0: open-ended scaling</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <td>Tablet</td>
+                            <td>
+                                <select name="brro_tablet_ref">
+                                    <option value="768" <?php selected('768', get_option('brro_tablet_ref')); ?>>768</option>
+                                    <option value="810" <?php selected('810', get_option('brro_tablet_ref')); ?>>810</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="hidden" name="brro_tablet_start" value="768" />
+                                <input type="number" value="768" disabled />
+                            </td>
+                            <td>
+                                <input type="number" value="<?php echo esc_attr($tablet_end); ?>" disabled />
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <td>Mobile</td>
+                            <td>
+                                <select name="brro_mobile_ref">
+                                    <option value="360" <?php selected('360', get_option('brro_mobile_ref')); ?>>360</option>
+                                    <option value="390" <?php selected('390', get_option('brro_mobile_ref')); ?>>390</option>
+                                    <option value="414" <?php selected('414', get_option('brro_mobile_ref')); ?>>414</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="hidden" name="brro_mobile_start" value="320" />
+                                <input type="number" value="320" disabled />
+                            </td>
+                            <td>
+                                <input type="number" value="<?php echo esc_attr($mobile_end); ?>" disabled />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                
+                <!-- Lock Screen References -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Lock screen references</h3></legend>
+                    <label>
+                        <input type="radio" name="brro_lock_screen" value="1" <?php checked(1, get_option('brro_lock_screen')); ?>>
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_lock_screen" value="0" <?php checked(0, get_option('brro_lock_screen')); ?>>
+                        No
+                    </label>
+                </fieldset>
+                
+                <!-- Inspector CSS Settings -->
+                <fieldset style="max-width: 420px;">
+                    <legend><h3 style="margin: 40px 0 16px 0;">Inspector CSS colors</h3></legend>
                     <label for="brro_blend_mode">Mix blend mode:</label>
                     <input style="float: right;" type="text" name="brro_blend_mode" value="<?php echo esc_attr(get_option('brro_blend_mode', 'screen')); ?>">
                     <br><br>
@@ -179,10 +183,11 @@ function brro_plugin_settings_page() {
                     <br><br>
                     <label for="brro_widget_text_color">Widget element box shadow color:</label>
                     <input style="float: right;" type="text" name="brro_widget_text_color" value="<?php echo esc_attr(get_option('brro_widget_text_color', '#DDD')); ?>">
-            </fieldset>
-        <!-- Custom CSS Settings for WP Login Page -->
-            <fieldset style="max-width:420px;">
-                <h3 style="margin:40px 0 16px 0;">wp-login.php custom CSS</h3>
+                </fieldset>
+                
+                <!-- WP Login Page Settings -->
+                <fieldset style="max-width: 420px;">
+                    <legend><h3 style="margin: 40px 0 16px 0;">wp-login.php custom CSS</h3></legend>
                     <label for="brro_login_backgroundmain">Background:</label>
                     <input style="float: right;" type="text" name="brro_login_backgroundmain" value="<?php echo esc_attr(get_option('brro_login_backgroundmain', 'linear-gradient(270deg, beige, blue, purple, pink)')); ?>">
                     <br><br>
@@ -200,54 +205,58 @@ function brro_plugin_settings_page() {
                     <br><br>
                     <label for="brro_login_logoheight">Logo height (px):</label>
                     <input style="float: right;" type="number" name="brro_login_logoheight" value="<?php echo esc_attr(get_option('brro_login_logoheight', '160')); ?>">
-            </fieldset>
-        <!-- Append menu items to 'Site content' -->
-            <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Append menu items to 'Site Content'</h3>
+                </fieldset>
+                
+                <!-- Menu Items -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Append menu items to 'Site Content'</h3></legend>
                     <textarea id="brro_append_menuitems" name="brro_append_menuitems" rows="10" cols="50"><?php echo esc_textarea(get_option('brro_append_menuitems', '')); ?></textarea>
-            </fieldset>
-        <!-- Array of site editors -->
-            <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Array of site editors</h3>
+                </fieldset>
+                
+                <!-- Site Editors -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Array of site editors</h3></legend>
                     <input type="text" id="brro_editors" name="brro_editors" value="<?php echo esc_attr(get_option('brro_editors', '2,3,4,5')); ?>" />
-            </fieldset>
-        <!-- Checkbox for "Turn off support XML RPC" -->
-            <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Turn off support XML RPC</h3>
-                <label>
-                    <input type="radio" name="brro_xmlrpc_off" value="1" <?php checked(1, get_option('brro_xmlrpc_off')); ?>>
-                    Yes
-                </label>
+                </fieldset>
                 
-                <label>
-                    <input type="radio" name="brro_xmlrpc_off" value="0" <?php checked(0, get_option('brro_xmlrpc_off')); ?>>
-                    No
-                </label>
-            </fieldset>
-        <!-- Checkbox for "Turn off support Comments" -->
-            <fieldset>
-                <h3 style="margin:40px 0 16px 0;">Turn off support for comments</h3>
-                <label>
-                    <input type="radio" name="brro_comments_off" value="1" <?php checked(1, get_option('brro_comments_off')); ?>>
-                    Yes
-                </label>
+                <!-- XML RPC Settings -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Turn off support XML RPC</h3></legend>
+                    <label>
+                        <input type="radio" name="brro_xmlrpc_off" value="1" <?php checked(1, get_option('brro_xmlrpc_off')); ?>>
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_xmlrpc_off" value="0" <?php checked(0, get_option('brro_xmlrpc_off')); ?>>
+                        No
+                    </label>
+                </fieldset>
                 
-                <label>
-                    <input type="radio" name="brro_comments_off" value="0" <?php checked(0, get_option('brro_comments_off')); ?>>
-                    No
-                </label>
-            </fieldset>
-        </div>
-        <!-- Website help dashboard button url -->
-            <fieldset style="max-width:420px;">
-                <h3 style="margin:40px 0 16px 0;">Custom URL @ top of admin side menu</h3>
+                <!-- Comments Settings -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Turn off support for comments</h3></legend>
+                    <label>
+                        <input type="radio" name="brro_comments_off" value="1" <?php checked(1, get_option('brro_comments_off')); ?>>
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_comments_off" value="0" <?php checked(0, get_option('brro_comments_off')); ?>>
+                        No
+                    </label>
+                </fieldset>
+            </div>
+            
+            <!-- Help URL Settings -->
+            <fieldset style="max-width: 420px;">
+                <legend><h3 style="margin: 40px 0 16px 0;">Custom URL @ top of admin side menu</h3></legend>
                 <label for="brro_client_help_url">URL:</label>
                 <input style="float: right;" type="text" name="brro_client_help_url" value="<?php echo esc_attr(get_option('brro_client_help_url', 'https://www.brro.nl/contact')); ?>">
-                <br><br>      
+                <br><br>
                 <label for="brro_client_help_menutitle">Menu title:</label>
-                <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">    
-            </fieldset>    
-        <?php submit_button(); ?>
+                <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">
+            </fieldset>
+            
+            <?php submit_button(); ?>
         </form>
     </div>
     <?php
