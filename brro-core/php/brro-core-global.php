@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit;
 /*
 Function Index for brro-core-global.php:
 1. brro_wp_css_body_class

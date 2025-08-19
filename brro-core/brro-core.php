@@ -10,6 +10,7 @@
  * Text Domain: brro-core
  * 
  */
+if (!defined('ABSPATH')) exit;
 //
 // Include php function files
 // 

@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit;
 /*
 Function Index for brro-core-admin.php:
 1. brro_add_wplogin_css

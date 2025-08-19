@@ -1,5 +1,5 @@
 <?php
-// brro-webdev-settings.php
+if (!defined('ABSPATH')) exit;
 //
 // Create menu item
 add_action('admin_menu', 'brro_plugin_add_settings_page');
