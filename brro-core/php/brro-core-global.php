@@ -26,12 +26,6 @@ Function Index for brro-core-global.php:
  * ========================================
  * CHECK IF BRRO-PROJECT PLUGIN IS ACTIVE
  * ========================================
- * 
- * Example usage:
- *    if (brro_is_project_active()) {
- *        // do something
- *    }
- * 
  */
 
 function brro_is_project_active() {
@@ -39,11 +33,14 @@ function brro_is_project_active() {
     if (function_exists('is_plugin_active')) {
         return is_plugin_active('brro-project/brro-project.php');
     }
-    
     // Fallback: check if plugin file exists and is loaded
     return class_exists('Brro_Project') || 
            defined('BRRO_PROJECT_VERSION') || 
            file_exists(WP_PLUGIN_DIR . '/brro-project/brro-project.php');
+    // Example usage:
+    // if (!brro_is_project_active()) {
+    //     do something if brro-project plugin is not active
+    // }
 }
 
 //
