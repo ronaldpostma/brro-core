@@ -2,23 +2,50 @@
 if (!defined('ABSPATH')) exit;
 /*
 Function Index for brro-core-global.php:
-1. brro_wp_css_body_class
+1. brro_is_project_active
+   - Checks if brro-project plugin is active and available.
+2. brro_wp_css_body_class
    - Adds custom classes to the body tag based on user roles and page properties.
-2. brro_add_post_id_admin_body_class
+3. brro_add_post_id_admin_body_class
    - Adds post ID and post type as classes in the admin body for styling purposes.
-3. brro_acf_content_shortcode
+4. brro_acf_content_shortcode
    - Creates a shortcode to display ACF field data with optional before and after HTML.
-4. brro_get_cached_acf_field
+5. brro_get_cached_acf_field
    - Retrieves an ACF field value with caching to improve performance.
-5. brro_clear_acf_field_cache
+6. brro_clear_acf_field_cache
    - Clears the cached ACF field value when the ACF field is updated.
-6. brro_handle_updated_post_meta
+7. brro_handle_updated_post_meta
    - Hooks into post meta updates to clear cached ACF field values.
-7. brro_navburger_shortcode
+8. brro_navburger_shortcode
    - Generates a customizable navigation burger icon via a shortcode.
-8. brro_allow_page_excerpt
+9. brro_allow_page_excerpt
    - Enables excerpts on the 'page' post type for SEO descriptions.
 */
+
+/*
+ * ========================================
+ * CHECK IF BRRO-PROJECT PLUGIN IS ACTIVE
+ * ========================================
+ * 
+ * Example usage:
+ *    if (brro_is_project_active()) {
+ *        // do something
+ *    }
+ * 
+ */
+
+function brro_is_project_active() {
+    // Check if brro-project plugin is active using WordPress plugin API
+    if (function_exists('is_plugin_active')) {
+        return is_plugin_active('brro-project/brro-project.php');
+    }
+    
+    // Fallback: check if plugin file exists and is loaded
+    return class_exists('Brro_Project') || 
+           defined('BRRO_PROJECT_VERSION') || 
+           file_exists(WP_PLUGIN_DIR . '/brro-project/brro-project.php');
+}
+
 //
 // ******************************************************************************************************************************************************************
 //  

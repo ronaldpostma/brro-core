@@ -125,7 +125,7 @@ jQuery(function($) {
             return buildClampSingle(parsed.value, mobileRef, mobileStart, mobileEnd, false);
         }
         if (parsed.type === 'range') {
-            return buildClampRange(parsed.a, parsed.b, mobileStart, mobileEnd, mobileRef, mobileEnd);
+            return buildClampRange(parsed.a, parsed.b, mobileStart, mobileEnd, mobileStart, mobileEnd);
         }
         return '';
     }
