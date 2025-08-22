@@ -45,6 +45,20 @@ function brro_plugin_settings_page() {
         <?php
     }
     ?>
+    <script>
+    jQuery(function($){
+        // Show/hide posts menu options based on radio selection
+        $('input[name="brro_change_posts_menu"]').on('change', function() {
+            if ($(this).val() == '1') {
+                $('#posts-menu-options').show();
+            } else {
+                $('#posts-menu-options').hide();
+            }
+        });
+    });
+    </script>
+    <?php
+    ?>
     <div class="wrap">
         <h2>Brro Plugin Settings</h2>
         <style>
@@ -228,6 +242,24 @@ function brro_plugin_settings_page() {
                     <input type="text" id="brro_editors" name="brro_editors" value="<?php echo esc_attr(get_option('brro_editors', '2,3,4,5')); ?>" />
                 </fieldset>
                 
+                <!-- Editor Menu Pages to Remove -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Menu pages to remove for editors</h3></legend>
+                    <p>Enter one menu page slug per line. These pages will be hidden from editors:</p>
+                    <textarea id="brro_editors_remove_menupages" name="brro_editors_remove_menupages" rows="10" cols="50"><?php echo esc_textarea(get_option('brro_editors_remove_menupages', '')); ?></textarea>
+                    <br><br>
+                    <small>Examples: upload.php, themes.php, tools.php, users.php, profile.php, plugins.php, brro-separator-core, edit.php?post_type=elementor_library, snippets, elementor, brro-plugin-settings, jet-dashboard, jet-smart-filters, edit.php?post_type=acf-field-group, update-core.php</small>
+                </fieldset>
+                
+                <!-- Specific User Menu Pages to Remove -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Menu pages to remove for specific users</h3></legend>
+                    <p>Enter one entry per line in format: user_id,menu_page_slug. These pages will be hidden from specific users:</p>
+                    <textarea id="brro_users_remove_menupages" name="brro_users_remove_menupages" rows="10" cols="50"><?php echo esc_textarea(get_option('brro_users_remove_menupages', '')); ?></textarea>
+                    <br><br>
+                    <small>Examples: 6,upload.php, 7,themes.php, 8,tools.php, 9,users.php, 10,profile.php, 11,plugins.php</small>
+                </fieldset>
+                
                 <!-- XML RPC Settings -->
                 <fieldset>
                     <legend><h3 style="margin: 40px 0 16px 0;">Turn off support XML RPC</h3></legend>
@@ -264,6 +296,31 @@ function brro_plugin_settings_page() {
                 <label for="brro_client_help_menutitle">Menu title:</label>
                 <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">
             </fieldset>
+            
+            <?php if (!brro_is_project_active()): ?>
+            <!-- Posts Menu Customization (only when brro-project is not active) -->
+            <fieldset style="max-width: 420px;">
+                <legend><h3 style="margin: 40px 0 16px 0;">Posts Menu Customization</h3></legend>
+                <label>
+                    <input type="radio" name="brro_change_posts_menu" value="1" <?php checked(1, get_option('brro_change_posts_menu', 0)); ?>>
+                    Yes, change 'Posts' menu title
+                </label>
+                <label>
+                    <input type="radio" name="brro_change_posts_menu" value="0" <?php checked(0, get_option('brro_change_posts_menu', 0)); ?>>
+                    No, keep default
+                </label>
+                <br><br>
+                <div id="posts-menu-options" style="<?php echo (get_option('brro_change_posts_menu', 0) == 1) ? 'display: block;' : 'display: none;'; ?>">
+                    <label for="brro_posts_menu_title">Posts menu title:</label>
+                    <input style="float: right;" type="text" name="brro_posts_menu_title" value="<?php echo esc_attr(get_option('brro_posts_menu_title', 'Articles')); ?>">
+                    <br><br>
+                    <label for="brro_posts_menu_icon">Posts Dashicons slug:</label>
+                    <input style="float: right;" type="text" name="brro_posts_menu_icon" value="<?php echo esc_attr(get_option('brro_posts_menu_icon', 'dashicons-admin-post')); ?>">
+                    <br><br>
+                    <small>Example dashicons: dashicons-admin-post, dashicons-format-aside, dashicons-format-standard, dashicons-format-quote</small>
+                </div>
+            </fieldset>
+            <?php endif; ?>
             
             <?php submit_button(); ?>
         </form>
@@ -312,4 +369,12 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_append_menuitems');
     // Alternative site editors for custom wp backend UI
     register_setting('brro-plugin-settings-group', 'brro_editors');
+    // Menu pages to remove for editors
+    register_setting('brro-plugin-settings-group', 'brro_editors_remove_menupages');
+    // Menu pages to remove for specific users
+    register_setting('brro-plugin-settings-group', 'brro_users_remove_menupages');
+    // Posts menu customization (only when brro-project is not active)
+    register_setting('brro-plugin-settings-group', 'brro_change_posts_menu');
+    register_setting('brro-plugin-settings-group', 'brro_posts_menu_title');
+    register_setting('brro-plugin-settings-group', 'brro_posts_menu_icon');
 }
