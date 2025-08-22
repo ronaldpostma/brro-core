@@ -232,6 +232,120 @@ function brro_custom_admin_menu_order($menu_ord) {
 }
 
 //
+add_action( 'admin_footer', 'brro_admin_instructions_scripts_and_styles' );
+function brro_admin_instructions_scripts_and_styles() {
+    // Only proceed if brro-project is not active
+    if (brro_is_project_active()) {
+        return;
+    }
+    //
+    ?>
+    <script type='text/javascript'>
+    jQuery(function($) {
+        //
+        //
+        // Admin page type
+        var body = $('body');
+        var isSingle = body.hasClass('[class*="post-type-"]') && body.hasClass('post-new-php') || body.hasClass('post-php');
+        var isRedirection = body.hasClass('tools_page_redirection');
+        var isProfile = body.hasClass('user-edit-php') || body.hasClass('profile-php');
+        //
+        // Limit excerpt to 141 characters
+        if (isSingle) {
+            var maxLength = 141; // Set the maximum length for the excerpt
+            var excerptText = $('#excerpt'); // Get the excerpt textarea element
+            var excerptInfo = 'Wordt gebruikt als samenvatting en meta-beschrijving voor zoekmachines. Max ' + maxLength + ' karakters';
+            // Add a class and text to the paragraph following the excerpt textarea
+            $('textarea#excerpt + p').addClass('cust-excerpt').text(excerptInfo);
+            excerptText.attr('maxlength', maxLength); // Set the maxlength attribute for the excerpt textarea
+            // Add an input event listener to the excerpt textarea
+            excerptText.on('input', function() {
+                var text = excerptText.val(); // Get the current value of the textarea
+                // If the text length exceeds the maximum length, trim it
+                if (text.length > maxLength) {
+                    excerptText.val(text.substring(0, maxLength));
+                }
+                // Update the paragraph text with the current character count
+                $('textarea#excerpt + p').text(excerptInfo + ': ' + text.length + '/' + maxLength);
+            });
+        }
+    });
+    </script>
+    <?php
+}
+
+//
+// ******************************************************************************************************************************************************************
+//  
+// Add excerpts to pages for SEO page description
+add_action('init', 'brro_allow_page_excerpt');
+function brro_allow_page_excerpt() {
+    add_post_type_support('page', 'excerpt');
+}
+//
+// ******************************************************************************************************************************************************************
+//  
+// Change posts menu title
+add_action( 'admin_menu', 'brro_change_posts_menu' );
+function brro_change_posts_menu() {
+    // Only proceed if brro-project is not active and the setting is enabled
+    if (!brro_is_project_active() && get_option('brro_change_posts_menu', 0) == 1) {
+        global $menu;
+        $custom_title = get_option('brro_posts_menu_title', 'Articles');
+        $custom_icon = get_option('brro_posts_menu_icon', 'dashicons-admin-post');
+        
+        // Loop through the menu to find the Posts menu item
+        foreach ( $menu as $key => $item ) {
+            if ( $item[2] === 'edit.php' ) {
+                $menu[$key][0] = $custom_title;
+                $menu[$key][6] = $custom_icon;
+                break; // Exit the loop after updating the Posts menu item
+            }
+        }
+    }
+}
+
+// Hook into 'admin_menu' to remove certain menu pages based on user role or ID
+add_action('admin_init', 'brro_remove_editor_menus',9999);
+function brro_remove_editor_menus() {
+	$user = get_current_user_id();
+	// Client editors
+	$get_editors = get_option('brro_editors', '2,3,4,5');
+    $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
+		return $id > 0;
+	}); 
+    if (in_array($user, $editors)) {
+        $get_editors_remove_menupages = get_option('brro_editors_remove_menupages', '');
+        if (!empty($get_editors_remove_menupages)) {
+            $editors_remove_menupages = array_filter(array_map('trim', explode("\n", $get_editors_remove_menupages)));
+            foreach ($editors_remove_menupages as $menu_page) {
+                if (!empty($menu_page)) {
+                    remove_menu_page($menu_page);
+                }
+            }
+        }
+    }
+    
+    // Remove menu pages for specific users
+    $get_users_remove_menupages = get_option('brro_users_remove_menupages', '');
+    if (!empty($get_users_remove_menupages)) {
+        $users_remove_menupages = array_filter(array_map('trim', explode("\n", $get_users_remove_menupages)));
+        foreach ($users_remove_menupages as $entry) {
+            if (!empty($entry)) {
+                $parts = array_map('trim', explode(',', $entry));
+                if (count($parts) === 2) {
+                    $target_user_id = (int) $parts[0];
+                    $menu_page = $parts[1];
+                    if ($target_user_id === $user && !empty($menu_page)) {
+                        remove_menu_page($menu_page);
+                    }
+                }
+            }
+        }
+    }
+}
+
+//
 // ******************************************************************************************************************************************************
 //
 // Chromeless CSS calculator popup endpoint (AJAX, admins only)
