@@ -1,0 +1,127 @@
+/* ========================================
+   BRRO PROJECT - WP ADMIN EDITORS STYLE
+   CSS for Client editors in WP Admin
+   ======================================== */
+
+/* ========================================
+   ADMIN MENU CUSTOMIZATION
+   ======================================== */
+
+/* Admin Menu Brro separator titles */
+#toplevel_page_brro-separator-core .wp-menu-name:after {
+    content: "Site instellingen" !important;
+}
+#toplevel_page_brro-separator-functionality .wp-menu-name:after {
+    content: "Webshop & Instellingen" !important;
+}
+#toplevel_page_brro-separator-content .wp-menu-name:after {
+    content: "Inhoud" !important;
+}
+
+/* ========================================
+   ELEMENT HIDING & DISPLAY CONTROL
+   ======================================== */
+
+/* Hide specific elements */
+li#specific-admin-menu,
+/* Hide private pages */
+tr.status-private {
+    display: none;
+}
+
+/* Disable drag postboxes & Meta links */
+#screen-meta-links,
+.handle-actions {
+    /**/display: none!important;/**/
+}
+
+/* Disable drag functionality for postboxes and widgets */
+.js .postbox .hndle, 
+.js .widget .widget-top {
+    /**/cursor: default !important;
+    pointer-events: none !important;/**/
+}
+
+/* ========================================
+   YOAST SEO PREMIUM BADGES
+   ======================================== */
+
+/* Hide Yoast premium badges and upsell elements */
+[class*="yoast"][class*="product"],
+[class*="yoast"][class*="upsell"],
+[class*="yoast"][class*="premium"],
+[class*="yst"][class*="product"],
+[class*="yst"][class*="upsell"],
+[class*="yst"][class*="premium"] {
+    display: none !important;
+}
+
+/* ========================================
+   CUSTOM DASHBOARD
+   ======================================== */
+
+/* Custom dashboard logo */
+.index-php #dashboard-widgets-wrap:before {
+    content: url(https://www.brro-client-website.nl/wp-content/uploads/logo.svg);
+    margin-left: calc(50% - 327px); /* 50% - half the width */
+    filter: invert(.7); /* if needed */
+}
+
+/* ========================================
+   FORM ELEMENT STYLING
+   ======================================== */
+
+/* General styling of instruction elements */
+#excerpt {
+    height: 8em !important;
+}
+
+.acf-field-message h2 {
+    padding: 0px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+
+/* ========================================
+   INSTRUCTION ELEMENTS STYLING
+   ======================================== */
+
+/* Base styling for all instruction elements */
+.tablenav.top:before,
+/* Explanation for featured image */
+#postimagediv .inside:after,
+/* Explanation for summary */
+textarea#excerpt + p,
+/* Explanation for native WordPress content editor */
+#wp-content-editor-tools:before,
+/* Explanation for title edit */
+#titlewrap:after,
+/* ACF info block */
+.acf-field-message {
+    font-size: 13px;
+    font-weight: 500;
+    background-color: rgba(0, 125, 62, .07);
+}
+
+/* ========================================
+   CONTENT-SPECIFIC INSTRUCTIONS
+   ======================================== */
+
+/* 
+ * Instruction simple content with :after 
+*/
+
+/* Blog / single post - Featured image explanation */
+.post-type-post #postimagediv .inside:after {
+    content: "Wordt getoond als beeld naast de titel, en in het berichtenoverzicht.";
+}
+
+/* Specific page - Content editor explanation */
+.post-id-368 #wp-content-editor-tools:before {
+    content: "Dit is de tekst onder de titel(s) en na de lead intro tekst.";
+}
+
+/* Custom post - Content editor explanation */
+.post-type-custom-post #wp-content-editor-tools:before {
+    content: "Omschrijving en details van het evenement onder de titel + afbeelding sectie."
+}

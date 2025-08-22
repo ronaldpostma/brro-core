@@ -18,16 +18,12 @@ Function Index for brro-core-global.php:
    - Hooks into post meta updates to clear cached ACF field values.
 8. brro_navburger_shortcode
    - Generates a customizable navigation burger icon via a shortcode.
-9. brro_allow_page_excerpt
-   - Enables excerpts on the 'page' post type for SEO descriptions.
 */
 
-/*
- * ========================================
- * CHECK IF BRRO-PROJECT PLUGIN IS ACTIVE
- * ========================================
- */
-
+/* ========================================
+   BRRO-PROJECT PLUGIN DETECTION
+   Checks if brro-project plugin is active and available
+   ======================================== */
 function brro_is_project_active() {
     // Check if brro-project plugin is active using WordPress plugin API
     if (function_exists('is_plugin_active')) {
@@ -46,7 +42,10 @@ function brro_is_project_active() {
 //
 // ******************************************************************************************************************************************************************
 //  
-// Add body classes frontend
+/* ========================================
+   FRONTEND BODY CLASSES
+   Adds custom classes to the body tag based on user roles and page properties
+   ======================================== */
 add_filter( 'body_class', 'brro_wp_css_body_class' );
 function brro_wp_css_body_class( $classes ){
     $user = get_current_user_id();
@@ -82,7 +81,10 @@ function brro_wp_css_body_class( $classes ){
     }
     return $classes;
 }
-// Add body class backend
+/* ========================================
+   ADMIN BODY CLASSES
+   Adds post ID and post type as classes in the admin body for styling purposes
+   ======================================== */
 add_filter('admin_body_class', 'brro_add_post_id_admin_body_class');
 function brro_add_post_id_admin_body_class($classes) {
     // Check if we are on a post edit screen robustly
@@ -110,7 +112,11 @@ function brro_add_post_id_admin_body_class($classes) {
 //
 // ******************************************************************************************************************************************************************
 //  
-// Shortcode constructor from ACF field data. Example: [acfcontent before="<span>" field="custom_title" after="</span>"]
+/* ========================================
+   ACF CONTENT SHORTCODE
+   Creates a shortcode to display ACF field data with optional before and after HTML
+   Example: [acfcontent before="<span>" field="custom_title" after="</span>"]
+   ======================================== */
 add_shortcode('acfcontent', 'brro_acf_content_shortcode');
 function brro_acf_content_shortcode($atts) {
     if (!function_exists('get_field')) {
@@ -157,7 +163,10 @@ function brro_acf_content_shortcode($atts) {
     // Return the final output
     return $output;
 }
-// Cache ACF get_field
+/* ========================================
+   ACF FIELD CACHING
+   Retrieves an ACF field value with caching to improve performance
+   ======================================== */
 function brro_get_cached_acf_field($field_name, $post_id) {
     $transient_key = 'acf_field_' . $post_id . '_' . $field_name;
     $cached_value = get_transient($transient_key);
@@ -168,12 +177,18 @@ function brro_get_cached_acf_field($field_name, $post_id) {
     $success = set_transient($transient_key, $acf_value, 12 * HOUR_IN_SECONDS);
     return $acf_value;
 }
-// Hook to clear cache when ACF field is updated
+/* ========================================
+   ACF CACHE CLEARING
+   Clears the cached ACF field value when the ACF field is updated
+   ======================================== */
 function brro_clear_acf_field_cache($post_id, $meta_key) {
     $transient_key = 'acf_field_' . $post_id . '_' . $meta_key;
     $success = delete_transient($transient_key);
 }
-// Hook into post metadata update actions to clear transient cache for relevant ACF fields
+/* ========================================
+   POST META UPDATE HANDLER
+   Hooks into post meta updates to clear cached ACF field values
+   ======================================== */
 add_action('updated_post_meta', 'brro_handle_updated_post_meta', 10, 4);
 add_action('added_post_meta', 'brro_handle_updated_post_meta', 10, 4);
 add_action('deleted_post_meta', 'brro_handle_updated_post_meta', 10, 4);
@@ -184,7 +199,11 @@ function brro_handle_updated_post_meta($meta_id, $post_id, $meta_key, $_meta_val
 //
 // ******************************************************************************************************************************************************************
 //  
-// Shortcode constructor for navburger. Example usage: [navburger style="60px 40px 8px 3px red green"]
+/* ========================================
+   NAVIGATION BURGER SHORTCODE
+   Generates a customizable navigation burger icon via a shortcode
+   Example usage: [navburger style="60px 40px 8px 3px red green"]
+   ======================================== */
 add_shortcode('navburger', 'brro_navburger_shortcode');
 function brro_navburger_shortcode($atts) {
     // Shortcode attributes, expecting one 'style' attribute

@@ -3,28 +3,43 @@ if (!defined('ABSPATH')) exit;
 /*
 Function Index for brro-core-admin.php:
 1. brro_add_wplogin_css
-   - Adds custom CSS to the WordPress login page based on dynamic settings.
+    - Adds custom CSS to the WordPress login page based on dynamic settings.
 2. brro_admin_redirect
-   - Redirects non-logged-in users to the login page if private mode is enabled.
-3. brro_disable_admin_bar_for_subscribers
-   - Disables the WordPress admin bar for users with the subscriber role when private mode is active.
-4. brro_check_jquery
-   - Ensures jQuery is loaded on the site, enqueuing it if necessary.
-5. brro_add_custom_menu_items
-   - Customizes the admin menu by removing default separators and adding custom items.
-6. brro_custom_admin_menu_order
-   - Reorders the admin menu items based on a specified custom order.
-7. brro_css_calc_popup_handler
-   - Renders the chromeless CSS calculator (AJAX, admins only).
-8. brro_disable_xmlrpc_comments
-   - Disables XML-RPC and comments site-wide based on settings.
-9. brro_remove_comments
-   - Removes comment UIs and disables comment supports in admin.
+    - Redirects non-logged-in users to the login page if private mode is enabled.
+3. brro_get_private_mode_exceptions
+    - Parses and normalizes private mode exception URLs from settings.
+4. brro_handle_preview_access
+    - Handles preview access flow with cookie-based authentication.
+5. brro_disable_admin_bar_for_subscribers
+    - Disables the WordPress admin bar for users with the subscriber role when private mode is active.
+6. brro_check_jquery
+    - Ensures jQuery is loaded on the site, enqueuing it if necessary.
+7. brro_add_custom_menu_items
+    - Customizes the admin menu by removing default separators and adding custom items.
+8. brro_custom_admin_menu_order
+    - Reorders the admin menu items based on a specified custom order.
+9. brro_admin_instructions_scripts_and_styles
+    - Adds excerpt character limiting and admin page enhancements (only when brro-project is not active).
+10. brro_allow_page_excerpt
+    - Enables excerpts on the 'page' post type for SEO descriptions.
+11. brro_change_posts_menu_title
+    - Changes Posts menu title and icon (only when brro-project is not active).
+12. brro_remove_editor_menus
+    - Removes menu pages for editors and specific users based on settings.
+13. brro_css_calc_popup_handler
+    - Renders the chromeless CSS calculator (AJAX, admins only).
+14. brro_disable_xmlrpc_comments
+    - Disables XML-RPC and comments site-wide based on settings.
+15. brro_remove_comments
+    - Removes comment UIs and disables comment supports in admin.
 */
 //
 // ******************************************************************************************************************************************************
 //
-// WP Login page
+/* ========================================
+   WP LOGIN PAGE CUSTOMIZATION
+   Adds custom CSS to the WordPress login page based on dynamic settings
+   ======================================== */
 add_action('login_enqueue_scripts', 'brro_add_wplogin_css');
 function brro_add_wplogin_css() {
     // Fetching individual settings for each condition
@@ -52,7 +67,10 @@ function brro_add_wplogin_css() {
 //
 // ******************************************************************************************************************************************************
 //
-// Wordpress private / logged in only mode
+/* ========================================
+   WORDPRESS PRIVATE MODE
+   Redirects non-logged-in users to the login page if private mode is enabled
+   ======================================== */
 add_action('get_header', 'brro_admin_redirect');
 function brro_admin_redirect() {
     // Only act when private mode is enabled
@@ -81,6 +99,10 @@ function brro_admin_redirect() {
     }
 }
 
+/* ========================================
+   PRIVATE MODE EXCEPTIONS PARSER
+   Parses and normalizes private mode exception URLs from settings
+   ======================================== */
 function brro_get_private_mode_exceptions() {
     $private_redirect_exceptions = get_option('brro_private_redirect_exceptions', '');
     $exceptions = array_filter(array_map('trim', explode("\n", $private_redirect_exceptions)));
@@ -90,6 +112,10 @@ function brro_get_private_mode_exceptions() {
     }, $exceptions);
 }
 
+/* ========================================
+   PREVIEW ACCESS HANDLER
+   Handles preview access flow with cookie-based authentication
+   ======================================== */
 function brro_handle_preview_access($current_path) {
     $is_preview = (bool) preg_match('/\/preview\/?$/', $current_path);
     if (!$is_preview) { return false; }
@@ -120,7 +146,10 @@ function brro_handle_preview_access($current_path) {
 //
 // ******************************************************************************************************************************************************
 //
-// Disable admin bar for subscribers (for viewing link)
+/* ========================================
+   ADMIN BAR CONTROL FOR SUBSCRIBERS
+   Disables the WordPress admin bar for users with the subscriber role when private mode is active
+   ======================================== */
 add_action('after_setup_theme', 'brro_disable_admin_bar_for_subscribers');
 function brro_disable_admin_bar_for_subscribers() {
     $private_mode = get_option('brro_private_mode', 0);
@@ -134,7 +163,10 @@ function brro_disable_admin_bar_for_subscribers() {
 //
 // ******************************************************************************************************************************************************
 //
-// Check if jQuery loaded (in WP 6.x it failed to load on some sites)
+/* ========================================
+   JQUERY LOADING CHECK
+   Ensures jQuery is loaded on the site, enqueuing it if necessary
+   ======================================== */
 add_action('wp_enqueue_scripts', 'brro_check_jquery');
 function brro_check_jquery() {
     if (!wp_script_is('jquery', 'enqueued')) {
@@ -144,7 +176,10 @@ function brro_check_jquery() {
 //
 // ******************************************************************************************************************************************************************
 //  
-//  Add custom separators and delete the default ons
+/* ========================================
+   CUSTOM ADMIN MENU ITEMS
+   Customizes the admin menu by removing default separators and adding custom items
+   ======================================== */
 add_action('admin_menu', 'brro_add_custom_menu_items');
 function brro_add_custom_menu_items() {
     global $menu;
@@ -171,14 +206,20 @@ function brro_add_custom_menu_items() {
 //
 // ******************************************************************************************************************************************************************
 //
-// WP Admin Sidebar order
+/* ========================================
+   ADMIN MENU REORDERING
+   Reorders the admin menu items based on a specified custom order
+   ======================================== */
 add_filter('custom_menu_order', '__return_true'); // Enable custom menu ordering.
 add_filter('menu_order', 'brro_custom_admin_menu_order', 1000); // Function for the custom order
 function brro_custom_admin_menu_order($menu_ord) {
+    // Validate input array
     if (!is_array($menu_ord)) {
         error_log('Menu order is not an array in brro_custom_admin_menu_order');
         return true;
     }
+    //
+    // Define the core custom order for admin menu items
     $custom_order = array(
         'index.php', // Dashboard
         'brro-help-link', // Brro help outward link
@@ -192,46 +233,56 @@ function brro_custom_admin_menu_order($menu_ord) {
         'brro-separator-functionality', // Brro separator
         'plugins.php', // Plugins
     );
-    // Initialize array to hold menu items fetched from plugin settings
-    $plugin_settings_menuitems = array(); // To hold menu items fetched from plugin settings
-    $append_custom_menuitems = get_option('brro_append_menuitems'); // Fetch items to append from settings list
+    //
+    // Get plugin settings menu items from database
+    $plugin_settings_menuitems = array();
+    $append_custom_menuitems = get_option('brro_append_menuitems');
+    // Parse plugin settings menu items if they exist
+    $menuitem_strings = array();
     if (!empty($append_custom_menuitems)) {
-        $menuitem_strings = explode("\n", $append_custom_menuitems); // Convert to array 
-        $menuitem_strings = array_map('trim', $menuitem_strings); // Trim each string to remove possible white spaces
+        $menuitem_strings = array_map('trim', explode("\n", $append_custom_menuitems));
     }
-    // Insert all menu items after "Plugins", except for exceptions from settings
+    //
+    // Process each menu item from WordPress
     foreach ($menu_ord as $menu_item) {
-        // Skip if the item is already in the custom order
+        // Skip items already in our custom order
         if (!in_array($menu_item, $custom_order)) {
-            $matched = false; // Flag to indicate if a match was found in plugin settings
-            // Check against plugin settings items
+            $matched = false;
+            //
+            // Check if this item matches any plugin settings items
             if (!empty($menuitem_strings)) {
                 foreach ($menuitem_strings as $item) {
                     if ($menu_item === $item) {
                         $plugin_settings_menuitems[] = $menu_item;
                         $matched = true;
-                        break; // Stop the loop if a match is found
+                        break; // Found match, stop inner loop
                     }
                 }
             }
-            // For items not matching specific criteria and not in plugin settings
+            //
+            // Add to custom order if not matched in plugin settings
             if (!$matched) {
                 $custom_order[] = $menu_item;
             }
         }
     }
-    // Append these specific items after plugins
+    //
+    // Add content section items after plugins
     $custom_order[] = 'brro-separator-content'; // Brro separator
     $custom_order[] = 'upload.php'; // Media
     $custom_order[] = 'users.php'; // Users
     $custom_order[] = 'edit.php?post_type=page'; // Pages
     $custom_order[] = 'edit.php'; // Posts
-    // Final assembly of the custom order array
-    $custom_order = array_merge($custom_order, $plugin_settings_menuitems);
-    return $custom_order;
+    //
+    // Combine custom order with plugin settings items
+    return array_merge($custom_order, $plugin_settings_menuitems);
 }
 
 //
+/* ========================================
+   ADMIN PAGE ENHANCEMENTS
+   Adds excerpt character limiting and admin page enhancements (only when brro-project is not active)
+   ======================================== */
 add_action( 'admin_footer', 'brro_admin_instructions_scripts_and_styles' );
 function brro_admin_instructions_scripts_and_styles() {
     // Only proceed if brro-project is not active
@@ -277,17 +328,23 @@ function brro_admin_instructions_scripts_and_styles() {
 //
 // ******************************************************************************************************************************************************************
 //  
-// Add excerpts to pages for SEO page description
-add_action('init', 'brro_allow_page_excerpt');
-function brro_allow_page_excerpt() {
+/* ========================================
+   PAGE EXCERPTS ENABLEMENT
+   Enables excerpts on the 'page' post type for SEO descriptions
+   ======================================== */
+add_action('init', 'brro_allow_page_excerpt_for_seo');
+function brro_allow_page_excerpt_for_seo() {
     add_post_type_support('page', 'excerpt');
 }
 //
 // ******************************************************************************************************************************************************************
 //  
-// Change posts menu title
-add_action( 'admin_menu', 'brro_change_posts_menu' );
-function brro_change_posts_menu() {
+/* ========================================
+   POSTS MENU CUSTOMIZATION
+   Changes Posts menu title and icon (only when brro-project is not active)
+   ======================================== */
+add_action( 'admin_menu', 'brro_change_posts_menu_title' );
+function brro_change_posts_menu_title() {
     // Only proceed if brro-project is not active and the setting is enabled
     if (!brro_is_project_active() && get_option('brro_change_posts_menu', 0) == 1) {
         global $menu;
@@ -305,9 +362,12 @@ function brro_change_posts_menu() {
     }
 }
 
-// Hook into 'admin_menu' to remove certain menu pages based on user role or ID
-add_action('admin_init', 'brro_remove_editor_menus',9999);
-function brro_remove_editor_menus() {
+/* ========================================
+   EDITOR MENU PAGE REMOVAL
+   Removes menu pages for editors and specific users based on settings
+   ======================================== */
+add_action('admin_init', 'brro_remove_wp_admin_menu_items',9999);
+function brro_remove_wp_admin_menu_items() {
 	$user = get_current_user_id();
 	// Client editors
 	$get_editors = get_option('brro_editors', '2,3,4,5');
@@ -348,7 +408,10 @@ function brro_remove_editor_menus() {
 //
 // ******************************************************************************************************************************************************
 //
-// Chromeless CSS calculator popup endpoint (AJAX, admins only)
+/* ========================================
+   CSS CALCULATOR POPUP HANDLER
+   Renders the chromeless CSS calculator (AJAX, admins only)
+   ======================================== */
 add_action('wp_ajax_brro_css_calc_popup', 'brro_css_calc_popup_handler');
 function brro_css_calc_popup_handler() {
     if ( ! is_user_logged_in() || ! current_user_can('manage_options') ) {
@@ -430,8 +493,10 @@ function brro_css_calc_popup_handler() {
 //
 // ******************************************************************************************************************************************************
 //
-// Remove XML RPC and Comments
-// Hook XML-RPC into 'after_setup_theme'
+/* ========================================
+   XML-RPC AND COMMENTS DISABLEMENT
+   Disables XML-RPC and comments site-wide based on settings
+   ======================================== */
 add_action('after_setup_theme', 'brro_disable_xmlrpc_comments');
 function brro_disable_xmlrpc_comments() {
     $xmlrpc_off = get_option('brro_xmlrpc_off', 0);
@@ -465,7 +530,10 @@ function brro_disable_xmlrpc_comments() {
         }, 1);
     }
 }
-// Remove comments
+/* ========================================
+   COMMENTS UI REMOVAL
+   Removes comment UIs and disables comment supports in admin
+   ======================================== */
 add_action('admin_init', 'brro_remove_comments');
 function brro_remove_comments() {
     $comments_off = get_option('brro_comments_off', 0);

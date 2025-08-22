@@ -103,10 +103,6 @@ function brro_webdev_enqueue_admin_assets() {
     // Client users / editors
     if (in_array($user, $editors)) {
         wp_enqueue_style( 'brro-core-wp-admin-editors-style', plugins_url( '/css/brro-core-wp-admin-editors-style.css', __FILE__ ), [], '1.0.0', 'all' );
-    } 
-    // Main Brro admin & 3rd parties
-    if ( current_user_can('administrator') ) {
-        wp_enqueue_style( 'brro-core-wp-admin-admin-style', plugins_url( '/css/brro-core-wp-admin-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
     }
 }
 //
