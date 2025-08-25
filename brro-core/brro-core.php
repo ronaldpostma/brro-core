@@ -12,6 +12,25 @@
  */
 if (!defined('ABSPATH')) exit;
 //
+/* ========================================
+   BRRO-PROJECT PLUGIN DETECTION
+   Checks if brro-project plugin is active and available
+   ======================================== */
+   function brro_is_project_active() {
+    // Check if brro-project plugin is active using WordPress plugin API
+    if (function_exists('is_plugin_active')) {
+        return is_plugin_active('brro-project/brro-project.php');
+    }
+    // Fallback: check if plugin file exists and is loaded
+    return class_exists('Brro_Project') || 
+           defined('BRRO_PROJECT_VERSION') || 
+           file_exists(WP_PLUGIN_DIR . '/brro-project/brro-project.php');
+    // Example usage:
+    // if (!brro_is_project_active()) {
+    //     do something if brro-project plugin is not active
+    // }
+}
+//
 // Include php function files
 // 
 require_once plugin_dir_path(__FILE__) . '/php/brro-core-settings.php';

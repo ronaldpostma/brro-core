@@ -18,19 +18,17 @@ Function Index for brro-core-admin.php:
     - Customizes the admin menu by removing default separators and adding custom items.
 8. brro_custom_admin_menu_order
     - Reorders the admin menu items based on a specified custom order.
-9. brro_admin_instructions_scripts_and_styles
-    - Adds excerpt character limiting and admin page enhancements (only when brro-project is not active).
-10. brro_allow_page_excerpt
+9. brro_allow_page_excerpt
     - Enables excerpts on the 'page' post type for SEO descriptions.
-11. brro_change_posts_menu_title
+10. brro_change_posts_menu_title
     - Changes Posts menu title and icon (only when brro-project is not active).
-12. brro_remove_editor_menus
+11. brro_remove_editor_menus
     - Removes menu pages for editors and specific users based on settings.
-13. brro_css_calc_popup_handler
+12. brro_css_calc_popup_handler
     - Renders the chromeless CSS calculator (AJAX, admins only).
-14. brro_disable_xmlrpc_comments
+13. brro_disable_xmlrpc_comments
     - Disables XML-RPC and comments site-wide based on settings.
-15. brro_remove_comments
+14. brro_remove_comments
     - Removes comment UIs and disables comment supports in admin.
 */
 //
@@ -277,54 +275,6 @@ function brro_custom_admin_menu_order($menu_ord) {
     // Combine custom order with plugin settings items
     return array_merge($custom_order, $plugin_settings_menuitems);
 }
-
-//
-/* ========================================
-   ADMIN PAGE ENHANCEMENTS
-   Adds excerpt character limiting and admin page enhancements (only when brro-project is not active)
-   ======================================== */
-add_action( 'admin_footer', 'brro_admin_instructions_scripts_and_styles' );
-function brro_admin_instructions_scripts_and_styles() {
-    // Only proceed if brro-project is not active
-    if (brro_is_project_active()) {
-        return;
-    }
-    //
-    ?>
-    <script type='text/javascript'>
-    jQuery(function($) {
-        //
-        //
-        // Admin page type
-        var body = $('body');
-        var isSingle = body.hasClass('[class*="post-type-"]') && body.hasClass('post-new-php') || body.hasClass('post-php');
-        var isRedirection = body.hasClass('tools_page_redirection');
-        var isProfile = body.hasClass('user-edit-php') || body.hasClass('profile-php');
-        //
-        // Limit excerpt to 141 characters
-        if (isSingle) {
-            var maxLength = 141; // Set the maximum length for the excerpt
-            var excerptText = $('#excerpt'); // Get the excerpt textarea element
-            var excerptInfo = 'Wordt gebruikt als samenvatting en meta-beschrijving voor zoekmachines. Max ' + maxLength + ' karakters';
-            // Add a class and text to the paragraph following the excerpt textarea
-            $('textarea#excerpt + p').addClass('cust-excerpt').text(excerptInfo);
-            excerptText.attr('maxlength', maxLength); // Set the maxlength attribute for the excerpt textarea
-            // Add an input event listener to the excerpt textarea
-            excerptText.on('input', function() {
-                var text = excerptText.val(); // Get the current value of the textarea
-                // If the text length exceeds the maximum length, trim it
-                if (text.length > maxLength) {
-                    excerptText.val(text.substring(0, maxLength));
-                }
-                // Update the paragraph text with the current character count
-                $('textarea#excerpt + p').text(excerptInfo + ': ' + text.length + '/' + maxLength);
-            });
-        }
-    });
-    </script>
-    <?php
-}
-
 //
 // ******************************************************************************************************************************************************************
 //  
