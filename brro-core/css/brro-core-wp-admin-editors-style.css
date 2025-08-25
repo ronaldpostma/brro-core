@@ -1,3 +1,9 @@
+/* ========================================
+   IMPORTANT READ FIRST
+   This file is not available when brro-flex-theme is active
+   ======================================== */
+
+
 /* Display > none 
  * Hide all links in top menu and page attributes */ 
 #wpadminbar li, .wp-admin #wpfooter,
