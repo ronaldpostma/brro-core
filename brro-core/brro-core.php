@@ -105,7 +105,9 @@ function brro_enqueue_script_frontend_inspector() {
 add_action( 'admin_enqueue_scripts', 'brro_webdev_enqueue_admin_assets');
 function brro_webdev_enqueue_admin_assets() {
     // For all users
-    wp_enqueue_style( 'brro-core-wp-admin-style', plugins_url( '/css/brro-core-wp-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
+    if (brro_is_project_active()) {
+        wp_enqueue_style( 'brro-core-wp-admin-style', plugins_url( '/css/brro-core-wp-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
+    }
     wp_enqueue_script( 'brro-core-wp-admin-script', plugins_url( '/js/brro-core-wp-admin-script.js', __FILE__ ), ['jquery'], '1.0.0', true );
     // Localize script with data from your settings
     $script_data = array(
@@ -114,14 +116,16 @@ function brro_webdev_enqueue_admin_assets() {
     wp_localize_script('brro-core-wp-admin-script', 'pluginSettings', $script_data);
     // 
     // For specific users
-    $user = get_current_user_id();
-    $get_editors = get_option('brro_editors', '2,3,4,5');
-    $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
-	    return $id > 0;
-	}); 
-    // Client users / editors
-    if (in_array($user, $editors)) {
-        wp_enqueue_style( 'brro-core-wp-admin-editors-style', plugins_url( '/css/brro-core-wp-admin-editors-style.css', __FILE__ ), [], '1.0.0', 'all' );
+    if (brro_is_project_active()) {
+        $user = get_current_user_id();
+        $get_editors = get_option('brro_editors', '2,3,4,5');
+        $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
+            return $id > 0;
+        }); 
+        // Client users / editors
+        if (in_array($user, $editors)) {
+            wp_enqueue_style( 'brro-core-wp-admin-editors-style', plugins_url( '/css/brro-core-wp-admin-editors-style.css', __FILE__ ), [], '1.0.0', 'all' );
+        }
     }
 }
 //
