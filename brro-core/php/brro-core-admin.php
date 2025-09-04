@@ -89,6 +89,9 @@ function brro_admin_redirect() {
     // Preview access flow (handles its own redirects)
     if (brro_handle_preview_access($current_path)) { return; }
 
+    // Allow access if preview cookie is set (granted via /preview)
+    if (isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] === 'true') { return; }
+
     // Redirect to configured URL or login
     $redirect_url = get_option('brro_private_mode_redirect', home_url('wp-login.php'));
     if (!headers_sent()) {
@@ -115,11 +118,14 @@ function brro_get_private_mode_exceptions() {
    Handles preview access flow with cookie-based authentication
    ======================================== */
 function brro_handle_preview_access($current_path) {
+    // Check if the current path is a preview path
     $is_preview = (bool) preg_match('/\/preview\/?$/', $current_path);
     if (!$is_preview) { return false; }
 
+    // Check if the user has preview access via a cookie
     $has_preview_access = isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] === 'true';
     if ($has_preview_access) {
+        // Redirect to home if headers are not already sent
         if (!headers_sent()) {
             wp_safe_redirect(home_url());
             exit;
@@ -127,9 +133,10 @@ function brro_handle_preview_access($current_path) {
         return true;
     }
 
+    // Set a cookie for preview access and redirect to home if headers are not already sent
     if (!headers_sent()) {
         setcookie('preview_access', 'true', array(
-            'expires' => time() + 7200,
+            'expires' => time() + 7200, // Cookie expires in 2 hours
             'path' => COOKIEPATH,
             'domain' => COOKIE_DOMAIN,
             'secure' => is_ssl(),
@@ -316,38 +323,41 @@ function brro_change_posts_menu_title() {
    EDITOR MENU PAGE REMOVAL
    Removes menu pages for editors and specific users based on settings
    ======================================== */
-add_action('admin_init', 'brro_remove_wp_admin_menu_items',9999);
+add_action('admin_init', 'brro_remove_wp_admin_menu_items', 9999);
 function brro_remove_wp_admin_menu_items() {
-	$user = get_current_user_id();
-	// Client editors
-	$get_editors = get_option('brro_editors', '2,3,4,5');
-    $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
-		return $id > 0;
-	}); 
-    if (in_array($user, $editors)) {
-        $get_editors_remove_menupages = get_option('brro_editors_remove_menupages', '');
-        if (!empty($get_editors_remove_menupages)) {
-            $editors_remove_menupages = array_filter(array_map('trim', explode("\n", $get_editors_remove_menupages)));
-            foreach ($editors_remove_menupages as $menu_page) {
-                if (!empty($menu_page)) {
-                    remove_menu_page($menu_page);
+    // Only proceed if brro-project is not active
+    if (!brro_is_project_active()) {
+        $user = get_current_user_id();
+        // Client editors
+        $get_editors = get_option('brro_editors', '2,3,4,5');
+        $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
+            return $id > 0;
+        }); 
+        if (in_array($user, $editors)) {
+            $get_editors_remove_menupages = get_option('brro_editors_remove_menupages', '');
+            if (!empty($get_editors_remove_menupages)) {
+                $editors_remove_menupages = array_filter(array_map('trim', explode("\n", $get_editors_remove_menupages)));
+                foreach ($editors_remove_menupages as $menu_page) {
+                    if (!empty($menu_page)) {
+                        remove_menu_page($menu_page);
+                    }
                 }
             }
         }
-    }
-    
-    // Remove menu pages for specific users
-    $get_users_remove_menupages = get_option('brro_users_remove_menupages', '');
-    if (!empty($get_users_remove_menupages)) {
-        $users_remove_menupages = array_filter(array_map('trim', explode("\n", $get_users_remove_menupages)));
-        foreach ($users_remove_menupages as $entry) {
-            if (!empty($entry)) {
-                $parts = array_map('trim', explode(',', $entry));
-                if (count($parts) === 2) {
-                    $target_user_id = (int) $parts[0];
-                    $menu_page = $parts[1];
-                    if ($target_user_id === $user && !empty($menu_page)) {
-                        remove_menu_page($menu_page);
+        
+        // Remove menu pages for specific users
+        $get_users_remove_menupages = get_option('brro_users_remove_menupages', '');
+        if (!empty($get_users_remove_menupages)) {
+            $users_remove_menupages = array_filter(array_map('trim', explode("\n", $get_users_remove_menupages)));
+            foreach ($users_remove_menupages as $entry) {
+                if (!empty($entry)) {
+                    $parts = array_map('trim', explode(',', $entry));
+                    if (count($parts) === 2) {
+                        $target_user_id = (int) $parts[0];
+                        $menu_page = $parts[1];
+                        if ($target_user_id === $user && !empty($menu_page)) {
+                            remove_menu_page($menu_page);
+                        }
                     }
                 }
             }
