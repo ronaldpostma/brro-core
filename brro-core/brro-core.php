@@ -39,17 +39,27 @@ require_once plugin_dir_path(__FILE__) . '/php/brro-core-admin.php';
 // 
 require_once plugin_dir_path(__FILE__) . '/php/brro-core-global.php';
 //
-// Detect if Elementor is active (runtime detection only)
-$elementor_active = ( did_action('elementor/loaded') || class_exists('\\Elementor\\Plugin') || defined('ELEMENTOR_VERSION') ) ? 1 : 0;
+// Detect if Elementor is active (late, after plugins load)
+add_action('plugins_loaded', 'brro_set_elementor_flag', 20);
+function brro_set_elementor_flag() {
+    $active = did_action('elementor/loaded') || class_exists('\\Elementor\\Plugin') || defined('ELEMENTOR_VERSION');
+    if (!defined('BRRO_ELEMENTOR_ACTIVE')) {
+        define('BRRO_ELEMENTOR_ACTIVE', $active ? true : false);
+    }
+}
+function brro_is_elementor_active() {
+    return defined('BRRO_ELEMENTOR_ACTIVE') && BRRO_ELEMENTOR_ACTIVE;
+}
 //
 // Load script for Elementor Editor Panel
-if ( $elementor_active === 1 ) {
-    add_action( 'elementor/editor/after_enqueue_scripts', 'brro_enqueue_script_elementor_editor' );
-}
+add_action('plugins_loaded', function() {
+    if ( brro_is_elementor_active() ) {
+        add_action( 'elementor/editor/after_enqueue_scripts', 'brro_enqueue_script_elementor_editor' );
+    }
+}, 30);
 function brro_enqueue_script_elementor_editor() {
-    global $elementor_active;
     $developer_mode = get_option('brro_developer_mode', 0);
-    if ($elementor_active === 1 && $developer_mode == 1 && is_user_logged_in() ) {
+    if ( brro_is_elementor_active() && $developer_mode == 1 && is_user_logged_in() ) {
         wp_enqueue_script( 'brro-core-elementor-editor-script', plugins_url( '/js/brro-core-elementor-editor-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
         // Localize script with data from your settings
         $script_data = array(
@@ -90,12 +100,11 @@ function brro_enqueue_script_css_calculator() {
 // Load script for site back- and frontend 'inspector'
 add_action( 'wp_enqueue_scripts', 'brro_enqueue_script_frontend_inspector' );
 function brro_enqueue_script_frontend_inspector() {
-    global $elementor_active;
     $developer_mode = get_option('brro_developer_mode', 0);
     if ($developer_mode == 1 && is_user_logged_in() ) {
         wp_enqueue_script( 'brro-core-frontend-inspector-script', plugins_url( '/js/brro-core-frontend-inspector-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
         wp_localize_script('brro-core-frontend-inspector-script', 'pluginSettings', array(
-            'elementorActive' => $elementor_active
+            'elementorActive' => brro_is_elementor_active()
         ));
         wp_enqueue_style('brro-core-frontend-inspector-style', plugins_url( '/css/brro-core-frontend-inspector-style.css', __FILE__ ), [], '1.0.0' );
     }
