@@ -3,7 +3,7 @@
  * Plugin Name: Brro Core
  * Plugin URI: https://github.com/ronaldpostma/brro-core
  * Description: Global core functions and development tools for sites developed by Brro.
- * Version: 2.0.0
+ * Version: 2.0.1
  * Author: Ronald Postma @ Brro.nl
  * Author URI: https://brro.nl/
  * License: GPLv2 or later
@@ -28,6 +28,25 @@ if (!defined('ABSPATH')) exit;
     // Example usage:
     // if (!brro_is_project_active()) {
     //     do something if brro-project plugin is not active
+    // }
+}
+/* ========================================
+   BRRO FLEX THEME DETECTION
+   Checks if brro-flex-theme is active and available
+   ======================================== */
+   function brro_is_flex_theme_active() {
+    // Check if brro-flex-theme is the active theme
+    $current_theme = wp_get_theme();
+    if ($current_theme->get('Name') === 'Brro Flex Theme' || $current_theme->get('TextDomain') === 'brro-flex-theme' || $current_theme->get_stylesheet() === 'brro-flex-theme') {
+        return true;
+    }
+    // Fallback: check if theme class or constant exists, or theme directory exists
+    return class_exists('Brro_Flex_Theme') || 
+           defined('BRRO_FLEX_THEME_VERSION') || 
+           file_exists(get_theme_root() . '/brro-flex-theme/style.css');
+    // Example usage:
+    // if (!brro_is_flex_theme_active()) {
+    //     do something if brro-flex-theme is not active
     // }
 }
 //
@@ -97,24 +116,11 @@ function brro_enqueue_script_css_calculator() {
     }
 }
 //
-// Load script for site back- and frontend 'inspector'
-add_action( 'wp_enqueue_scripts', 'brro_enqueue_script_frontend_inspector' );
-function brro_enqueue_script_frontend_inspector() {
-    $developer_mode = get_option('brro_developer_mode', 0);
-    if ($developer_mode == 1 && is_user_logged_in() ) {
-        wp_enqueue_script( 'brro-core-frontend-inspector-script', plugins_url( '/js/brro-core-frontend-inspector-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
-        wp_localize_script('brro-core-frontend-inspector-script', 'pluginSettings', array(
-            'elementorActive' => brro_is_elementor_active()
-        ));
-        wp_enqueue_style('brro-core-frontend-inspector-style', plugins_url( '/css/brro-core-frontend-inspector-style.css', __FILE__ ), [], '1.0.0' );
-    }
-}
-//
 // Load assets for wp admin area
 add_action( 'admin_enqueue_scripts', 'brro_webdev_enqueue_admin_assets');
 function brro_webdev_enqueue_admin_assets() {
     // For all users
-    if (brro_is_project_active()) {
+    if (brro_is_project_active() || !brro_is_flex_theme_active()) {
         wp_enqueue_style( 'brro-core-wp-admin-style', plugins_url( '/css/brro-core-wp-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
     }
     wp_enqueue_script( 'brro-core-wp-admin-script', plugins_url( '/js/brro-core-wp-admin-script.js', __FILE__ ), ['jquery'], '1.0.0', true );
@@ -125,7 +131,7 @@ function brro_webdev_enqueue_admin_assets() {
     wp_localize_script('brro-core-wp-admin-script', 'pluginSettings', $script_data);
     // 
     // For specific users
-    if (brro_is_project_active()) {
+    if (brro_is_project_active() || !brro_is_flex_theme_active()) {
         $user = get_current_user_id();
         $get_editors = get_option('brro_editors', '2,3,4,5');
         $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
@@ -135,57 +141,6 @@ function brro_webdev_enqueue_admin_assets() {
         if (in_array($user, $editors)) {
             wp_enqueue_style( 'brro-core-wp-admin-editors-style', plugins_url( '/css/brro-core-wp-admin-editors-style.css', __FILE__ ), [], '1.0.0', 'all' );
         }
-    }
-}
-//
-// Custom CSS for inspector mode
-add_action('wp_head', 'brro_add_inspector_css');
-function brro_add_inspector_css() {
-    $developer_mode = get_option('brro_developer_mode', 0); 
-    // Enqueue only if '$developer_mode' is "1 / Developer Mode"
-    if ($developer_mode == 1 && is_user_logged_in() ) {
-        // Fetching individual settings for each condition
-        $blend_mode_setting = get_option('brro_blend_mode', 'screen'); // Default for blend mode
-        $parent_border_color = get_option('brro_parent_border_color', '#ff0000'); // Example default color
-        $child_border_color = get_option('brro_child_border_color', '#00ff00'); // Example default color
-        $child_child_border_color = get_option('brro_child_child_border_color', '#0000ff'); // Example default color
-        $widget_text_color = get_option('brro_widget_text_color', '#ddd'); // Example default color
-        $desktopEnd = get_option('brro_desktop_end', '1600');
-        // Constructing the CSS string with dynamic values
-        $custom_css = "
-        .elementor-container-inspector .e-con::before,
-        .inspect-parent .e-con::before,
-        .inspect-child .e-con::before,
-        .inspect-child-child .e-con::before,
-        .elementor-container-inspector .elementor-widget::before,
-        .inspect-widget .elementor-widget::before {
-            mix-blend-mode: {$blend_mode_setting};
-        }
-        .elementor-container-inspector  .e-con.e-parent::before,
-        .inspect-parent .e-con.e-parent::before {
-            border-color: {$parent_border_color};
-        }
-        .elementor-container-inspector  .e-con.e-child::before,
-        .inspect-child .e-con.e-child::before {
-            border-color: {$child_border_color};
-        }
-        .elementor-container-inspector  .e-con.e-child .e-con.e-child::before,
-        .inspect-child-child .e-con.e-child .e-con.e-child::before {
-            border-color: {$child_child_border_color};
-        }
-        .elementor-container-inspector .elementor-widget::before,
-        .inspect-widget .elementor-widget::before {
-            color: {$widget_text_color};
-        }
-        .inspect-edges span.edge.inner.left {
-            left: calc(50% - ({$desktopEnd}px / 2) - 100%);
-        }
-        .inspect-edges span.edge.inner.right {
-            left: calc(50% + ({$desktopEnd}px / 2));
-        }";
-
-        // Outputting the CSS
-        echo '<style>' . $custom_css . '</style>';
     }
 }
 /*

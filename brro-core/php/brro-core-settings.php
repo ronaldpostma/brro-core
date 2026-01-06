@@ -189,25 +189,6 @@ function brro_plugin_settings_page() {
                     </label>
                 </fieldset>
                 
-                <!-- Inspector CSS Settings -->
-                <fieldset style="max-width: 420px;">
-                    <legend><h3 style="margin: 40px 0 16px 0;">Inspector CSS colors</h3></legend>
-                    <label for="brro_blend_mode">Mix blend mode:</label>
-                    <input style="float: right;" type="text" name="brro_blend_mode" value="<?php echo esc_attr(get_option('brro_blend_mode', 'screen')); ?>">
-                    <br><br>
-                    <label for="brro_parent_border_color">Parent container border color:</label>
-                    <input style="float: right;" type="text" name="brro_parent_border_color" value="<?php echo esc_attr(get_option('brro_parent_border_color', '#FF0000')); ?>">
-                    <br><br>
-                    <label for="brro_child_border_color">Child container border color:</label>
-                    <input style="float: right;" type="text" name="brro_child_border_color" value="<?php echo esc_attr(get_option('brro_child_border_color', '#00FF00')); ?>">
-                    <br><br>
-                    <label for="brro_child_child_border_color">Child > Child containers border color:</label>
-                    <input style="float: right;" type="text" name="brro_child_child_border_color" value="<?php echo esc_attr(get_option('brro_child_child_border_color', '#0000FF')); ?>">
-                    <br><br>
-                    <label for="brro_widget_text_color">Widget element box shadow color:</label>
-                    <input style="float: right;" type="text" name="brro_widget_text_color" value="<?php echo esc_attr(get_option('brro_widget_text_color', '#DDD')); ?>">
-                </fieldset>
-                
                 <!-- WP Login Page Settings -->
                 <fieldset style="max-width: 420px;">
                     <legend><h3 style="margin: 40px 0 16px 0;">wp-login.php custom CSS</h3></legend>
@@ -242,7 +223,7 @@ function brro_plugin_settings_page() {
                     <input type="text" id="brro_editors" name="brro_editors" value="<?php echo esc_attr(get_option('brro_editors', '2,3,4,5')); ?>" />
                 </fieldset>
                 
-                <?php if (!brro_is_project_active()): ?>
+                <?php if (!brro_is_project_active() || !brro_is_flex_theme_active()): ?>
                 <!-- Editor Menu Pages to Remove (only when brro-project is not active) -->
                 <fieldset>
                     <legend><h3 style="margin: 40px 0 16px 0;">Menu pages to remove for editors</h3></legend>
@@ -299,7 +280,7 @@ function brro_plugin_settings_page() {
                 <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">
             </fieldset>
             
-            <?php if (!brro_is_project_active()): ?>
+            <?php if (!brro_is_project_active() || !brro_is_flex_theme_active()): ?>
             <!-- Posts Menu Customization (only when brro-project is not active) -->
             <fieldset style="max-width: 420px;">
                 <legend><h3 style="margin: 40px 0 16px 0;">Posts Menu Customization</h3></legend>
@@ -344,12 +325,6 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_mobile_ref');
     register_setting('brro-plugin-settings-group', 'brro_mobile_start');
     register_setting('brro-plugin-settings-group', 'brro_lock_screen');
-    // register settings frontend inspector
-    register_setting('brro-plugin-settings-group', 'brro_blend_mode');
-    register_setting('brro-plugin-settings-group', 'brro_parent_border_color');
-    register_setting('brro-plugin-settings-group', 'brro_child_border_color');
-    register_setting('brro-plugin-settings-group', 'brro_child_child_border_color');
-    register_setting('brro-plugin-settings-group', 'brro_widget_text_color');
     // register settings wp login
     register_setting('brro-plugin-settings-group', 'brro_login_backgroundmain');
     register_setting('brro-plugin-settings-group', 'brro_login_backgroundform');
