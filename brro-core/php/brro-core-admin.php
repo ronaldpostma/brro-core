@@ -69,7 +69,7 @@ function brro_add_wplogin_css() {
    WORDPRESS PRIVATE MODE
    Redirects non-logged-in users to the login page if private mode is enabled
    ======================================== */
-add_action('get_header', 'brro_admin_redirect');
+add_action('template_redirect', 'brro_admin_redirect');
 function brro_admin_redirect() {
     // Only act when private mode is enabled
     $private_mode = get_option('brro_private_mode', 0);
@@ -93,7 +93,18 @@ function brro_admin_redirect() {
     if (isset($_COOKIE['preview_access']) && $_COOKIE['preview_access'] === 'true') { return; }
 
     // Redirect to configured URL or login
-    $redirect_url = get_option('brro_private_mode_redirect', home_url('wp-login.php'));
+    $redirect_url_setting = trim(get_option('brro_private_mode_redirect', ''));
+    $redirect_url = home_url('wp-login.php'); // Default fallback
+    
+    // Validate URL - check if not empty and is a valid URL
+    if (!empty($redirect_url_setting)) {
+        // Use filter_var to validate URL format
+        $validated_url = filter_var($redirect_url_setting, FILTER_VALIDATE_URL);
+        if ($validated_url !== false) {
+            $redirect_url = esc_url_raw($validated_url);
+        }
+    }
+    
     if (!headers_sent()) {
         wp_safe_redirect($redirect_url);
         exit;
