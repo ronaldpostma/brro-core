@@ -223,7 +223,7 @@ function brro_plugin_settings_page() {
                     <input type="text" id="brro_editors" name="brro_editors" value="<?php echo esc_attr(get_option('brro_editors', '2,3,4,5')); ?>" />
                 </fieldset>
                 
-                <?php if (!brro_is_project_active() || !brro_is_flex_theme_active()): ?>
+                <?php if (!brro_is_project_active()): ?>
                 <!-- Editor Menu Pages to Remove (only when brro-project is not active) -->
                 <fieldset>
                     <legend><h3 style="margin: 40px 0 16px 0;">Menu pages to remove for editors</h3></legend>
@@ -233,7 +233,7 @@ function brro_plugin_settings_page() {
                     <small>Examples: upload.php, themes.php, tools.php, users.php, profile.php, plugins.php, brro-separator-core, edit.php?post_type=elementor_library, snippets, elementor, brro-plugin-settings, jet-dashboard, jet-smart-filters, edit.php?post_type=acf-field-group, update-core.php</small>
                 </fieldset>
                 
-                <!-- Specific User Menu Pages to Remove (only when brro-project is not active) -->
+                <!-- Specific User Menu Pages to Remove (only when brro-project or flex theme is not active) -->
                 <fieldset>
                     <legend><h3 style="margin: 40px 0 16px 0;">Menu pages to remove for specific users</h3></legend>
                     <p>Enter one entry per line in format: user_id,menu_page_slug. These pages will be hidden from specific users:</p>
@@ -280,7 +280,7 @@ function brro_plugin_settings_page() {
                 <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">
             </fieldset>
             
-            <?php if (!brro_is_project_active() || !brro_is_flex_theme_active()): ?>
+            <?php if (!brro_is_project_active()): ?>
             <!-- Posts Menu Customization (only when brro-project is not active) -->
             <fieldset style="max-width: 420px;">
                 <legend><h3 style="margin: 40px 0 16px 0;">Posts Menu Customization</h3></legend>
