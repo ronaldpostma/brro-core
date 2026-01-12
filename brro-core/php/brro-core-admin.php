@@ -96,12 +96,17 @@ function brro_admin_redirect() {
     $redirect_url_setting = trim(get_option('brro_private_mode_redirect', ''));
     $redirect_url = home_url('wp-login.php'); // Default fallback
     
-    // Validate URL - check if not empty and is a valid URL
+    // Validate URL - check if not empty and is a valid URL or path
     if (!empty($redirect_url_setting)) {
-        // Use filter_var to validate URL format
-        $validated_url = filter_var($redirect_url_setting, FILTER_VALIDATE_URL);
-        if ($validated_url !== false) {
-            $redirect_url = esc_url_raw($validated_url);
+        // If it starts with /, treat as path and convert to full URL
+        if (strpos($redirect_url_setting, '/') === 0) {
+            $redirect_url = home_url($redirect_url_setting);
+        } else {
+            // Otherwise, validate as full URL
+            $validated_url = filter_var($redirect_url_setting, FILTER_VALIDATE_URL);
+            if ($validated_url !== false) {
+                $redirect_url = esc_url_raw($validated_url);
+            }
         }
     }
     
@@ -119,6 +124,11 @@ function brro_get_private_mode_exceptions() {
     $private_redirect_exceptions = get_option('brro_private_redirect_exceptions', '');
     $exceptions = array_filter(array_map('trim', explode("\n", $private_redirect_exceptions)));
     return array_map(function($url){
+        // If it starts with /, treat as path directly
+        if (strpos($url, '/') === 0) {
+            return trailingslashit($url);
+        }
+        // Otherwise, try to parse as URL
         $path = parse_url($url, PHP_URL_PATH);
         return trailingslashit($path ? $path : '/');
     }, $exceptions);
