@@ -101,9 +101,10 @@ function brro_plugin_settings_page() {
                         <input type="radio" name="brro_private_mode" value="0" <?php checked(0, $private_mode); ?>>
                         Open publicly
                     </label><br><br>
-                    <label for="brro_private_mode_redirect">Redirect URL:</label><br>
+                    <label for="brro_private_mode_redirect">Redirect page in private mode:</label><br>
+                    <small>Enter a full URL, for example: https://example.com/coming-soon/ or a relative path within the website, for example: /coming-soon/</small><br>
                     <input type="text" name="brro_private_mode_redirect" id="brro_private_mode_redirect" value="<?php echo esc_url(get_option('brro_private_mode_redirect', home_url('/wp-login.php'))); ?>"><br><br>
-                    <label for="brro_private_redirect_exceptions">Enter URLs, one per line:</label><br>
+                    <label for="brro_private_redirect_exceptions">Enter URLs, one per line, to exclude from private mode:</label><br>
                     <textarea name="brro_private_redirect_exceptions" id="brro_private_redirect_exceptions" rows="5" cols="50"><?php echo esc_textarea(get_option('brro_private_redirect_exceptions')); ?></textarea>
                 </fieldset>
                 
