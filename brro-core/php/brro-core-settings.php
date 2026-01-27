@@ -222,6 +222,18 @@ function brro_plugin_settings_page() {
                 <fieldset>
                     <legend><h3 style="margin: 40px 0 16px 0;">Array of site editors</h3></legend>
                     <input type="text" id="brro_editors" name="brro_editors" value="<?php echo esc_attr(get_option('brro_editors', '2,3,4,5')); ?>" />
+                    <br><br>
+                    <strong>Restrict editor access</strong><br>
+                    <label>
+                        <input type="radio" name="brro_restrict_editor_access" value="1" <?php checked(1, get_option('brro_restrict_editor_access', 0)); ?>>
+                        On
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_restrict_editor_access" value="0" <?php checked(0, get_option('brro_restrict_editor_access', 0)); ?>>
+                        Off
+                    </label>
+                    <br>
+                    <small>When on, user IDs listed above cannot log in. They will see a temporary maintenance message.</small>
                 </fieldset>
                 
                 <?php if (!brro_is_project_active()): ?>
