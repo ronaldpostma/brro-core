@@ -6,29 +6,31 @@ Function Index for brro-core-admin.php:
     - Adds custom CSS to the WordPress login page based on dynamic settings.
 2. brro_admin_redirect
     - Redirects non-logged-in users to the login page if private mode is enabled.
-3. brro_get_private_mode_exceptions
+3. brro_restrict_editor_login
+    - When “Restrict editor access” is on, blocks login for users in brro_editors with a custom message.
+4. brro_get_private_mode_exceptions
     - Parses and normalizes private mode exception URLs from settings.
-4. brro_handle_preview_access
+5. brro_handle_preview_access
     - Handles preview access flow with cookie-based authentication.
-5. brro_disable_admin_bar_for_subscribers
+6. brro_disable_admin_bar_for_subscribers
     - Disables the WordPress admin bar for users with the subscriber role when private mode is active.
-6. brro_check_jquery
+7. brro_check_jquery
     - Ensures jQuery is loaded on the site, enqueuing it if necessary.
-7. brro_add_custom_menu_items
+8. brro_add_custom_menu_items
     - Customizes the admin menu by removing default separators and adding custom items.
-8. brro_custom_admin_menu_order
+9. brro_custom_admin_menu_order
     - Reorders the admin menu items based on a specified custom order.
-9. brro_allow_page_excerpt
+10. brro_allow_page_excerpt
     - Enables excerpts on the 'page' post type for SEO descriptions.
-10. brro_change_posts_menu_title
+11. brro_change_posts_menu_title
     - Changes Posts menu title and icon (only when brro-project is not active).
-11. brro_remove_editor_menus
+12. brro_remove_editor_menus
     - Removes menu pages for editors and specific users based on settings.
-12. brro_css_calc_popup_handler
+13. brro_css_calc_popup_handler
     - Renders the chromeless CSS calculator (AJAX, admins only).
-13. brro_disable_xmlrpc_comments
+14. brro_disable_xmlrpc_comments
     - Disables XML-RPC and comments site-wide based on settings.
-14. brro_remove_comments
+15. brro_remove_comments
     - Removes comment UIs and disables comment supports in admin.
 */
 //
@@ -114,6 +116,32 @@ function brro_admin_redirect() {
         wp_safe_redirect($redirect_url);
         exit;
     }
+}
+
+/* ========================================
+   RESTRICT EDITOR ACCESS
+   When enabled, users in brro_editors cannot log in; they see a custom message.
+   ======================================== */
+add_filter('wp_authenticate_user', 'brro_restrict_editor_login', 10, 2);
+function brro_restrict_editor_login($user, $password) {
+    if (is_wp_error($user)) {
+        return $user;
+    }
+    $restrict = get_option('brro_restrict_editor_access', 0);
+    if ((int) $restrict !== 1) {
+        return $user;
+    }
+    $raw = get_option('brro_editors', '2,3,4,5');
+    $editors = array_filter(array_map('intval', explode(',', $raw)), function($id) {
+        return $id > 0;
+    });
+    if (empty($editors) || !in_array((int) $user->ID, $editors, true)) {
+        return $user;
+    }
+    return new WP_Error(
+        'brro_restrict_editor_access',
+        __('Ronald van Brro is momenteel kritieke wijzigingen op de site aan het doorvoeren, en inloggen is tijdelijk niet mogelijk. Bij spoed, mail support@brro.nl', 'brro-core')
+    );
 }
 
 /* ========================================

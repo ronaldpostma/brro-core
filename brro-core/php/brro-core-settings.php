@@ -347,6 +347,7 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_append_menuitems');
     // Alternative site editors for custom wp backend UI
     register_setting('brro-plugin-settings-group', 'brro_editors');
+    register_setting('brro-plugin-settings-group', 'brro_restrict_editor_access');
     // Menu pages to remove for editors
     register_setting('brro-plugin-settings-group', 'brro_editors_remove_menupages');
     // Menu pages to remove for specific users
