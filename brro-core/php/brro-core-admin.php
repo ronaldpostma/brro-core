@@ -20,11 +20,11 @@ Function Index for brro-core-admin.php:
     - Customizes the admin menu by removing default separators and adding custom items.
 9. brro_custom_admin_menu_order
     - Reorders the admin menu items based on a specified custom order.
-10. brro_allow_page_excerpt
+10. brro_allow_page_excerpt_for_seo
     - Enables excerpts on the 'page' post type for SEO descriptions.
 11. brro_change_posts_menu_title
     - Changes Posts menu title and icon (only when brro-project is not active).
-12. brro_remove_editor_menus
+12. brro_remove_wp_admin_menu_items
     - Removes menu pages for editors and specific users based on settings.
 13. brro_css_calc_popup_handler
     - Renders the chromeless CSS calculator (AJAX, admins only).
@@ -32,6 +32,14 @@ Function Index for brro-core-admin.php:
     - Disables XML-RPC and comments site-wide based on settings.
 15. brro_remove_comments
     - Removes comment UIs and disables comment supports in admin.
+16. brro_remove_comment_columns
+    - Removes the comments admin column from all post type list tables.
+17. brro_filter_comment_columns
+    - Filters list table columns to unset the comments column.
+18. brro_disable_comment_feeds
+    - Disables comment feed endpoints when comments are turned off.
+19. brro_disable_comment_reply_script
+    - Prevents the comment-reply script from loading.
 */
 //
 // ******************************************************************************************************************************************************
@@ -528,6 +536,12 @@ function brro_disable_xmlrpc_comments() {
         add_filter('comments_open', '__return_false', 20, 2); // Close comments on the front-end
         add_filter('pings_open', '__return_false', 20, 2); // Close pings on the front-end
         add_filter('comments_array', '__return_empty_array', 10, 2); // Hide existing comments
+        // Disable comment feeds
+        add_action('do_feed_rss2_comments', 'brro_disable_comment_feeds', 1);
+        add_action('do_feed_atom_comments', 'brro_disable_comment_feeds', 1);
+        add_action('do_feed_rss_comments', 'brro_disable_comment_feeds', 1);
+        // Prevent comment-reply script from loading
+        add_action('wp_enqueue_scripts', 'brro_disable_comment_reply_script', 20);
         // Remove comment feeds
         add_action('wp_loaded', function() {
             remove_action('wp_head', 'feed_links_extra', 3);
@@ -571,6 +585,36 @@ function brro_remove_comments() {
                 }
             }
         }
+    }
+}
+add_action('admin_init', 'brro_remove_comment_columns');
+function brro_remove_comment_columns() {
+    $comments_off = get_option('brro_comments_off', 0);
+    if ($comments_off == 1) {
+        $post_types = get_post_types(['show_ui' => true], 'names');
+        foreach ($post_types as $post_type) {
+            add_filter('manage_edit-' . $post_type . '_columns', 'brro_filter_comment_columns', 99);
+            add_filter('manage_' . $post_type . '_posts_columns', 'brro_filter_comment_columns', 99);
+        }
+        add_filter('manage_media_columns', 'brro_filter_comment_columns', 99);
+    }
+}
+function brro_filter_comment_columns($columns) {
+    if (isset($columns['comments'])) {
+        unset($columns['comments']);
+    }
+    return $columns;
+}
+function brro_disable_comment_feeds() {
+    $comments_off = get_option('brro_comments_off', 0);
+    if ($comments_off == 1) {
+        wp_die('Comments are disabled.', 'Comments Disabled', ['response' => 403]);
+    }
+}
+function brro_disable_comment_reply_script() {
+    $comments_off = get_option('brro_comments_off', 0);
+    if ($comments_off == 1) {
+        wp_deregister_script('comment-reply');
     }
 }
 add_action('admin_menu', function () {
