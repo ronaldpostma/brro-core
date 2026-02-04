@@ -68,7 +68,7 @@ body:not(.post-type-locateandfiltermap) .select2-container .select2-selection--s
 }
 
 /* :before character length ACF */
-div[brro-acf-data-maxlength]:before {
+div[brro-acf-data-maxlength]:after {
     content: 'Maximaal ' attr(brro-acf-data-maxlength) ' karakters';
     font-weight: 400;
     margin: 4px 0;
