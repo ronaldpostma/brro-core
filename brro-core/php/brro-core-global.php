@@ -16,6 +16,10 @@ Function Index for brro-core-global.php:
    - Hooks into post meta updates to clear cached ACF field values.
 7. brro_navburger_shortcode
    - Generates a customizable navigation burger icon via a shortcode.
+8. brro_toolbar_toggle_handler
+   - Handles toolbar toggle for admins via URL param
+9. brro_toolbar_toggle_button
+   - Displays fixed Toolbar toggle button for admins on frontend
 */
 //
 // ******************************************************************************************************************************************************************
@@ -229,4 +233,58 @@ function brro_navburger_shortcode($atts) {
     echo '</div>';
     // Return the buffered content
     return ob_get_clean();
+}
+//
+// ******************************************************************************************************************************************************************
+//
+/* ========================================
+   TOOLBAR TOGGLE FOR ADMINISTRATORS
+   Fixed button to toggle show_admin_bar_front user meta on frontend
+   ======================================== */
+add_action( 'init', 'brro_toolbar_toggle_handler', 5 );
+function brro_toolbar_toggle_handler() {
+    if ( is_admin() || ! is_user_logged_in() ) {
+        return;
+    }
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    if ( empty( $_GET['brro_toggle_toolbar'] ) || $_GET['brro_toggle_toolbar'] !== '1' ) {
+        return;
+    }
+    if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'brro_toggle_toolbar' ) ) {
+        return;
+    }
+    $user_id = get_current_user_id();
+    if ( $user_id <= 0 ) {
+        return;
+    }
+    $current  = get_user_meta( $user_id, 'show_admin_bar_front', true );
+    $show_now = ( $current !== 'false' );
+    $new_val  = $show_now ? 'false' : 'true';
+    update_user_meta( $user_id, 'show_admin_bar_front', $new_val );
+    $redirect = remove_query_arg( array( 'brro_toggle_toolbar', '_wpnonce' ) );
+    wp_safe_redirect( $redirect );
+    exit;
+}
+
+add_action( 'wp_footer', 'brro_toolbar_toggle_button' );
+function brro_toolbar_toggle_button() {
+    if ( is_admin() || ! is_user_logged_in() ) {
+        return;
+    }
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    $url = add_query_arg(
+        array(
+            'brro_toggle_toolbar' => '1',
+            '_wpnonce'            => wp_create_nonce( 'brro_toggle_toolbar' ),
+        )
+    );
+    ?>
+    <a href="<?php echo esc_url( $url ); ?>" class="brro-toolbar-toggle-btn" style="position:fixed;bottom:10px;left:10px;background:#23282d;color:#fff;padding:8px 14px;border-radius:5px;text-decoration:none;font-size:13px;z-index:999999;box-shadow:0 2px 5px rgba(0,0,0,0.2);">
+        Toolbar
+    </a>
+    <?php
 }
