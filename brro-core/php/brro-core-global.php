@@ -89,6 +89,21 @@ function brro_add_post_id_admin_body_class($classes) {
     if (!empty($post_type)) {
         $classes .= ' post-type-' . $post_type;
     }
+    // Add role-based classes for admin screens
+    if (function_exists('wp_get_current_user')) {
+        $user = wp_get_current_user();
+        if ($user && !empty($user->roles) && is_array($user->roles)) {
+            if (in_array('administrator', $user->roles, true)) {
+                $classes .= ' webadmin';
+            }
+            if (in_array('editor', $user->roles, true)) {
+                $classes .= ' webeditor';
+            }
+            if (in_array('subscriber', $user->roles, true)) {
+                $classes .= ' websubscriber';
+            }
+        }
+    }
     return $classes;
 }
 //
