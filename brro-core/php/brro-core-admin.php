@@ -85,8 +85,12 @@ function brro_admin_redirect() {
     $private_mode = get_option('brro_private_mode', 0);
     if ($private_mode != 1) { return; }
 
-    // Logged-in users proceed
-    if (is_user_logged_in()) { return; }
+    // Logged-in users proceed only if role is allowed
+    if (is_user_logged_in()) {
+        $user = wp_get_current_user();
+        $allowed_roles = array('administrator', 'editor');
+        if (!empty($user->roles) && array_intersect($allowed_roles, $user->roles)) { return; }
+    }
 
     // Normalize current request path
     $uri_raw = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
