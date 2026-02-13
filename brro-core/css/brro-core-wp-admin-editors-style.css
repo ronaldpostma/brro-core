@@ -33,8 +33,7 @@ p.page-template-label-wrapper, #page_template {
 }
              
 /* Hide publishing actions in pages and posts */
-#misc-publishing-actions > div:not(.curtime):not(.misc-pub-post-status), 
-#minor-publishing-actions {
+#misc-publishing-actions > div:not(.curtime):not(.misc-pub-post-status) {
     visibility:hidden;
     height:2px;
     overflow:hidden;
