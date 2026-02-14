@@ -7,3 +7,9 @@
 #ref folder
 ref
 ref/*
+
+#brro-project folders
+brro-project
+brro-project/*
+brro-project-*
+brro-project-*/*
