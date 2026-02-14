@@ -236,8 +236,7 @@ function brro_plugin_settings_page() {
                     <small>When on, user IDs listed above cannot log in. They will see a temporary maintenance message.</small>
                 </fieldset>
                 
-                <?php if (!brro_is_project_active()): ?>
-                <!-- Editor Menu Pages to Remove (only when brro-project is not active) -->
+                <!-- Editor Menu Pages to Remove -->
                 <fieldset>
                     <legend><h3 style="margin: 40px 0 16px 0;">Menu pages to remove for editors</h3></legend>
                     <p>Enter one menu page slug per line. These pages will be hidden from editors:</p>
@@ -246,7 +245,7 @@ function brro_plugin_settings_page() {
                     <small>Examples: upload.php, themes.php, tools.php, users.php, profile.php, plugins.php, brro-separator-core, edit.php?post_type=elementor_library, snippets, elementor, brro-plugin-settings, jet-dashboard, jet-smart-filters, edit.php?post_type=acf-field-group, update-core.php</small>
                 </fieldset>
                 
-                <!-- Specific User Menu Pages to Remove (only when brro-project or flex theme is not active) -->
+                <!-- Specific User Menu Pages to Remove-->
                 <fieldset>
                     <legend><h3 style="margin: 40px 0 16px 0;">Menu pages to remove for specific users</h3></legend>
                     <p>Enter one entry per line in format: user_id,menu_page_slug. These pages will be hidden from specific users:</p>
@@ -254,7 +253,6 @@ function brro_plugin_settings_page() {
                     <br><br>
                     <small>Examples: 6,upload.php, 7,themes.php, 8,tools.php, 9,users.php, 10,profile.php, 11,plugins.php</small>
                 </fieldset>
-                <?php endif; ?>
                 
                 <!-- XML RPC Settings -->
                 <fieldset>
@@ -293,8 +291,7 @@ function brro_plugin_settings_page() {
                 <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">
             </fieldset>
             
-            <?php if (!brro_is_project_active()): ?>
-            <!-- Posts Menu Customization (only when brro-project is not active) -->
+            <!-- Posts Menu Customization -->
             <fieldset style="max-width: 420px;">
                 <legend><h3 style="margin: 40px 0 16px 0;">Posts Menu Customization</h3></legend>
                 <label>
@@ -316,7 +313,6 @@ function brro_plugin_settings_page() {
                     <small>Example dashicons: dashicons-admin-post, dashicons-format-aside, dashicons-format-standard, dashicons-format-quote</small>
                 </div>
             </fieldset>
-            <?php endif; ?>
             
             <?php submit_button(); ?>
         </form>
@@ -364,7 +360,7 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_editors_remove_menupages');
     // Menu pages to remove for specific users
     register_setting('brro-plugin-settings-group', 'brro_users_remove_menupages');
-    // Posts menu customization (only when brro-project is not active)
+    // Posts menu customization 
     register_setting('brro-plugin-settings-group', 'brro_change_posts_menu');
     register_setting('brro-plugin-settings-group', 'brro_posts_menu_title');
     register_setting('brro-plugin-settings-group', 'brro_posts_menu_icon');

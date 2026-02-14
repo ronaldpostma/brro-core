@@ -359,12 +359,12 @@ function brro_allow_page_excerpt_for_seo() {
 //  
 /* ========================================
    POSTS MENU CUSTOMIZATION
-   Changes Posts menu title and icon (only when brro-project is not active)
+   Changes Posts menu title and icon
    ======================================== */
 add_action( 'admin_menu', 'brro_change_posts_menu_title' );
 function brro_change_posts_menu_title() {
-    // Only proceed if brro-project is not active and the setting is enabled
-    if (!brro_is_project_active() && get_option('brro_change_posts_menu', 0) == 1) {
+    // Only proceed if the setting is enabled
+    if (get_option('brro_change_posts_menu', 0) == 1) {
         global $menu;
         $custom_title = get_option('brro_posts_menu_title', 'Articles');
         $custom_icon = get_option('brro_posts_menu_icon', 'dashicons-admin-post');
@@ -386,39 +386,36 @@ function brro_change_posts_menu_title() {
    ======================================== */
 add_action('admin_init', 'brro_remove_wp_admin_menu_items', 9999);
 function brro_remove_wp_admin_menu_items() {
-    // Only proceed if brro-project is not active
-    if (!brro_is_project_active()) {
-        $user = get_current_user_id();
-        // Client editors
-        $get_editors = get_option('brro_editors', '2,3,4,5');
-        $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
-            return $id > 0;
-        }); 
-        if (in_array($user, $editors)) {
-            $get_editors_remove_menupages = get_option('brro_editors_remove_menupages', '');
-            if (!empty($get_editors_remove_menupages)) {
-                $editors_remove_menupages = array_filter(array_map('trim', explode("\n", $get_editors_remove_menupages)));
-                foreach ($editors_remove_menupages as $menu_page) {
-                    if (!empty($menu_page)) {
-                        remove_menu_page($menu_page);
-                    }
+    $user = get_current_user_id();
+    // Client editors
+    $get_editors = get_option('brro_editors', '2,3,4,5');
+    $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
+        return $id > 0;
+    }); 
+    if (in_array($user, $editors)) {
+        $get_editors_remove_menupages = get_option('brro_editors_remove_menupages', '');
+        if (!empty($get_editors_remove_menupages)) {
+            $editors_remove_menupages = array_filter(array_map('trim', explode("\n", $get_editors_remove_menupages)));
+            foreach ($editors_remove_menupages as $menu_page) {
+                if (!empty($menu_page)) {
+                    remove_menu_page($menu_page);
                 }
             }
         }
-        
-        // Remove menu pages for specific users
-        $get_users_remove_menupages = get_option('brro_users_remove_menupages', '');
-        if (!empty($get_users_remove_menupages)) {
-            $users_remove_menupages = array_filter(array_map('trim', explode("\n", $get_users_remove_menupages)));
-            foreach ($users_remove_menupages as $entry) {
-                if (!empty($entry)) {
-                    $parts = array_map('trim', explode(',', $entry));
-                    if (count($parts) === 2) {
-                        $target_user_id = (int) $parts[0];
-                        $menu_page = $parts[1];
-                        if ($target_user_id === $user && !empty($menu_page)) {
-                            remove_menu_page($menu_page);
-                        }
+    }
+    
+    // Remove menu pages for specific users
+    $get_users_remove_menupages = get_option('brro_users_remove_menupages', '');
+    if (!empty($get_users_remove_menupages)) {
+        $users_remove_menupages = array_filter(array_map('trim', explode("\n", $get_users_remove_menupages)));
+        foreach ($users_remove_menupages as $entry) {
+            if (!empty($entry)) {
+                $parts = array_map('trim', explode(',', $entry));
+                if (count($parts) === 2) {
+                    $target_user_id = (int) $parts[0];
+                    $menu_page = $parts[1];
+                    if ($target_user_id === $user && !empty($menu_page)) {
+                        remove_menu_page($menu_page);
                     }
                 }
             }
