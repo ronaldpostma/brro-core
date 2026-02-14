@@ -235,6 +235,30 @@ function brro_plugin_settings_page() {
                     <br>
                     <small>When on, user IDs listed above cannot log in. They will see a temporary maintenance message.</small>
                 </fieldset>
+
+                <!-- Admin CSS loading -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Admin CSS loading</h3></legend>
+                    <strong>Load admin css for all backend users</strong><br>
+                    <label>
+                        <input type="radio" name="brro_admin_css_all" value="1" <?php checked(1, get_option('brro_admin_css_all', 1)); ?>>
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_admin_css_all" value="0" <?php checked(0, get_option('brro_admin_css_all', 1)); ?>>
+                        No
+                    </label>
+                    <br><br>
+                    <strong>Load admin css for Brro editors</strong><br>
+                    <label>
+                        <input type="radio" name="brro_admin_css_editors" value="1" <?php checked(1, get_option('brro_admin_css_editors', 1)); ?>>
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_admin_css_editors" value="0" <?php checked(0, get_option('brro_admin_css_editors', 1)); ?>>
+                        No
+                    </label>
+                </fieldset>
                 
                 <!-- Editor Menu Pages to Remove -->
                 <fieldset>
@@ -356,6 +380,9 @@ function brro_plugin_register_settings() {
     // Alternative site editors for custom wp backend UI
     register_setting('brro-plugin-settings-group', 'brro_editors');
     register_setting('brro-plugin-settings-group', 'brro_restrict_editor_access');
+    // Admin css loading
+    register_setting('brro-plugin-settings-group', 'brro_admin_css_all');
+    register_setting('brro-plugin-settings-group', 'brro_admin_css_editors');
     // Menu pages to remove for editors
     register_setting('brro-plugin-settings-group', 'brro_editors_remove_menupages');
     // Menu pages to remove for specific users

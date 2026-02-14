@@ -3,7 +3,7 @@
  * Plugin Name: Brro Core
  * Plugin URI: https://github.com/ronaldpostma/brro-core
  * Description: Global core functions and development tools for sites developed by Brro.
- * Version: 2.0.4
+ * Version: 2.0.5
  * Author: Ronald Postma @ Brro.nl
  * Author URI: https://brro.nl/
  * License: GPLv2 or later
@@ -11,26 +11,6 @@
  * 
  */
 if (!defined('ABSPATH')) exit;
-
-/* ========================================
-   BRRO FLEX THEME DETECTION
-   Checks if brro-flex-theme is active and available
-   ======================================== */
-   function brro_is_flex_theme_active() {
-    // Check if brro-flex-theme is the active theme
-    $current_theme = wp_get_theme();
-    if ($current_theme->get('Name') === 'Brro Flex Theme' || $current_theme->get('TextDomain') === 'brro-flex-theme' || $current_theme->get_stylesheet() === 'brro-flex-theme') {
-        return true;
-    }
-    // Fallback: check if theme class or constant exists, or theme directory exists
-    return class_exists('Brro_Flex_Theme') || 
-           defined('BRRO_FLEX_THEME_VERSION') || 
-           file_exists(get_theme_root() . '/brro-flex-theme/style.css');
-    // Example usage:
-    // if (!brro_is_flex_theme_active()) {
-    //     do something if brro-flex-theme is not active
-    // }
-}
 //
 // Include php function files
 // 
@@ -101,8 +81,9 @@ function brro_enqueue_script_css_calculator() {
 // Load assets for wp admin area
 add_action( 'admin_enqueue_scripts', 'brro_webdev_enqueue_admin_assets');
 function brro_webdev_enqueue_admin_assets() {
-    // For all users
-    if (!brro_is_flex_theme_active()) {
+    // Load admin css for all backend users
+    $load_admin_css_all = (int) get_option('brro_admin_css_all', 1);
+    if ($load_admin_css_all === 1) {
         wp_enqueue_style( 'brro-core-wp-admin-style', plugins_url( '/css/brro-core-wp-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
     }
     wp_enqueue_script( 'brro-core-wp-admin-script', plugins_url( '/js/brro-core-wp-admin-script.js', __FILE__ ), ['jquery'], '1.0.0', true );
@@ -112,8 +93,9 @@ function brro_webdev_enqueue_admin_assets() {
     );
     wp_localize_script('brro-core-wp-admin-script', 'pluginSettings', $script_data);
     // 
-    // For specific users
-    if (!brro_is_flex_theme_active()) {
+    // Load backend css for Brro editors
+    $load_admin_css_editors = (int) get_option('brro_admin_css_editors', 1);
+    if ($load_admin_css_editors === 1) {
         $user = get_current_user_id();
         $get_editors = get_option('brro_editors', '2,3,4,5');
         $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
