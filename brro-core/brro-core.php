@@ -3,7 +3,7 @@
  * Plugin Name: Brro Core
  * Plugin URI: https://github.com/ronaldpostma/brro-core
  * Description: Global core functions and development tools for sites developed by Brro.
- * Version: 2.0.3
+ * Version: 2.0.4
  * Author: Ronald Postma @ Brro.nl
  * Author URI: https://brro.nl/
  * License: GPLv2 or later
@@ -11,25 +11,7 @@
  * 
  */
 if (!defined('ABSPATH')) exit;
-//
-/* ========================================
-   BRRO-PROJECT PLUGIN DETECTION
-   Checks if brro-project plugin is active and available
-   ======================================== */
-   function brro_is_project_active() {
-    // Check if brro-project plugin is active using WordPress plugin API
-    if (function_exists('is_plugin_active')) {
-        return is_plugin_active('brro-project/brro-project.php');
-    }
-    // Fallback: check if plugin file exists and is loaded
-    return class_exists('Brro_Project') || 
-           defined('BRRO_PROJECT_VERSION') || 
-           file_exists(WP_PLUGIN_DIR . '/brro-project/brro-project.php');
-    // Example usage:
-    // if (!brro_is_project_active()) {
-    //     do something if brro-project plugin is not active
-    // }
-}
+
 /* ========================================
    BRRO FLEX THEME DETECTION
    Checks if brro-flex-theme is active and available
@@ -120,7 +102,7 @@ function brro_enqueue_script_css_calculator() {
 add_action( 'admin_enqueue_scripts', 'brro_webdev_enqueue_admin_assets');
 function brro_webdev_enqueue_admin_assets() {
     // For all users
-    if (brro_is_project_active() || !brro_is_flex_theme_active()) {
+    if (!brro_is_flex_theme_active()) {
         wp_enqueue_style( 'brro-core-wp-admin-style', plugins_url( '/css/brro-core-wp-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
     }
     wp_enqueue_script( 'brro-core-wp-admin-script', plugins_url( '/js/brro-core-wp-admin-script.js', __FILE__ ), ['jquery'], '1.0.0', true );
@@ -131,7 +113,7 @@ function brro_webdev_enqueue_admin_assets() {
     wp_localize_script('brro-core-wp-admin-script', 'pluginSettings', $script_data);
     // 
     // For specific users
-    if (brro_is_project_active() || !brro_is_flex_theme_active()) {
+    if (!brro_is_flex_theme_active()) {
         $user = get_current_user_id();
         $get_editors = get_option('brro_editors', '2,3,4,5');
         $editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
