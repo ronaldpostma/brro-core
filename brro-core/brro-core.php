@@ -3,7 +3,7 @@
  * Plugin Name: Brro Core
  * Plugin URI: https://github.com/ronaldpostma/brro-core
  * Description: Global core functions and development tools for sites developed by Brro.
- * Version: 2.0.5
+ * Version: 2.1.0
  * Author: Ronald Postma @ Brro.nl
  * Author URI: https://brro.nl/
  * License: GPLv2 or later
