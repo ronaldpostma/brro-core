@@ -630,3 +630,14 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
         $wp_admin_bar->remove_node('comments'); // Remove comments links from admin bar
     }
 }, 999);
+
+/* ========================================
+   DEV SITE BADGE (ADMIN)
+   Shows a fixed badge when on dev/stage/staging/test subdomains
+   ======================================== */
+add_action('admin_footer', 'brro_render_dev_site_badge_admin');
+function brro_render_dev_site_badge_admin() {
+    if (function_exists('brro_render_dev_site_badge')) {
+        brro_render_dev_site_badge();
+    }
+}

@@ -20,6 +20,10 @@ Function Index for brro-core-global.php:
    - Handles toolbar toggle for admins via URL param
 9. brro_toolbar_toggle_button
    - Displays fixed Toolbar toggle button for admins on frontend
+10. brro_is_dev_site_subdomain
+   - Detects if site host uses a dev/stage/staging/test subdomain.
+11. brro_render_dev_site_badge
+   - Renders a fixed "Dev site" badge on the frontend.
 */
 //
 // ******************************************************************************************************************************************************************
@@ -302,4 +306,25 @@ function brro_toolbar_toggle_button() {
         Toolbar
     </a>
     <?php
+}
+
+/* ========================================
+   DEV SITE BADGE (FRONTEND)
+   Shows a fixed badge when on dev/stage/staging/test subdomains
+   ======================================== */
+add_action('wp_footer', 'brro_render_dev_site_badge');
+function brro_is_dev_site_subdomain() {
+    $host = parse_url(home_url(), PHP_URL_HOST);
+    if (!$host || !is_string($host)) {
+        return false;
+    }
+    $host = strtolower($host);
+    $pattern = '/^(dev([\-0-9a-z]+)?|stage([\-0-9a-z]+)?|staging([\-0-9a-z]+)?|test([\-0-9a-z]+)?)\./';
+    return (bool) preg_match($pattern, $host);
+}
+function brro_render_dev_site_badge() {
+    if (!brro_is_dev_site_subdomain()) {
+        return;
+    }
+    echo '<div style="position:fixed;right:12px;bottom:12px;z-index:999999;background:#c40000;color:#fff;padding:16px 24px;border-radius:8px;font-size:20px;line-height:1;font-family:Arial,sans-serif;box-shadow:0 2px 6px rgba(0,0,0,0.25);">DEVELOPMENT</div>';
 }
