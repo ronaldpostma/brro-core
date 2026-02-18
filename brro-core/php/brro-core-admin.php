@@ -40,6 +40,8 @@ Function Index for brro-core-admin.php:
     - Disables comment feed endpoints when comments are turned off.
 19. brro_disable_comment_reply_script
     - Prevents the comment-reply script from loading.
+20. brro_set_admin_color_scheme_on_dev
+    - Forces admin color scheme to sunrise on dev/stage/test subdomains.
 */
 //
 // ******************************************************************************************************************************************************
@@ -630,6 +632,29 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
         $wp_admin_bar->remove_node('comments'); // Remove comments links from admin bar
     }
 }, 999);
+
+/* ========================================
+   DEV SITE ADMIN COLOR SCHEME
+   Forces admin color scheme to sunrise for administrators on dev/stage/test subdomains
+   ======================================== */
+add_action('admin_init', 'brro_set_admin_color_scheme_on_dev');
+function brro_set_admin_color_scheme_on_dev() {
+    if (!function_exists('brro_is_dev_site_subdomain') || !brro_is_dev_site_subdomain()) {
+        return;
+    }
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    $user_id = get_current_user_id();
+    if ($user_id <= 0) {
+        return;
+    }
+    $target = 'sunrise';
+    $current = get_user_meta($user_id, 'admin_color', true);
+    if ($current !== $target) {
+        update_user_meta($user_id, 'admin_color', $target);
+    }
+}
 
 /* ========================================
    DEV SITE BADGE (ADMIN)
