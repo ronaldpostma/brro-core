@@ -42,6 +42,8 @@ Function Index for brro-core-admin.php:
     - Prevents the comment-reply script from loading.
 20. brro_set_admin_color_scheme_on_dev
     - Forces admin color scheme to sunrise on dev/stage/test subdomains.
+21. brro_filter_comment_rest_endpoints
+    - Removes only comment-related REST endpoints when comments are turned off.
 */
 //
 // ******************************************************************************************************************************************************
@@ -550,12 +552,25 @@ function brro_disable_xmlrpc_comments() {
             remove_action('wp_head', 'feed_links_extra', 3);
             remove_action('wp_head', 'feed_links', 2);
         });
-        // Remove comment-related REST API endpoints
-        add_action('rest_api_init', function() {
-            remove_action('rest_api_init', 'create_initial_rest_routes', 99);
-        }, 1);
     }
 }
+
+function brro_filter_comment_rest_endpoints($endpoints) {
+    $comments_off = get_option('brro_comments_off', 0);
+    if ((int) $comments_off !== 1 || !is_array($endpoints)) {
+        return $endpoints;
+    }
+
+    // Keep core REST working (Site Health, editor, WooCommerce) and remove only comments routes.
+    foreach (array_keys($endpoints) as $route) {
+        if (strpos($route, '/wp/v2/comments') === 0) {
+            unset($endpoints[$route]);
+        }
+    }
+
+    return $endpoints;
+}
+add_filter('rest_endpoints', 'brro_filter_comment_rest_endpoints', 99);
 /* ========================================
    COMMENTS UI REMOVAL
    Removes comment UIs and disables comment supports in admin
