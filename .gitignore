@@ -1,5 +1,6 @@
 # Zipped plugin
 brro-core.zip
+brro-core-*.zip
 
 # Cursor folder
 .cursor
