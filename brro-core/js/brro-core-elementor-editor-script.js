@@ -240,6 +240,12 @@ jQuery(function($) {
                 var growthRate = (inputTwo - inputOne) / (mobileEnd - mobileRef);
                 var vwTarget = growthRate * 100;
                 var baseValue = inputOne - (growthRate * mobileRef);
+                // Compute values at the actual mobileStart and mobileEnd breakpoints
+                var valueAtStart = (growthRate * mobileStart) + baseValue;
+                var valueAtEnd = (growthRate * mobileEnd) + baseValue;
+                // Round breakpoint values to 2 decimals when needed
+                valueAtStart = (valueAtStart % 1) ? Number(valueAtStart.toFixed(2)) : valueAtStart;
+                valueAtEnd = (valueAtEnd % 1) ? Number(valueAtEnd.toFixed(2)) : valueAtEnd;
                 var cssComment = ' /*' + inputOne + 'px @ ' + mobileRef + ' : ' + inputTwo + 'px @ ' + mobileEnd + '*/';
             } else {
                 $input.val('No device mode class detected in preview panel').trigger('keydown').trigger('keyup').trigger('input').trigger('change');
@@ -250,8 +256,14 @@ jQuery(function($) {
             growthRate = (growthRate % 1) ? growthRate.toFixed(2) : growthRate;
             vwTarget = (vwTarget % 1) ? vwTarget.toFixed(2) : vwTarget;
             baseValue = (baseValue % 1) ? baseValue.toFixed(2) : baseValue;
-            outputMin = Math.min(inputOne, inputTwo);
-            outputMax = Math.max(inputOne, inputTwo);
+            // For mobile ranges, use the values at mobileStart/mobileEnd as clamp bounds.
+            if ($('body').hasClass('elementor-device-mobile') && typeof valueAtStart !== 'undefined' && typeof valueAtEnd !== 'undefined') {
+                outputMin = Math.min(valueAtStart, valueAtEnd);
+                outputMax = Math.max(valueAtStart, valueAtEnd);
+            } else {
+                outputMin = Math.min(inputOne, inputTwo);
+                outputMax = Math.max(inputOne, inputTwo);
+            }
             // 
             // CSS output
             //

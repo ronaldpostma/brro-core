@@ -68,11 +68,19 @@ jQuery(function($) {
         var growthRate = (inputB - inputA) / (screenRefEnd - screenRefStart);
         var vwTarget = growthRate * 100;
         var baseValue = inputA - (growthRate * screenRefStart);
+
+        // Compute values at the actual screenStart and screenEnd breakpoints
+        var valueAtStart = (growthRate * screenStart) + baseValue;
+        var valueAtEnd = (growthRate * screenEnd) + baseValue;
+
         growthRate = roundIfNeeded(growthRate);
         vwTarget = roundIfNeeded(vwTarget);
         baseValue = roundIfNeeded(baseValue);
-        var minPx = Math.min(inputA, inputB);
-        var maxPx = Math.max(inputA, inputB);
+        valueAtStart = roundIfNeeded(valueAtStart);
+        valueAtEnd = roundIfNeeded(valueAtEnd);
+
+        var minPx = Math.min(valueAtStart, valueAtEnd);
+        var maxPx = Math.max(valueAtStart, valueAtEnd);
         var baseSign = (baseValue < 0) ? '- ' + Math.abs(baseValue) : '+ ' + baseValue;
         var comment = ' /*' + inputA + 'px @ ' + screenRefStart + ' : ' + inputB + 'px @ ' + screenRefEnd + '*/';
         return 'clamp(' + minPx + 'px, calc(' + vwTarget + 'vw ' + baseSign + 'px), ' + maxPx + 'px)' + comment;
@@ -125,7 +133,9 @@ jQuery(function($) {
             return buildClampSingle(parsed.value, mobileRef, mobileStart, mobileEnd, false);
         }
         if (parsed.type === 'range') {
-            return buildClampRange(parsed.a, parsed.b, mobileStart, mobileEnd, mobileStart, mobileEnd);
+            // Anchor the first value at mobileRef (e.g. 360px) and second at mobileEnd,
+            // while the clamp min/max reflects the full range from mobileStart to mobileEnd.
+            return buildClampRange(parsed.a, parsed.b, mobileStart, mobileEnd, mobileRef, mobileEnd);
         }
         return '';
     }

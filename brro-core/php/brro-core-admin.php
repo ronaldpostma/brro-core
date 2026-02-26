@@ -257,7 +257,8 @@ function brro_add_custom_menu_items() {
         error_log('Global menu is not an array in brro_add_custom_menu_items');
         return;
     }
-    $brrohelp = get_option('brro_client_help_menutitle', 'Brro, help!');
+    $help_url   = trim((string) get_option('brro_client_help_url', ''));
+    $help_title = trim((string) get_option('brro_client_help_menutitle', ''));
     // Iterate over the menu items and remove separators
     foreach ($menu as $index => $item) {
         if ('wp-menu-separator' === $item[4]) {
@@ -268,8 +269,13 @@ function brro_add_custom_menu_items() {
     add_menu_page('WP Core','|','read','brro-separator-core','','dashicons-arrow-down-alt2');
     add_menu_page('Plugin Settings','|','read','brro-separator-functionality','','dashicons-arrow-down-alt2');
     add_menu_page('Site Content','|','read','brro-separator-content','','dashicons-arrow-down-alt2');
-    // Add Brro help item
-    add_menu_page($brrohelp,$brrohelp,'read','brro-help-link','','dashicons-external');   
+    // Add Brro help item only when URL or title is provided
+    if ($help_url !== '' || $help_title !== '') {
+        if ($help_title === '') {
+            $help_title = 'Brro, help!';
+        }
+        add_menu_page($help_title, $help_title, 'read', 'brro-help-link', '', 'dashicons-external');
+    }
     // Add Chromeless Popup mock link (placeholder) for site administrator role
     add_menu_page('CSS calc','CSS calc','manage_options','brro-calc-popup','','dashicons-calculator');
 }
@@ -444,11 +450,11 @@ function brro_css_calc_popup_handler() {
     // Settings for calculations
     $desktop_end   = (int) get_option('brro_desktop_end');
     $desktop_ref   = (int) get_option('brro_desktop_ref');
-    $desktop_start = (int) get_option('brro_desktop_start');
+    $desktop_start = (int) get_option('brro_desktop_start', 1024);
     $tablet_ref    = (int) get_option('brro_tablet_ref');
-    $tablet_start  = (int) get_option('brro_tablet_start');
+    $tablet_start  = (int) get_option('brro_tablet_start', 768);
     $mobile_ref    = (int) get_option('brro_mobile_ref');
-    $mobile_start  = (int) get_option('brro_mobile_start');
+    $mobile_start  = (int) get_option('brro_mobile_start', 320);
     $admin_title   = 'Brro CSS calc';
     $jquery_src    = includes_url('js/jquery/jquery.min.js');
     $calc_js_src   = plugins_url('../js/brro-core-css-calculator-script.js', __FILE__);

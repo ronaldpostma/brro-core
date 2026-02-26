@@ -27,8 +27,8 @@ function brro_plugin_add_settings_page() {
 function brro_plugin_settings_page() {
     $developer_mode = get_option('brro_developer_mode', 0);
     $private_mode = get_option('brro_private_mode', 0);
-    $mobile_end = (int)get_option('brro_tablet_start') - 1;
-    $tablet_end = (int)get_option('brro_desktop_start') - 1;
+    $mobile_end = (int) get_option('brro_tablet_start', 768) - 1;
+    $tablet_end = (int) get_option('brro_desktop_start', 1024) - 1;
     $lock_screen = get_option('brro_lock_screen', 0);
     if ($lock_screen == 1) {
         ?>
@@ -129,8 +129,8 @@ function brro_plugin_settings_page() {
                                 </select>
                             </td>
                             <td>
-                                <input type="hidden" name="brro_desktop_start" value="1180" />
-                                <input type="number" value="1180" disabled />
+                                <?php $desktop_start = (int) get_option('brro_desktop_start', 1024); ?>
+                                <input type="number" name="brro_desktop_start" value="<?php echo esc_attr($desktop_start); ?>" />
                             </td>
                             <td>
                                 <select name="brro_desktop_end">
@@ -303,40 +303,40 @@ function brro_plugin_settings_page() {
                         No
                     </label>
                 </fieldset>
+
+                <!-- Help URL Settings -->
+                <fieldset style="max-width: 420px;">
+                    <legend><h3 style="margin: 40px 0 16px 0;">Custom URL @ top of admin side menu</h3></legend>
+                    <label for="brro_client_help_url">URL:</label>
+                    <input style="float: right;" type="text" name="brro_client_help_url" value="<?php echo esc_attr(get_option('brro_client_help_url', 'https://www.brro.nl/contact')); ?>">
+                    <br><br>
+                    <label for="brro_client_help_menutitle">Menu title:</label>
+                    <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">
+                </fieldset>
+                
+                <!-- Posts Menu Customization -->
+                <fieldset style="max-width: 420px;">
+                    <legend><h3 style="margin: 40px 0 16px 0;">Posts Menu Customization</h3></legend>
+                    <label>
+                        <input type="radio" name="brro_change_posts_menu" value="1" <?php checked(1, get_option('brro_change_posts_menu', 0)); ?>>
+                        Yes, change 'Posts' menu title
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_change_posts_menu" value="0" <?php checked(0, get_option('brro_change_posts_menu', 0)); ?>>
+                        No, keep default
+                    </label>
+                    <br><br>
+                    <div id="posts-menu-options" style="<?php echo (get_option('brro_change_posts_menu', 0) == 1) ? 'display: block;' : 'display: none;'; ?>">
+                        <label for="brro_posts_menu_title">Posts menu title:</label>
+                        <input style="float: right;" type="text" name="brro_posts_menu_title" value="<?php echo esc_attr(get_option('brro_posts_menu_title', 'Articles')); ?>">
+                        <br><br>
+                        <label for="brro_posts_menu_icon">Posts Dashicons slug:</label>
+                        <input style="float: right;" type="text" name="brro_posts_menu_icon" value="<?php echo esc_attr(get_option('brro_posts_menu_icon', 'dashicons-admin-post')); ?>">
+                        <br><br>
+                        <small>Example dashicons: dashicons-admin-post, dashicons-format-aside, dashicons-format-standard, dashicons-format-quote</small>
+                    </div>
+                </fieldset>
             </div>
-            
-            <!-- Help URL Settings -->
-            <fieldset style="max-width: 420px;">
-                <legend><h3 style="margin: 40px 0 16px 0;">Custom URL @ top of admin side menu</h3></legend>
-                <label for="brro_client_help_url">URL:</label>
-                <input style="float: right;" type="text" name="brro_client_help_url" value="<?php echo esc_attr(get_option('brro_client_help_url', 'https://www.brro.nl/contact')); ?>">
-                <br><br>
-                <label for="brro_client_help_menutitle">Menu title:</label>
-                <input style="float: right;" type="text" name="brro_client_help_menutitle" value="<?php echo esc_attr(get_option('brro_client_help_menutitle', 'Brro, help!')); ?>">
-            </fieldset>
-            
-            <!-- Posts Menu Customization -->
-            <fieldset style="max-width: 420px;">
-                <legend><h3 style="margin: 40px 0 16px 0;">Posts Menu Customization</h3></legend>
-                <label>
-                    <input type="radio" name="brro_change_posts_menu" value="1" <?php checked(1, get_option('brro_change_posts_menu', 0)); ?>>
-                    Yes, change 'Posts' menu title
-                </label>
-                <label>
-                    <input type="radio" name="brro_change_posts_menu" value="0" <?php checked(0, get_option('brro_change_posts_menu', 0)); ?>>
-                    No, keep default
-                </label>
-                <br><br>
-                <div id="posts-menu-options" style="<?php echo (get_option('brro_change_posts_menu', 0) == 1) ? 'display: block;' : 'display: none;'; ?>">
-                    <label for="brro_posts_menu_title">Posts menu title:</label>
-                    <input style="float: right;" type="text" name="brro_posts_menu_title" value="<?php echo esc_attr(get_option('brro_posts_menu_title', 'Articles')); ?>">
-                    <br><br>
-                    <label for="brro_posts_menu_icon">Posts Dashicons slug:</label>
-                    <input style="float: right;" type="text" name="brro_posts_menu_icon" value="<?php echo esc_attr(get_option('brro_posts_menu_icon', 'dashicons-admin-post')); ?>">
-                    <br><br>
-                    <small>Example dashicons: dashicons-admin-post, dashicons-format-aside, dashicons-format-standard, dashicons-format-quote</small>
-                </div>
-            </fieldset>
             
             <?php submit_button(); ?>
         </form>

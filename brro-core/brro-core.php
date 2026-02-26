@@ -65,14 +65,14 @@ function brro_enqueue_script_css_calculator() {
         wp_enqueue_script( 'brro-core-css-calculator-script', plugins_url( '/js/brro-core-css-calculator-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
         // Localize script with data from your settings
         $script_data = array(
-            'desktopEnd' => get_option('brro_desktop_end'),
-            'desktopRef' => get_option('brro_desktop_ref'),
-            'desktopStart' => get_option('brro_desktop_start'),
-            'tabletRef'  => get_option('brro_tablet_ref'),
-            'tabletStart'  => get_option('brro_tablet_start'),
-            'mobileRef'  => get_option('brro_mobile_ref'),
-            'mobileStart'  => get_option('brro_mobile_start'),
-            'developerMode'  => get_option('brro_developer_mode'),
+            'desktopEnd'   => get_option('brro_desktop_end'),
+            'desktopRef'   => get_option('brro_desktop_ref'),
+            'desktopStart' => get_option('brro_desktop_start', 1024),
+            'tabletRef'    => get_option('brro_tablet_ref'),
+            'tabletStart'  => get_option('brro_tablet_start', 768),
+            'mobileRef'    => get_option('brro_mobile_ref'),
+            'mobileStart'  => get_option('brro_mobile_start', 320),
+            'developerMode'=> get_option('brro_developer_mode'),
         );
         wp_localize_script('brro-core-css-calculator-script', 'pluginSettings', $script_data);
     }
