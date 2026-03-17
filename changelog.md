@@ -1,3 +1,6 @@
+## V2.1.4 - Release not scheduled
+- [x] 2026-03-17 - Add jQuery to display max 141 characters while typing in excerpt. `brro-c0re-wp-admin-script.js`
+
 ## V2.1.3 - Released 2026-03-16
 - [x] 2026-02-26 - Hide the custom help URL and Posts Menu Customization settings when developer mode is off, and prevent an empty help menu item from being added; updated `brro_plugin_settings_page` in `brro-core-settings.php` and `brro_add_custom_menu_items` in `brro-core-admin.php`.
 - [x] 2026-02-26 - Fix mobile range clamp calculations so they use the real values at mobile start/end breakpoints; updated `buildClampRange`/`calcForMobile` in `brro-core-css-calculator-script.js` and the double-input mobile branch in `brro-core-elementor-editor-script.js`.
