@@ -123,164 +123,74 @@ jQuery(function($) {
             $('.convert-button:not(.calcref)').remove();
         }
     });
+
+    function brro_getElementorDevice() {
+        if ($('body').hasClass('elementor-device-desktop')) {
+            return 'desktop';
+        }
+
+        if ($('body').hasClass('elementor-device-tablet')) {
+            return 'tablet';
+        }
+
+        if ($('body').hasClass('elementor-device-mobile')) {
+            return 'mobile';
+        }
+
+        return '';
+    }
+
+    function brro_triggerElementorInput($input, value) {
+        $input.val(value).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
+    }
     //
     // Calculation of new values after 'Convert' button click
     //
     $('#elementor-panel').on('click', '.convert-button', function() {
-        //
-        // 3.1 Get input value from manual input, to detect single or range input
-        var inputId = $(this).data('input-id');
+        var $button = $(this);
+        var inputId = $button.data('input-id');
         var $input = $('#' + inputId);
         var inputValue = $input.val();
-        var outputMin;
-        var outputMax;
-        var inputSingle;
-        var inputOne;
-        var inputTwo;
-        var mdTrue = false;
-        var negativeNr = false;
-        // convert-button: Check if inputValue is a numeric string (including negative numbers)
-        if ($.isNumeric(inputValue) && /^-?\d+(\.\d+)?$/.test(inputValue)) { //.................................IF SINGLE INPUT
-            inputSingle = inputValue;
-            if (parseFloat(inputValue) < 0) {
-                negativeNr = true;
+
+        function brro_removeConvertButton() {
+            if (!$button.hasClass('calcref')) {
+                $button.remove();
             }
-        // convert-button: Check if inputValue is a two-part string, possibly with negative numbers, separated by a comma
-        } else if ( /^-?\d+,-?\d+$/.test(inputValue.trim()) || /^md,-?\d+,-?\d+$/.test(inputValue.trim()) ) { //..........................................IF RANGE INPUT
-            var parts = inputValue.trim().split(',').map(Number);
-            inputOne = parts[0];
-            inputTwo = parts[1];
-            if (inputValue.includes('md')) {
-                mdTrue = true;
-            }
-        } else {
-            console.log('Error, wrong input. Script terminates.');
+        }
+
+        if (!window.brroCssCalculator) {
+            console.log('Error: Calculator library could not be loaded. Script terminates.');
+            brro_removeConvertButton();
             return;
         }
-        //
-        // Set correct reference values based on device mode
-        //
-        if ( $('body').hasClass('elementor-device-desktop') ) {
-            var screenEnd = desktopEnd;
-            var screenRef = desktopRef;
-            var screenStart = desktopStart;
-        } else if ( $('body').hasClass('elementor-device-tablet') ) {
-            var screenEnd = tabletEnd;
-            var screenRef = tabletRef;
-            var screenStart = tabletStart;
-        } else if ( $('body').hasClass('elementor-device-mobile') ) {
-            var screenEnd = mobileEnd;
-            var screenRef = mobileRef;
-            var screenStart = mobileStart;
-        } else {
-            console.log('Error: No screensize reference values. Script terminates.');
+
+        var device = brro_getElementorDevice();
+
+        if (!device) {
+            brro_triggerElementorInput($input, 'No device mode class detected in preview panel');
+            brro_removeConvertButton();
             return;
         }
-        //
-        // Trigger a focus on the element
-        //
+
         $input.trigger('focus');
-        // 
-        //
-        //
-        // SINGLE INPUT: Check if the input is a singular numeric string, and not empty
-        if ( inputSingle !== undefined && inputSingle !== '' ) {
-            // 
-            // Calculate the scaling target in vw
-            var vwTarget = (inputSingle / screenRef) * 100;
-            // Calculate the minimum value based on vw and minimum screen size for this device
-            outputMin = (screenStart / 100) * vwTarget;
-            outputMax = (screenEnd / 100) * vwTarget;
-            // Round results, vwTarget 2 decimals, outputMin to nearest integer
-            vwTarget = (vwTarget % 1) ? vwTarget.toFixed(2) : vwTarget;
-            outputMin = Math.round(outputMin).toString(); 
-            outputMax = Math.round(outputMax).toString();
-            // CSS clamp() output
-            var clampSingleCSS = 'clamp(' + (negativeNr ? outputMax : outputMin) + 'px, ' + vwTarget + 'vw, ' + (negativeNr ? outputMin : outputMax) + 'px) /*' + inputSingle + 'px @ ' + screenRef + '*/';
-            var maxSingleCSS = 'max(' + (negativeNr ? outputMax : outputMin) + 'px, ' + vwTarget + 'vw) /*' + inputSingle + 'px @ ' + screenRef + '*/';
-            // Set new value and trigger events to tell Elementor to update changes
-            // Exception for full fluidity, if desktopEnd === 0
-            if ( $('body').hasClass('elementor-device-desktop') && desktopEnd === 0 ) {
-                $input.val(maxSingleCSS).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
-            } else {
-                $input.val(clampSingleCSS).trigger('keydown').trigger('keyup').trigger('input').trigger('change');
-            }
-        //
-        //
-        //
-        // DOUBLE INPUT: Check if the input has a min and max value for scaling calculation
-        } else if ( (inputOne !== undefined && inputTwo !== undefined) ) {
-            // Calculate singular calc() function for all screen sizes, by entering two ',' sep values in any order: 
-            // var outputs based on screen
-            // Desktop, scale from desktopStart to desktopRef
-            if ($('body').hasClass('elementor-device-desktop') ) {
-                if ( desktopRef !== desktopEnd) {
-                    $input.val('Invalid: desktopRef is unequal to desktopEnd').trigger('keydown').trigger('keyup').trigger('input').trigger('change');
-                    if (!$(this).hasClass('calcref')) {
-                        $(this).remove();
-                    }
-                    return;
-                } else if (mdTrue) {
-                    var growthRate = (inputTwo - inputOne) / (desktopRef - mobileRef);
-                    var vwTarget = growthRate * 100;
-                    var baseValue = inputOne - (growthRate * mobileRef);
-                    var cssComment = ' /*' + inputOne + 'px @ ' + mobileRef + ' : ' + inputTwo + 'px @ ' + desktopRef + '*/';
-                } else {
-                    var growthRate = (inputTwo - inputOne) / (desktopRef - desktopStart);
-                    var vwTarget = growthRate * 100;
-                    var baseValue = inputOne - (growthRate * desktopStart);
-                    var cssComment = ' /*' + inputOne + 'px @ ' + desktopStart + ' : ' + inputTwo + 'px @ ' + desktopRef + '*/';
-                } 
-            } else if ($('body').hasClass('elementor-device-tablet')) {
-                var growthRate = (inputTwo - inputOne) / (tabletEnd - tabletStart);
-                var vwTarget = growthRate * 100;
-                var baseValue = inputOne - (growthRate * tabletStart);
-                var cssComment = ' /*' + inputOne + 'px @ ' + tabletStart + ' : ' + inputTwo + 'px @ ' + tabletEnd + '*/';
-            } else if ($('body').hasClass('elementor-device-mobile')) {
-                var growthRate = (inputTwo - inputOne) / (mobileEnd - mobileRef);
-                var vwTarget = growthRate * 100;
-                var baseValue = inputOne - (growthRate * mobileRef);
-                // Compute values at the actual mobileStart and mobileEnd breakpoints
-                var valueAtStart = (growthRate * mobileStart) + baseValue;
-                var valueAtEnd = (growthRate * mobileEnd) + baseValue;
-                // Round breakpoint values to 2 decimals when needed
-                valueAtStart = (valueAtStart % 1) ? Number(valueAtStart.toFixed(2)) : valueAtStart;
-                valueAtEnd = (valueAtEnd % 1) ? Number(valueAtEnd.toFixed(2)) : valueAtEnd;
-                var cssComment = ' /*' + inputOne + 'px @ ' + mobileRef + ' : ' + inputTwo + 'px @ ' + mobileEnd + '*/';
-            } else {
-                $input.val('No device mode class detected in preview panel').trigger('keydown').trigger('keyup').trigger('input').trigger('change');
-                return;
-            }
-            //
-            // Round to 2 decimal places only if the number is not a whole number
-            growthRate = (growthRate % 1) ? growthRate.toFixed(2) : growthRate;
-            vwTarget = (vwTarget % 1) ? vwTarget.toFixed(2) : vwTarget;
-            baseValue = (baseValue % 1) ? baseValue.toFixed(2) : baseValue;
-            // For mobile ranges, use the values at mobileStart/mobileEnd as clamp bounds.
-            if ($('body').hasClass('elementor-device-mobile') && typeof valueAtStart !== 'undefined' && typeof valueAtEnd !== 'undefined') {
-                outputMin = Math.min(valueAtStart, valueAtEnd);
-                outputMax = Math.max(valueAtStart, valueAtEnd);
-            } else {
-                outputMin = Math.min(inputOne, inputTwo);
-                outputMax = Math.max(inputOne, inputTwo);
-            }
-            // 
-            // CSS output
-            //
-            baseValue = (baseValue < 0) ? '- ' + Math.abs(baseValue) : '+ ' + baseValue;
-            var clampMinMaxCSS = 'clamp('+ outputMin + 'px, calc(' + vwTarget + 'vw ' + baseValue + 'px), ' + outputMax + 'px)' + cssComment;
-            // Final calculated input
-            var cssOutput = clampMinMaxCSS;
-            // Input and apply to field
-            $input.val(cssOutput).trigger('keydown').trigger('keyup').trigger('input').trigger('change'); 
-        // Error message fallback
-        } else {
-            // Nothing calculated. Check for errors
-            $input.val('Nothing calculated. Check for errors').trigger('keydown').trigger('keyup').trigger('input').trigger('change');
+
+        var result = window.brroCssCalculator.calculateForDevice(inputValue, device, pluginSettings);
+
+        if (!result.valid) {
+            console.log('Error: ' + result.error);
+            brro_removeConvertButton();
+            return;
         }
+
+        if (!result.css) {
+            console.log('No CSS output for this input on the active device.');
+            brro_removeConvertButton();
+            return;
+        }
+
+        brro_triggerElementorInput($input, result.css);
+
         // Remove 'convert-button' to prevent duplicates
-        if (!$(this).hasClass('calcref')) {
-            $(this).remove();
-        }
+        brro_removeConvertButton();
     });
 });

@@ -461,6 +461,7 @@ function brro_css_calc_popup_handler() {
     $mobile_start  = (int) get_option('brro_mobile_start', 320);
     $admin_title   = 'Brro CSS calc';
     $jquery_src    = includes_url('js/jquery/jquery.min.js');
+    $calc_lib_js_src = plugins_url('../js/brro-core-css-calculator-lib.js', __FILE__);
     $calc_js_src   = plugins_url('../js/brro-core-css-calculator-script.js', __FILE__);
     header('Content-Type: text/html; charset=' . get_bloginfo('charset'));
     ?>
@@ -516,6 +517,7 @@ function brro_css_calc_popup_handler() {
         };
     </script>
     <script src="<?php echo esc_url( $jquery_src ); ?>"></script>
+    <script src="<?php echo esc_url( $calc_lib_js_src ); ?>"></script>
     <script src="<?php echo esc_url( $calc_js_src ); ?>"></script>
 </body>
 </html>

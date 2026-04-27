@@ -1,5 +1,6 @@
 ## V2.1.4 - Release not scheduled
 - [x] 2026-03-17 - Add jQuery to display max 141 characters while typing in excerpt. `brro-c0re-wp-admin-script.js`
+- [x] 2026-04-27 - Centralize responsive CSS clamp calculations into shared `brro-core-css-calculator-lib.js` used by both the Brro Calc popup and Elementor editor converter; keep formula decimals for accuracy while formatting clamp bounds as whole pixels; update script loading in `brro-core.php` and popup HTML in `brro-core-admin.php`.
 
 ## V2.1.3 - Released 2026-03-16
 - [x] 2026-02-26 - Hide the custom help URL and Posts Menu Customization settings when developer mode is off, and prevent an empty help menu item from being added; updated `brro_plugin_settings_page` in `brro-core-settings.php` and `brro_add_custom_menu_items` in `brro-core-admin.php`.

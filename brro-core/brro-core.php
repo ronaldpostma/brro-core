@@ -3,7 +3,7 @@
  * Plugin Name: Brro Core
  * Plugin URI: https://github.com/ronaldpostma/brro-core
  * Description: Global core functions and development tools for sites developed by Brro.
- * Version: 2.1.3
+ * Version: 2.1.4
  * Author: Ronald Postma @ Brro.nl
  * Author URI: https://brro.nl/
  * License: GPLv2 or later
@@ -41,7 +41,8 @@ add_action('plugins_loaded', function() {
 function brro_enqueue_script_elementor_editor() {
     $developer_mode = get_option('brro_developer_mode', 0);
     if ( brro_is_elementor_active() && $developer_mode == 1 && is_user_logged_in() ) {
-        wp_enqueue_script( 'brro-core-elementor-editor-script', plugins_url( '/js/brro-core-elementor-editor-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
+        wp_enqueue_script( 'brro-core-css-calculator-lib', plugins_url( '/js/brro-core-css-calculator-lib.js', __FILE__ ), [], '1.0.0', true );
+        wp_enqueue_script( 'brro-core-elementor-editor-script', plugins_url( '/js/brro-core-elementor-editor-script.js', __FILE__ ), [ 'jquery', 'brro-core-css-calculator-lib' ], '1.0.0', true );
         // Localize script with data from your settings
         $script_data = array(
             'desktopEnd' => get_option('brro_desktop_end'),
@@ -62,7 +63,8 @@ add_action( 'admin_enqueue_scripts', 'brro_enqueue_script_css_calculator' );
 function brro_enqueue_script_css_calculator() {
     $developer_mode = get_option('brro_developer_mode', 0);
     if ($developer_mode == 1 && is_user_logged_in() ) {
-        wp_enqueue_script( 'brro-core-css-calculator-script', plugins_url( '/js/brro-core-css-calculator-script.js', __FILE__ ), [ 'jquery' ], '1.0.0', true );
+        wp_enqueue_script( 'brro-core-css-calculator-lib', plugins_url( '/js/brro-core-css-calculator-lib.js', __FILE__ ), [], '1.0.0', true );
+        wp_enqueue_script( 'brro-core-css-calculator-script', plugins_url( '/js/brro-core-css-calculator-script.js', __FILE__ ), [ 'jquery', 'brro-core-css-calculator-lib' ], '1.0.0', true );
         // Localize script with data from your settings
         $script_data = array(
             'desktopEnd'   => get_option('brro_desktop_end'),
