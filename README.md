@@ -155,12 +155,25 @@ These features are controlled by the Brro Core settings panel (`/wp-admin/admin.
 
 Brro Calc is a CSS `clamp()` calculator popup available in wp-admin (admins only, developer mode on). It generates fluid `clamp()` values for desktop, tablet, and mobile based on breakpoint settings configured in Brro Core.
 
-**This tool generates the `clamp()` values that go into the theme's `style.css`.** It is a developer utility — it does not output anything on the frontend.
+**This tool generates the `clamp()` values that go into the theme's stylesheets.** It is a developer utility — it does not output anything on the frontend.
 
 The clamp formula uses configurable breakpoints:
-- Desktop: start (default 1024px) → end (e.g. 1600px), reference size (e.g. 1440px)
-- Tablet: start (default 768px), reference size
-- Mobile: start (default 320px), reference size
+- Desktop: start (default 1024px) → end (e.g. 1600px), reference size (default 1440px)
+- Tablet: start (default 768px) → end 'Desktop start -1', reference size (default 768px)
+- Mobile: start (default 320px), → end 'Tablet start -1', reference size (default 360px)
+
+## What Cursor should do when responsive sizing is needed
+
+1. **By default, write pixel values** — use the px values from Figma/Design directly unless told otherwise.
+2. **Only use clamp() when the user explicitly asks for it** — phrases like 'make this responsive with brro-calc', 'use clamp() from brro-calc', or 'calculate responsive sizing with brro-calc' etc are examples of the trigger.
+3. **When asked, use the Node.js formula** in the `@brro-calc` with the project's breakpoint settings — never estimate a clamp() value.
+4. **Include the reference comment** on every clamp() value, also shown in `@brro-calc` doc: `/*487px @ 1440*/`
+5. **Calculate all values in one pass** when building a new section — don't calculate one at a time.
+
+**Brro Calc generates clamp() values** for responsive sizing on request. Only calculate clamp() values when the user explicitly asks for responsive sizing.
+
+- **Library source**: `https://raw.githubusercontent.com/ronaldpostma/brro-core/main/brro-core/js/brro-core-css-calculator-lib.js`
+- **Docs**: See `@brro-calc` for usage instructions, breakpoint settings, and the Node.js calculation formula.
 
 ---
 
@@ -192,19 +205,6 @@ The clamp formula uses configurable breakpoints:
 2. **Do not use `brro_get_cached_acf_field()` or `[acfcontent]` in new code.** Always use `get_field()` directly.
 3. **Brro Core enqueues jQuery on the frontend.** You do not need to enqueue it again in the theme.
 4. **All admin improvements are automatic.** No theme code needs to call or interact with admin functions.
-
-## What Cursor should do when responsive sizing is needed
-
-1. **By default, write pixel values** — use the px values from Figma directly unless told otherwise.
-2. **Only use clamp() when the user explicitly asks for it** — phrases like 'make this responsive', 'use clamp()', or 'calculate responsive sizing' are the trigger.
-3. **When asked, use the Node.js formula** in this doc with the project's breakpoint settings — never estimate a clamp() value.
-4. **Include the reference comment** on every clamp() value: `/*487px @ 1440*/`
-5. **Calculate all values in one pass** when building a new section — don't calculate one at a time.
-
-**Brro Calc generates clamp() values** for responsive sizing on request. Only calculate clamp() values when the user explicitly asks for responsive sizing.
-
-- **Library source**: `https://raw.githubusercontent.com/ronaldpostma/brro-core/main/brro-core/js/brro-core-css-calculator-lib.js`
-- **Docs**: See `@brro-calc` for usage instructions, breakpoint settings, and the Node.js calculation formula.
 
 ---
 
