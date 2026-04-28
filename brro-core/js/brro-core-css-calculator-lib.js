@@ -1,3 +1,52 @@
+/**
+ * Brro CSS Calculator Library
+ * ============================
+ * Generates CSS clamp() values for responsive sizing in Brro WordPress themes.
+ * Used internally by Brro Calc (wp-admin popup) and as a reference for AI tools.
+ *
+ * @file    brro-core-css-calculator-lib.js
+ * @version See brro-core changelog
+ * @repo    https://github.com/ronaldpostma/brro-core
+ *
+ * -------------------------------
+ * CURSOR / AI TOOL REFERENCE
+ * -------------------------------
+ * Use this library to calculate clamp() values when the user explicitly asks
+ * for responsive sizing. Do NOT apply clamp() by default — use px values from
+ * Figma/design reference unless told otherwise.
+ *
+ * DEFAULT BREAKPOINT SETTINGS (set by user per project in Brro Core settings panel, so always ASK the user for the settings before calculating):
+ *
+ *   Desktop: screenRef 1440 | screenStart 1024 | screenEnd 1600
+ *   Tablet:  screenRef  768 | screenStart  768 | screenEnd 1023
+ *   Mobile:  screenRef  360 | screenStart  320 | screenEnd  767
+ *
+ * Always check the project's Brro Core settings panel for overrides before
+ * calculating. Example override: a project might use desktopStart 1180, tabletEnd 1179.
+ *
+ * HOW TO CALCULATE (Node.js):
+ *
+ *   const s = { desktopRef: 1440, desktopStart: 1024, desktopEnd: 1600 };
+ *   function ceil(n) { return Math.ceil(+(Math.round(n + 'e+2') + 'e-2')); }
+ *   function round2(n) { return n % 1 ? +n.toFixed(2) : n; }
+ *   function clamp(px) {
+ *       const vw = round2((px / s.desktopRef) * 100);
+ *       const min = ceil((s.desktopStart / 100) * vw);
+ *       const max = ceil((s.desktopEnd / 100) * vw);
+ *       if (px < 0) return 'clamp(' + max + 'px, ' + vw + 'vw, ' + min + 'px)';
+ *       return 'clamp(' + min + 'px, ' + vw + 'vw, ' + max + 'px)';
+ *   }
+ *
+ * OUTPUT FORMAT — always append a reference comment after the clamp() value:
+ *   width: clamp(400px, 33.82vw, 542px); // 487px @ 1440
+ *
+ * RULES:
+ *   - Always include the // px @ screenRef reference on every clamp() value
+ *   - Negative values (offsets, margins) are supported — min/max auto-swap
+ *   - Calculate all values for a section in one pass, not one at a time
+ *   - Never simplify or round clamp() output — use exact calculated values
+ */
+
 (function(window) {
     'use strict';
 
@@ -10,13 +59,13 @@
         var source = settings || {};
         var desktopStart = brro_toNumber(source.desktopStart, 1024);
         var tabletStart = brro_toNumber(source.tabletStart, 768);
-
+    
         return {
-            desktopEnd: brro_toNumber(source.desktopEnd, 0),
+            desktopEnd: brro_toNumber(source.desktopEnd, 1600),
             desktopRef: brro_toNumber(source.desktopRef, 1440),
             desktopStart: desktopStart,
             tabletEnd: desktopStart - 1,
-            tabletRef: brro_toNumber(source.tabletRef, 1024),
+            tabletRef: brro_toNumber(source.tabletRef, 768),
             tabletStart: tabletStart,
             mobileEnd: tabletStart - 1,
             mobileRef: brro_toNumber(source.mobileRef, 360),
