@@ -133,7 +133,6 @@ Cache is automatically cleared on post save via `updated_post_meta`, `added_post
 ## Admin features (background — theme code does not need to interact with these)
 
 These features are controlled by the Brro Core settings panel (`/wp-admin/admin.php?page=brro-plugin-settings`) and run automatically. They do not require any theme-level code.
-
 | Feature | What it does |
 |---------|-------------|
 | **Private mode** | Redirects non-logged-in visitors to login or a custom URL |
@@ -166,7 +165,6 @@ The clamp formula uses configurable breakpoints:
 ---
 
 ## Settings options (wp_options keys)
-
 | Option key | Default | Description |
 |------------|---------|-------------|
 | `brro_editors` | `2,3,4,5` | Comma-separated user IDs treated as editors |
@@ -194,12 +192,23 @@ The clamp formula uses configurable breakpoints:
 2. **Do not use `brro_get_cached_acf_field()` or `[acfcontent]` in new code.** Always use `get_field()` directly.
 3. **Brro Core enqueues jQuery on the frontend.** You do not need to enqueue it again in the theme.
 4. **All admin improvements are automatic.** No theme code needs to call or interact with admin functions.
-5. **Brro Calc generates clamp() values.** When the user asks to add responsive sizing, they may use Brro Calc output. Accept and use `clamp()` values as provided — do not simplify them.
+
+## What Cursor should do when responsive sizing is needed
+
+1. **By default, write pixel values** — use the px values from Figma directly unless told otherwise.
+2. **Only use clamp() when the user explicitly asks for it** — phrases like 'make this responsive', 'use clamp()', or 'calculate responsive sizing' are the trigger.
+3. **When asked, use the Node.js formula** in this doc with the project's breakpoint settings — never estimate a clamp() value.
+4. **Include the reference comment** on every clamp() value: `/*487px @ 1440*/`
+5. **Calculate all values in one pass** when building a new section — don't calculate one at a time.
+
+**Brro Calc generates clamp() values** for responsive sizing on request. Only calculate clamp() values when the user explicitly asks for responsive sizing.
+
+- **Library source**: `https://raw.githubusercontent.com/ronaldpostma/brro-core/main/brro-core/js/brro-core-css-calculator-lib.js`
+- **Docs**: See `@brro-calc` for usage instructions, breakpoint settings, and the Node.js calculation formula.
 
 ---
 
 ## Related files in the plugin
-
 | File | Content |
 |------|---------|
 | `brro-core.php` | Main plugin file, enqueues, update mechanism |
