@@ -78,7 +78,8 @@
     }
 
     function brro_validateInput(raw) {
-        return /^\s*(?:(?:min,-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?)|(?:(?:md,)?-?\d+(?:\.\d+)?(?:,-?\d+(?:\.\d+)?)?))\s*$/.test(raw || '');
+        // md, requires exactly two values (mobile-to-desktop range); md,single is not valid
+        return /^\s*(?:(?:min,-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?)|(?:md,-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?)|(?:-?\d+(?:\.\d+)?(?:,-?\d+(?:\.\d+)?)?))\s*$/.test(raw || '');
     }
 
     function brro_parseInput(raw) {
@@ -103,7 +104,9 @@
         }
 
         if (brro_isNumericString(trimmed)) {
-            return { type: 'single', value: Number(trimmed), negative: Number(trimmed) < 0, md: mdPrefix };
+            // md, is only valid with a range (two values); reject md,single
+            if (mdPrefix) { return null; }
+            return { type: 'single', value: Number(trimmed), negative: Number(trimmed) < 0, md: false };
         }
 
         if (/^-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?$/.test(trimmed)) {
@@ -237,7 +240,7 @@
 
     function brro_calculateForDevice(raw, device, settings) {
         if (!brro_validateInput(raw)) {
-            return brro_buildError('Invalid input. Use 300 or 300,600. Prefix with md, for mobile->desktop ranges, or min,16,32 for minimum clamp. Negatives allowed.');
+            return brro_buildError('Invalid input. Use 300 or 300,600. Use md,40,60 for mobile->desktop range, or min,16,32 for minimum clamp. Negatives allowed.');
         }
 
         var parsed = brro_parseInput(raw);
@@ -256,7 +259,7 @@
 
     function brro_calculateAll(raw, settings) {
         if (!brro_validateInput(raw)) {
-            return brro_buildError('Invalid input. Use 300 or 300,600. Prefix with md, for mobile->desktop ranges, or min,16,32 for minimum clamp. Negatives allowed.');
+            return brro_buildError('Invalid input. Use 300 or 300,600. Use md,40,60 for mobile->desktop range, or min,16,32 for minimum clamp. Negatives allowed.');
         }
 
         var parsed = brro_parseInput(raw);
