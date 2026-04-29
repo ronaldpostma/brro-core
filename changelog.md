@@ -1,6 +1,7 @@
-## V2.1.5 - Released 2026-04-28
+## V2.1.5 - Release not scheduled
 - [x] 2026-04-28 - Updated library fallback defaults: `desktopEnd` from `0` to `1600` (bounded clamp() by default instead of open-ended max()), and `tabletRef` from `1024` to `768`. Behaviour unchanged when settings are explicitly provided.
 - [x] 2026-04-28 - Added Cursor / AI tool reference comment block at the top of the library file with breakpoint settings, calculation formula, and usage rules.
+- [x] 2026-04-29 - Restrict `md,` prefix to range inputs only; `md,single` is no longer valid — `md,` now requires exactly two values (mobile-to-desktop range). Updated validation regex, added parse guard in `brro_parseInput`, and corrected error messages in `brro-core-css-calculator-lib.js`.
 
 ## V2.1.4 - Released 2026-04-27
 - [x] 2026-03-17 - Add jQuery to display max 141 characters while typing in excerpt. `brro-core-wp-admin-script.js`
