@@ -172,7 +172,7 @@ The clamp formula uses configurable breakpoints:
 
 **Brro Calc generates clamp() values** for responsive sizing on request. Only calculate clamp() values when the user explicitly asks for responsive sizing.
 
-- **Library source**: `https://raw.githubusercontent.com/ronaldpostma/brro-core/main/brro-core/js/brro-core-css-calculator-lib.js`
+- **Library source**: `https://raw.githubusercontent.com/ronaldpostma/brro-core/main/app/js/brro-core-css-calculator-lib.js`
 - **Docs**: See `@brro-calc` for usage instructions, breakpoint settings, and the Node.js calculation formula.
 
 ---

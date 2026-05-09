@@ -461,8 +461,10 @@ function brro_css_calc_popup_handler() {
     $mobile_start  = (int) get_option('brro_mobile_start', 320);
     $admin_title   = 'Brro CSS calc';
     $jquery_src    = includes_url('js/jquery/jquery.min.js');
-    $calc_lib_js_src = plugins_url('../js/brro-core-css-calculator-lib.js', __FILE__);
-    $calc_js_src   = plugins_url('../js/brro-core-css-calculator-script.js', __FILE__);
+    // Resolve URLs from main plugin file so paths stay correct under app/js/.
+    $brro_core_main_file = dirname(__FILE__, 3) . '/brro-core.php';
+    $calc_lib_js_src     = plugins_url('app/js/brro-core-css-calculator-lib.js', $brro_core_main_file);
+    $calc_js_src         = plugins_url('app/js/brro-core-css-calculator-script.js', $brro_core_main_file);
     header('Content-Type: text/html; charset=' . get_bloginfo('charset'));
     ?>
 <!DOCTYPE html>

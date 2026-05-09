@@ -1,18 +1,13 @@
-# Zipped plugin
-brro-core.zip
-brro-core-*.zip
+# Local reference copies (repo root only)
+/ref/
 
-# Cursor folder
-.cursor
-.cursor/*
+# Versioned ZIP builds — keep locally, not in Git (repo root only)
+/versions/
 
-#ref folder
-ref
-ref/*
+# Release zip at plugin root
+/brro-core.zip
+/brro-core-*.zip
 
-#brro-project folders
-brro-project.zip
-brro-project
-brro-project/*
-brro-project-*
-brro-project-*/*
+# Cursor / VS Code workspace data
+.cursor/
+.vscode/

@@ -14,11 +14,11 @@ if (!defined('ABSPATH')) exit;
 //
 // Include php function files
 // 
-require_once plugin_dir_path(__FILE__) . '/php/brro-core-settings.php';
+require_once plugin_dir_path(__FILE__) . 'app/php/brro-core-settings.php';
 // 
-require_once plugin_dir_path(__FILE__) . '/php/brro-core-admin.php';
+require_once plugin_dir_path(__FILE__) . 'app/php/brro-core-admin.php';
 // 
-require_once plugin_dir_path(__FILE__) . '/php/brro-core-global.php';
+require_once plugin_dir_path(__FILE__) . 'app/php/brro-core-global.php';
 //
 // Detect if Elementor is active (late, after plugins load)
 add_action('plugins_loaded', 'brro_set_elementor_flag', 20);
@@ -41,8 +41,8 @@ add_action('plugins_loaded', function() {
 function brro_enqueue_script_elementor_editor() {
     $developer_mode = get_option('brro_developer_mode', 0);
     if ( brro_is_elementor_active() && $developer_mode == 1 && is_user_logged_in() ) {
-        wp_enqueue_script( 'brro-core-css-calculator-lib', plugins_url( '/js/brro-core-css-calculator-lib.js', __FILE__ ), [], '1.0.0', true );
-        wp_enqueue_script( 'brro-core-elementor-editor-script', plugins_url( '/js/brro-core-elementor-editor-script.js', __FILE__ ), [ 'jquery', 'brro-core-css-calculator-lib' ], '1.0.0', true );
+        wp_enqueue_script( 'brro-core-css-calculator-lib', plugins_url( 'app/js/brro-core-css-calculator-lib.js', __FILE__ ), [], '1.0.0', true );
+        wp_enqueue_script( 'brro-core-elementor-editor-script', plugins_url( 'app/js/brro-core-elementor-editor-script.js', __FILE__ ), [ 'jquery', 'brro-core-css-calculator-lib' ], '1.0.0', true );
         // Localize script with data from your settings
         $script_data = array(
             'desktopEnd' => get_option('brro_desktop_end'),
@@ -63,8 +63,8 @@ add_action( 'admin_enqueue_scripts', 'brro_enqueue_script_css_calculator' );
 function brro_enqueue_script_css_calculator() {
     $developer_mode = get_option('brro_developer_mode', 0);
     if ($developer_mode == 1 && is_user_logged_in() ) {
-        wp_enqueue_script( 'brro-core-css-calculator-lib', plugins_url( '/js/brro-core-css-calculator-lib.js', __FILE__ ), [], '1.0.0', true );
-        wp_enqueue_script( 'brro-core-css-calculator-script', plugins_url( '/js/brro-core-css-calculator-script.js', __FILE__ ), [ 'jquery', 'brro-core-css-calculator-lib' ], '1.0.0', true );
+        wp_enqueue_script( 'brro-core-css-calculator-lib', plugins_url( 'app/js/brro-core-css-calculator-lib.js', __FILE__ ), [], '1.0.0', true );
+        wp_enqueue_script( 'brro-core-css-calculator-script', plugins_url( 'app/js/brro-core-css-calculator-script.js', __FILE__ ), [ 'jquery', 'brro-core-css-calculator-lib' ], '1.0.0', true );
         // Localize script with data from your settings
         $script_data = array(
             'desktopEnd'   => get_option('brro_desktop_end'),
@@ -86,9 +86,9 @@ function brro_webdev_enqueue_admin_assets() {
     // Load admin css for all backend users
     $load_admin_css_all = (int) get_option('brro_admin_css_all', 1);
     if ($load_admin_css_all === 1) {
-        wp_enqueue_style( 'brro-core-wp-admin-style', plugins_url( '/css/brro-core-wp-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
+        wp_enqueue_style( 'brro-core-wp-admin-style', plugins_url( 'app/css/brro-core-wp-admin-style.css', __FILE__ ), [], '1.0.0', 'all' );
     }
-    wp_enqueue_script( 'brro-core-wp-admin-script', plugins_url( '/js/brro-core-wp-admin-script.js', __FILE__ ), ['jquery'], '1.0.0', true );
+    wp_enqueue_script( 'brro-core-wp-admin-script', plugins_url( 'app/js/brro-core-wp-admin-script.js', __FILE__ ), ['jquery'], '1.0.0', true );
     // Localize script with data from your settings
     $script_data = array(
         'helpUrl' => get_option('brro_client_help_url'),
@@ -105,7 +105,7 @@ function brro_webdev_enqueue_admin_assets() {
         }); 
         // Client users / editors
         if (in_array($user, $editors)) {
-            wp_enqueue_style( 'brro-core-wp-admin-editors-style', plugins_url( '/css/brro-core-wp-admin-editors-style.css', __FILE__ ), [], '1.0.0', 'all' );
+            wp_enqueue_style( 'brro-core-wp-admin-editors-style', plugins_url( 'app/css/brro-core-wp-admin-editors-style.css', __FILE__ ), [], '1.0.0', 'all' );
         }
     }
 }
