@@ -1,4 +1,4 @@
-## V2.1.5 - Release not scheduled
+## V2.1.5 - Released 2025-05-13
 - [x] 2026-05-13 - Excerpt 141-character limit and live counter now apply on Add New post/page as well as edit: run when `#excerpt` exists instead of a broken `post-php`-only body class check. `brro-core-wp-admin-script.js`
 - [x] 2026-04-28 - Updated library fallback defaults: `desktopEnd` from `0` to `1600` (bounded clamp() by default instead of open-ended max()), and `tabletRef` from `1024` to `768`. Behaviour unchanged when settings are explicitly provided.
 - [x] 2026-04-28 - Added Cursor / AI tool reference comment block at the top of the library file with breakpoint settings, calculation formula, and usage rules.
