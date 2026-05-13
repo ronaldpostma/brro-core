@@ -31,27 +31,20 @@ jQuery(function($) {
         var maxLength = $(this).attr('maxlength');
         $(this).parent().attr('brro-acf-data-maxlength', maxLength);
     });
-    // Display max length for excerpt while typing
-    var body = $('body');
-    var isSingle = body.hasClass('[class*="post-type-"]') && body.hasClass('post-new-php') || body.hasClass('post-php');
-    //
-    // Limit excerpt to 141 characters
-    if (isSingle) {
-            var maxLength = 141; // Set the maximum length for the excerpt
-            var excerptText = $('#excerpt'); // Get the excerpt textarea element
-            var excerptInfo = 'Wordt gebruikt als samenvatting en meta-beschrijving voor zoekmachines. Max ' + maxLength + ' karakters';
-            // Add a class and text to the paragraph following the excerpt textarea
-            $('textarea#excerpt + p').addClass('cust-excerpt').text(excerptInfo);
-            excerptText.attr('maxlength', maxLength); // Set the maxlength attribute for the excerpt textarea
-            // Add an input event listener to the excerpt textarea
-            excerptText.on('input', function() {
+    // Display max length for excerpt while typing (runs whenever the excerpt metabox exists, e.g. new or edit post/page)
+    var excerptText = $('#excerpt');
+    if (excerptText.length) {
+        var maxLength = 141; // Set the maximum length for the excerpt
+        var excerptInfo = 'Wordt gebruikt als samenvatting en meta-beschrijving voor zoekmachines. Max ' + maxLength + ' karakters';
+        // Add a class and text to the paragraph following the excerpt textarea
+        $('textarea#excerpt + p').addClass('cust-excerpt').text(excerptInfo);
+        excerptText.attr('maxlength', maxLength); // Set the maxlength attribute for the excerpt textarea
+        excerptText.on('input', function() {
             var text = excerptText.val(); // Get the current value of the textarea
-            // If the text length exceeds the maximum length, trim it
             if (text.length > maxLength) {
                 excerptText.val(text.substring(0, maxLength));
             }
-            // Update the paragraph text with the current character count
             $('textarea#excerpt + p').text(excerptInfo + ': ' + text.length + '/' + maxLength);
-            });
+        });
     }
 });
