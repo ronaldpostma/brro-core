@@ -5,7 +5,7 @@ Function Index for brro-core-global.php:
 1. brro_wp_css_body_class
    - Adds custom classes to the body tag based on user roles and page properties.
 2. brro_add_post_id_admin_body_class
-   - Adds post ID and post type as classes in the admin body for styling purposes.
+   - Adds post ID, post type, role classes, and user-switched in the admin body for styling.
 3. brro_acf_content_shortcode
    - Creates a shortcode to display ACF field data with optional before and after HTML.
 4. brro_get_cached_acf_field
@@ -69,10 +69,14 @@ function brro_wp_css_body_class( $classes ){
 }
 /* ========================================
    ADMIN BODY CLASSES
-   Adds post ID and post type as classes in the admin body for styling purposes
+   Adds post ID, post type, roles, and user-switched classes in wp-admin
    ======================================== */
 add_filter('admin_body_class', 'brro_add_post_id_admin_body_class');
 function brro_add_post_id_admin_body_class($classes) {
+    // User Switching plugin: active switched session
+    if (function_exists('current_user_switched') && current_user_switched()) {
+        $classes .= ' user-switched';
+    }
     // Check if we are on a post edit screen robustly
     if (!is_admin() || !function_exists('get_current_screen')) {
         return $classes;
@@ -110,6 +114,7 @@ function brro_add_post_id_admin_body_class($classes) {
     }
     return $classes;
 }
+
 //
 // ******************************************************************************************************************************************************************
 //  

@@ -44,6 +44,14 @@ Function Index for brro-core-admin.php:
     - Forces admin color scheme to sunrise on dev/stage/test subdomains.
 21. brro_filter_comment_rest_endpoints
     - Removes only comment-related REST endpoints when comments are turned off.
+22. brro_custom_manage_privacy_options
+    - Allows brro_editors user IDs to edit the privacy policy page (manage_privacy_options).
+23. brro_restrict_page_management
+    - Limits page delete and/or quick edit for brro_editors based on settings.
+24. brro_disable_delete_pages
+    - map_meta_cap filter: blocks delete_page caps for brro editors when enabled.
+25. brro_remove_quick_edit
+    - Removes quick edit row action for brro editors when enabled.
 */
 //
 // ******************************************************************************************************************************************************
@@ -435,6 +443,76 @@ function brro_remove_wp_admin_menu_items() {
             }
         }
     }
+}
+
+//
+// ******************************************************************************************************************************************************
+//
+/* ========================================
+   PRIVACY POLICY PAGE EDITING
+   Allows brro_editors to manage Settings > Privacy
+   ======================================== */
+add_action('map_meta_cap', 'brro_custom_manage_privacy_options', 1, 4);
+function brro_custom_manage_privacy_options($caps, $cap, $user_id, $args) {
+    if (!is_user_logged_in() || 'manage_privacy_options' !== $cap) {
+        return $caps;
+    }
+    // Brro client editors (user IDs from settings)
+    $get_editors = get_option('brro_editors', '2,3,4,5');
+    $brro_editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
+        return $id > 0;
+    });
+    if (in_array((int) $user_id, $brro_editors, true)) {
+        $manage_name = is_multisite() ? 'manage_network' : 'manage_options';
+        $caps = array_diff($caps, array($manage_name));
+    }
+    return $caps;
+}
+
+//
+// ******************************************************************************************************************************************************
+//
+/* ========================================
+   BRRO EDITORS PAGE MANAGEMENT
+   Optionally disable page delete and quick edit for brro_editors
+   ======================================== */
+add_action('admin_init', 'brro_restrict_page_management');
+function brro_restrict_page_management() {
+    $disable_delete = (int) get_option('brro_editors_disable_page_delete', 0);
+    $disable_quick_edit = (int) get_option('brro_editors_disable_quick_edit', 0);
+    if ($disable_delete !== 1 && $disable_quick_edit !== 1) {
+        return;
+    }
+    $user = get_current_user_id();
+    // Brro client editors (user IDs from settings)
+    $get_editors = get_option('brro_editors', '2,3,4,5');
+    $brro_editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
+        return $id > 0;
+    });
+    if (!in_array($user, $brro_editors, true)) {
+        return;
+    }
+    if ($disable_delete === 1) {
+        add_filter('map_meta_cap', 'brro_disable_delete_pages', 10, 4);
+    }
+    if ($disable_quick_edit === 1) {
+        add_filter('post_row_actions', 'brro_remove_quick_edit', 10, 2);
+        add_filter('page_row_actions', 'brro_remove_quick_edit', 10, 2);
+    }
+}
+
+function brro_disable_delete_pages($caps, $cap, $user_id, $args) {
+    if ($cap === 'delete_page' || $cap === 'delete_pages') {
+        $caps[] = 'do_not_allow';
+    }
+    return $caps;
+}
+
+function brro_remove_quick_edit($actions, $post) {
+    if (isset($actions['inline hide-if-no-js'])) {
+        unset($actions['inline hide-if-no-js']);
+    }
+    return $actions;
 }
 
 //

@@ -1,6 +1,10 @@
-## V2.1.6 - Released 2025-05-18
-- [x] 2026-05-18 - Admin instructions tooltips: green toggle button opens a fixed, draggable help panel (`section.brro-tooltip`). Target via `tooltip-target` id or the first matching section after the button in DOM (ancestor walk supports ACF markup with the button inside `<p class="description">`). One panel open at a time; close via toggle again or top-right hit zone (CSS `:after` X is visual only). `brro-core-wp-admin-style.css`, `brro-core-wp-admin-script.js`
+## V2.1.7 - Released 2026-05-18
+- [x] 2026-05-18 - Allow `brro_editors` user IDs to edit the privacy policy page (`manage_privacy_options`) via `brro_custom_manage_privacy_options`. `brro-core-admin.php`
+- [x] 2026-05-18 - Add `user-switched` admin body class when User Switching plugin has an active switch; merged into `brro_add_post_id_admin_body_class`. `brro-core-global.php`
+- [x] 2026-05-18 - Brro editors page management settings: optionally disable page deleting and/or quick edit for `brro_editors`. `brro_restrict_page_management`, `brro_disable_delete_pages`, `brro_remove_quick_edit` in `brro-core-admin.php`; settings UI in `brro-core-settings.php`
 
+## V2.1.6 - Released 2026-05-18
+- [x] 2026-05-18 - Admin instructions tooltips: green toggle button opens a fixed, draggable help panel (`section.brro-tooltip`). Target via `tooltip-target` id or the first matching section after the button in DOM (ancestor walk supports ACF markup with the button inside `<p class="description">`). One panel open at a time; close via toggle again or top-right hit zone (CSS `:after` X is visual only). `brro-core-wp-admin-style.css`, `brro-core-wp-admin-script.js`
 
 ## V2.1.5 - Released 2025-05-13
 - [x] 2026-05-13 - Excerpt 141-character limit and live counter now apply on Add New post/page as well as edit: run when `#excerpt` exists instead of a broken `post-php`-only body class check. `brro-core-wp-admin-script.js`

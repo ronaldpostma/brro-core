@@ -260,6 +260,30 @@ function brro_plugin_settings_page() {
                     </label>
                 </fieldset>
                 
+                <!-- Brro editors page management -->
+                <fieldset>
+                    <legend><h3 style="margin: 40px 0 16px 0;">Brro editors page management</h3></legend>
+                    <strong>Disable page deleting</strong><br>
+                    <label>
+                        <input type="radio" name="brro_editors_disable_page_delete" value="1" <?php checked(1, get_option('brro_editors_disable_page_delete', 0)); ?>>
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_editors_disable_page_delete" value="0" <?php checked(0, get_option('brro_editors_disable_page_delete', 0)); ?>>
+                        No
+                    </label>
+                    <br><br>
+                    <strong>Disable quick edit</strong><br>
+                    <label>
+                        <input type="radio" name="brro_editors_disable_quick_edit" value="1" <?php checked(1, get_option('brro_editors_disable_quick_edit', 0)); ?>>
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="brro_editors_disable_quick_edit" value="0" <?php checked(0, get_option('brro_editors_disable_quick_edit', 0)); ?>>
+                        No
+                    </label>
+                </fieldset>
+
                 <!-- Editor Menu Pages to Remove -->
                 <fieldset>
                     <legend><h3 style="margin: 40px 0 16px 0;">Menu pages to remove for editors</h3></legend>
@@ -384,6 +408,8 @@ function brro_plugin_register_settings() {
     register_setting('brro-plugin-settings-group', 'brro_admin_css_all');
     register_setting('brro-plugin-settings-group', 'brro_admin_css_editors');
     // Menu pages to remove for editors
+    register_setting('brro-plugin-settings-group', 'brro_editors_disable_page_delete');
+    register_setting('brro-plugin-settings-group', 'brro_editors_disable_quick_edit');
     register_setting('brro-plugin-settings-group', 'brro_editors_remove_menupages');
     // Menu pages to remove for specific users
     register_setting('brro-plugin-settings-group', 'brro_users_remove_menupages');
