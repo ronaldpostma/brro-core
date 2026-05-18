@@ -1,3 +1,7 @@
+## V2.1.6 - Released 2025-05-18
+- [x] 2026-05-18 - Admin instructions tooltips: green toggle button opens a fixed, draggable help panel (`section.brro-tooltip`). Target via `tooltip-target` id or the first matching section after the button in DOM (ancestor walk supports ACF markup with the button inside `<p class="description">`). One panel open at a time; close via toggle again or top-right hit zone (CSS `:after` X is visual only). `brro-core-wp-admin-style.css`, `brro-core-wp-admin-script.js`
+
+
 ## V2.1.5 - Released 2025-05-13
 - [x] 2026-05-13 - Excerpt 141-character limit and live counter now apply on Add New post/page as well as edit: run when `#excerpt` exists instead of a broken `post-php`-only body class check. `brro-core-wp-admin-script.js`
 - [x] 2026-04-28 - Updated library fallback defaults: `desktopEnd` from `0` to `1600` (bounded clamp() by default instead of open-ended max()), and `tabletRef` from `1024` to `768`. Behaviour unchanged when settings are explicitly provided.

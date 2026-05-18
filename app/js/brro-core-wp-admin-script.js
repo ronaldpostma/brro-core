@@ -47,4 +47,120 @@ jQuery(function($) {
             $('textarea#excerpt + p').text(excerptInfo + ': ' + text.length + '/' + maxLength);
         });
     }
+    // Brro instructions tooltip
+    var brroTooltipDrag = null;
+    var brroTooltipOffsetX = 0;
+    var brroTooltipOffsetY = 0;
+
+    // Clear inline position from drag so CSS defaults apply again
+    function brroClearTooltipPosition($tooltip) {
+        $tooltip.css({ top: '', left: '', bottom: '', right: '' });
+    }
+
+    // Close tooltip and reset position
+    function brroCloseTooltip($tooltip) {
+        $tooltip.removeClass('open');
+        brroClearTooltipPosition($tooltip);
+    }
+
+    // Close all open tooltips
+    function brroCloseAllTooltips() {
+        $('section.brro-tooltip.open').each(function() {
+            brroCloseTooltip($(this));
+        });
+    }
+
+    // Resolve panel from toggle: tooltip-target id or first section after button in DOM
+    function brroGetTooltipForToggle($btn) {
+        var targetId = $btn.attr('tooltip-target');
+        if (targetId) {
+            return $('#' + $.escapeSelector(targetId)).filter('section.brro-tooltip');
+        }
+        // Walk up ancestors: section may follow a wrapper (e.g. ACF puts button inside <p>)
+        var $cursor = $btn;
+        while ($cursor.length) {
+            var $match = $cursor.nextAll('section.brro-tooltip').first();
+            if ($match.length) {
+                return $match;
+            }
+            $cursor = $cursor.parent();
+        }
+        return $();
+    }
+
+    // Top-right hit box for CSS :after close control (pseudo-element is not clickable)
+    function brroIsTooltipCloseZone($tooltip, clientX, clientY) {
+        var rect = $tooltip[0].getBoundingClientRect();
+        var hitSize = 40;
+        return clientX >= rect.right - hitSize && clientY <= rect.top + hitSize;
+    }
+
+    // Pin fixed panel to top/left before drag (avoids jump from bottom/left)
+    function brroPinTooltipPosition($tooltip) {
+        var rect = $tooltip[0].getBoundingClientRect();
+        $tooltip.css({
+            top: rect.top + 'px',
+            left: rect.left + 'px',
+            bottom: 'auto',
+            right: 'auto'
+        });
+    }
+
+    $(document).on('click', 'button.brro-tooltip-toggle', function(e) {
+        e.preventDefault();
+        var $tooltip = brroGetTooltipForToggle($(this));
+        if (!$tooltip.length) {
+            return;
+        }
+        if ($tooltip.hasClass('open')) {
+            brroCloseTooltip($tooltip);
+            return;
+        }
+        brroCloseAllTooltips();
+        $tooltip.addClass('open');
+    });
+
+    $(document).on('click', 'section.brro-tooltip.open', function(e) {
+        var $tooltip = $(this);
+        if (brroIsTooltipCloseZone($tooltip, e.clientX, e.clientY)) {
+            e.preventDefault();
+            e.stopPropagation();
+            brroCloseTooltip($tooltip);
+        }
+    });
+
+    $(document).on('mousedown', 'section.brro-tooltip.open', function(e) {
+        if (e.which !== 1) {
+            return;
+        }
+        var $tooltip = $(this);
+        if (brroIsTooltipCloseZone($tooltip, e.clientX, e.clientY)) {
+            return;
+        }
+        e.preventDefault();
+        brroPinTooltipPosition($tooltip);
+        var rect = $tooltip[0].getBoundingClientRect();
+        brroTooltipDrag = $tooltip;
+        brroTooltipOffsetX = e.clientX - rect.left;
+        brroTooltipOffsetY = e.clientY - rect.top;
+        $('body').css('user-select', 'none');
+    });
+
+    $(document).on('mousemove', function(e) {
+        if (!brroTooltipDrag) {
+            return;
+        }
+        brroTooltipDrag.css({
+            top: (e.clientY - brroTooltipOffsetY) + 'px',
+            left: (e.clientX - brroTooltipOffsetX) + 'px'
+        });
+    });
+
+    $(document).on('mouseup', function() {
+        if (!brroTooltipDrag) {
+            return;
+        }
+        brroTooltipDrag = null;
+        $('body').css('user-select', '');
+    });
 });

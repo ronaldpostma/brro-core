@@ -89,3 +89,58 @@ div[brro-acf-data-maxlength]:before {
 .acf-field-message[data-width] .acf-input {
 	font-weight:500!important;
 }
+
+
+/* Brro instructions button and section */
+button.brro-tooltip-toggle {
+    background-color: #abedb2;
+    border: 2px solid black;
+    color: black;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 200%;
+    padding: 2px 14px;
+    cursor: pointer;
+    transition: filter 150ms ease-in-out;
+}
+button.brro-tooltip-toggle:hover {
+    filter: hue-rotate(45deg);
+}
+section.brro-tooltip {
+    display: none;
+}
+section.brro-tooltip.open {
+    position: fixed;
+    bottom: 32px;
+    left: 32px;
+    width: auto;
+    max-width: 80vw;
+    height: auto;
+    z-index: 9999;
+    padding: 20px;
+    padding-top: 34px;
+    background-color: #abedb2;
+    border: 2px solid black;
+    color: black;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 200%;
+    cursor: move;
+    display: block;
+}
+section.brro-tooltip:active {
+    cursor: grabbing;
+}
+section.brro-tooltip:after {
+    content: "X";
+    position: absolute;
+    top: 7px;
+    right: 15px;
+    background-color: white;
+    padding: 0px 10px;
+    border-radius: 50%;
+    font-weight: 600;
+    border: 1px solid black;
+    z-index: 99999;
+    cursor: pointer!important;
+}
