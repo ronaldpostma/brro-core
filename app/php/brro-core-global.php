@@ -335,16 +335,16 @@ function brro_add_frontend_edit_button() {
     }
     $edit_post_url = '';
     if (is_user_logged_in() && current_user_can('edit_posts') && is_singular()) {
-        $edit_post_url = admin_url('post.php?post=' . get_the_ID() . '&action=edit');
+        $edit_post_url = esc_url_raw(admin_url('post.php?post=' . get_the_ID() . '&action=edit'));
     }
-    $admin_url = admin_url();
+    $admin_url = esc_url_raw(admin_url());
     ?>
     <script>
         jQuery(function($) {
             $('#user_switching_switch_on').hide();
             <?php if ($edit_post_url) { ?>
             var editButton = $('<a>', {
-                href: <?php echo wp_json_encode(esc_url($edit_post_url)); ?>,
+                href: <?php echo wp_json_encode($edit_post_url); ?>,
                 text: 'Deze pagina aanpassen',
                 class: 'frontend-edit-button',
                 css: {
@@ -362,7 +362,7 @@ function brro_add_frontend_edit_button() {
             $('body').append(editButton);
             <?php } ?>
             var adminButton = $('<a>', {
-                href: <?php echo wp_json_encode(esc_url($admin_url)); ?>,
+                href: <?php echo wp_json_encode($admin_url); ?>,
                 text: 'Naar admin dashboard',
                 class: 'frontend-edit-button',
                 css: {
