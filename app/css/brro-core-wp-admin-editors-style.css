@@ -14,6 +14,18 @@ p.page-template-label-wrapper, #page_template {
     display:none!important;
 }
 
+/* Disable drag postboxes & Meta links */
+
+body:not(.user-switched) #screen-meta-links,
+body:not(.user-switched) .handle-actions {
+    display:none;
+}
+body:not(.user-switched) .js .postbox .hndle, 
+body:not(.user-switched) .js .widget .widget-top {
+    cursor: default!important;
+    pointer-events: none!important;
+}
+
 /* Display > reset initial
  * Show Admin top menu */
 #wpadminbar li#wp-admin-bar-site-name, #wpadminbar li#wp-admin-bar-my-account, #wpadminbar li#wp-admin-bar-logout {
