@@ -1,3 +1,6 @@
+## V2.1.8 - Released 2026-05-19
+- [x] 2026-05-19 - Frontend fixed buttons for `brro_editors`: edit current singular post/page (“Deze pagina aanpassen”), link to wp-admin dashboard, and hide User Switching “switch on” link. `brro_add_frontend_edit_button` in `brro-core-global.php`
+
 ## V2.1.7 - Released 2026-05-18
 - [x] 2026-05-18 - Allow `brro_editors` user IDs to edit the privacy policy page (`manage_privacy_options`) via `brro_custom_manage_privacy_options`. `brro-core-admin.php`
 - [x] 2026-05-18 - Add `user-switched` admin body class when User Switching plugin has an active switch; merged into `brro_add_post_id_admin_body_class`. `brro-core-global.php`

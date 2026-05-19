@@ -24,6 +24,8 @@ Function Index for brro-core-global.php:
    - Detects if site host uses a dev/stage/staging/test subdomain.
 11. brro_render_dev_site_badge
    - Renders a fixed "Dev site" badge on the frontend.
+12. brro_add_frontend_edit_button
+   - Fixed frontend links for brro_editors: edit current singular post/page and wp-admin dashboard.
 */
 //
 // ******************************************************************************************************************************************************************
@@ -310,6 +312,74 @@ function brro_toolbar_toggle_button() {
     <a href="<?php echo esc_url( $url ); ?>" class="brro-toolbar-toggle-btn" style="position:fixed;bottom:10px;left:10px;background:#23282d;color:#fff;padding:8px 14px;border-radius:5px;text-decoration:none;font-size:13px;z-index:999999;box-shadow:0 2px 5px rgba(0,0,0,0.2);">
         Toolbar
     </a>
+    <?php
+}
+
+/* ========================================
+   FRONTEND EDIT BUTTONS (BRRO EDITORS)
+   Fixed links to edit the current page and open wp-admin
+   ======================================== */
+add_action('wp_footer', 'brro_add_frontend_edit_button');
+function brro_add_frontend_edit_button() {
+    if (is_admin()) {
+        return;
+    }
+    $user = get_current_user_id();
+    // Brro client editors (user IDs from settings)
+    $get_editors = get_option('brro_editors', '2,3,4,5');
+    $brro_editors = array_filter(array_map('intval', explode(',', $get_editors)), function($id) {
+        return $id > 0;
+    });
+    if (!in_array($user, $brro_editors, true)) {
+        return;
+    }
+    $edit_post_url = '';
+    if (is_user_logged_in() && current_user_can('edit_posts') && is_singular()) {
+        $edit_post_url = admin_url('post.php?post=' . get_the_ID() . '&action=edit');
+    }
+    $admin_url = admin_url();
+    ?>
+    <script>
+        jQuery(function($) {
+            $('#user_switching_switch_on').hide();
+            <?php if ($edit_post_url) { ?>
+            var editButton = $('<a>', {
+                href: <?php echo wp_json_encode(esc_url($edit_post_url)); ?>,
+                text: 'Deze pagina aanpassen',
+                class: 'frontend-edit-button',
+                css: {
+                    position: 'fixed',
+                    bottom: '80px',
+                    left: '10px',
+                    background: '#0073aa',
+                    color: '#fff',
+                    padding: '10px 15px',
+                    'border-radius': '5px',
+                    'text-decoration': 'none',
+                    'z-index': 1000
+                }
+            });
+            $('body').append(editButton);
+            <?php } ?>
+            var adminButton = $('<a>', {
+                href: <?php echo wp_json_encode(esc_url($admin_url)); ?>,
+                text: 'Naar admin dashboard',
+                class: 'frontend-edit-button',
+                css: {
+                    position: 'fixed',
+                    bottom: '10px',
+                    left: '10px',
+                    background: '#005f8a',
+                    color: '#fff',
+                    padding: '10px 15px',
+                    'border-radius': '5px',
+                    'text-decoration': 'none',
+                    'z-index': 1000
+                }
+            });
+            $('body').append(adminButton);
+        });
+    </script>
     <?php
 }
 
